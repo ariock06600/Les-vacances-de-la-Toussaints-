@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Le Maître des Zéros : Multiplier par 10, 100 et 1 000</title>
+    <!-- Tailwind CSS pour un design moderne et éclatant -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zeroBlue: '#0284c7',
+                        zeroAmber: '#f59e0b',
+                        zeroEmerald: '#10b981',
+                        zeroPurple: '#8b5cf6',
+                        zeroRose: '#f43f5e',
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Polices lisibles et adaptées aux enfants -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+        .page-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+        }
+        .page-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* Animation magique d'arrivée des zéros */
+        @keyframes attachZeros {
+            0% { transform: scale(0.2) translateX(-25px); opacity: 0; }
+            60% { transform: scale(1.25) translateX(3px); opacity: 1; }
+            100% { transform: scale(1) translateX(0); opacity: 1; }
+        }
+        .animate-attach-zeros {
+            animation: attachZeros 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+        .numpad-btn {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-amber-200">
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- HEADER / NAVIGATION PRINCIPALE -->
+    <header class="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-700 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-3.5 flex flex-wrap items-center justify-between gap-3">
+            <button onclick="navigate('landing')" class="flex items-center gap-3 text-left group">
+                <span class="text-3xl p-2 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">🪄</span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs uppercase font-extrabold tracking-wider bg-black/20 text-sky-100 px-2.5 py-0.5 rounded-full">CE2 • CM1 • CM2</span>
+                        <span id="headerRankBadge" class="text-xs font-bold text-amber-300">Apprenti des Zéros</span>
+                    </div>
+                    <h1 class="text-lg sm:text-xl font-black font-heading tracking-tight leading-tight mt-0.5">
+                        Le Maître des Zéros : ×10, ×100, ×1 000
+                    </h1>
+                </div>
+            </button>
+
+            <!-- Navigation Bar -->
+            <nav class="flex items-center gap-2 text-xs sm:text-sm font-bold bg-black/15 p-1 rounded-2xl">
+                <button onclick="navigate('landing')" id="nav-landing" class="px-3.5 py-1.5 rounded-xl bg-white/20 text-white shadow-xs transition flex items-center gap-1.5">
+                    <span>🏠</span> <span class="hidden sm:inline">Accueil & Règle</span>
+                </button>
+                <button onclick="navigate('trophies')" id="nav-trophies" class="px-3.5 py-1.5 rounded-xl hover:bg-white/10 text-white transition flex items-center gap-1.5 relative">
+                    <span>🏆</span> <span>Trophées</span>
+                    <span id="navTrophyBadge" class="bg-amber-400 text-amber-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">0/9</span>
+                </button>
+                <button id="soundToggle" onclick="toggleSound()" title="Activer / Couper le son" class="p-2 rounded-xl hover:bg-white/10 text-white transition">
+                    🔊
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENEUR DES PAGES -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- ======================================================== -->
+        <!-- PAGE 1 : LANDING PAGE & CONFIGURATION                   -->
+        <!-- ======================================================== -->
+        <section id="page-landing" class="page-view active space-y-6">
+            
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-indigo-700 to-purple-900 text-white p-6 sm:p-8 shadow-xl border border-white/10">
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-full text-xs font-black tracking-wide text-amber-200">
+                        <span>⚡</span> LA MÉTHODE MAGIQUE SANS POSER L'OPÉRATION
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold font-heading leading-tight">
+                        Apprends à multiplier par 10, 100 et 1 000 en un clin d'œil !
+                    </h2>
+                    <p class="text-sky-100 text-sm sm:text-base font-medium">
+                        Comprends la règle du décalage des rangs (unités, dizaines, centaines, milliers) et relève les 4 défis interactifs.
+                    </p>
+                </div>
+            </div>
+
+            <!-- LE DÉMONSTRATEUR INTERACTIF DE LA RÈGLE D'OR -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <span class="text-xs uppercase font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">La Règle d'Or en Action</span>
+                        <h3 class="text-xl font-black font-heading text-slate-800 mt-1">
+                            Comment ça marche ? Observe la magie des zéros :
+                        </h3>
+                    </div>
+                    <div class="text-xs font-bold text-slate-500">Clique sur les multiplicateurs pour tester en direct !</div>
+                </div>
+
+                <!-- Simulateur interactif -->
+                <div class="p-6 bg-gradient-to-r from-sky-50 via-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 text-center space-y-4">
+                    <div class="text-xs sm:text-sm font-bold text-slate-600">
+                        Choisis un nombre de base :
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button onclick="setDemoBase(4)" class="demo-base-btn px-4 py-1.5 rounded-xl font-black text-sm bg-indigo-600 text-white shadow-xs">4</button>
+                        <button onclick="setDemoBase(35)" class="demo-base-btn px-4 py-1.5 rounded-xl font-bold text-sm bg-white border border-slate-300 text-slate-700 hover:bg-slate-50">35</button>
+                        <button onclick="setDemoBase(80)" class="demo-base-btn px-4 py-1.5 rounded-xl font-bold text-sm bg-white border border-slate-300 text-slate-700 hover:bg-slate-50">80 (déjà un 0 !)</button>
+                        <button onclick="setDemoBase(420)" class="demo-base-btn px-4 py-1.5 rounded-xl font-bold text-sm bg-white border border-slate-300 text-slate-700 hover:bg-slate-50">420</button>
+                    </div>
+
+                    <!-- Calcul animé -->
+                    <div class="py-3 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-2xl sm:text-4xl font-black font-heading text-slate-800">
+                        <span id="demoNumberA" class="bg-white px-4 py-2 rounded-2xl border-2 border-slate-200 shadow-xs text-indigo-700">4</span>
+                        <span class="text-slate-400">×</span>
+                        <span id="demoMultiplier" class="bg-white px-4 py-2 rounded-2xl border-2 border-amber-400 shadow-xs text-amber-600">100</span>
+                        <span class="text-slate-400">=</span>
+                        <div id="demoResultBox" class="bg-white px-5 py-2 rounded-2xl border-2 border-emerald-500 shadow-md flex items-center">
+                            <span id="demoResultBase" class="text-indigo-700">4</span>
+                            <span id="demoResultZeros" class="text-emerald-500 font-extrabold tracking-widest animate-attach-zeros">00</span>
+                        </div>
+                    </div>
+
+                    <!-- Sélecteur des 3 règles -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-left">
+                        <button onclick="applyDemoPower(10)" id="demo-btn-10" class="p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-sky-400 transition">
+                            <div class="flex items-center justify-between font-black text-sky-700 text-sm mb-1">
+                                <span>Multiplier par 10</span>
+                                <span class="text-xs bg-sky-100 px-2 py-0.5 rounded-full">+ 1 zéro</span>
+                            </div>
+                            <p class="text-xs text-slate-600">Le nombre devient 10 fois plus grand : on décale d'un rang vers la gauche et on ajoute <strong>un 0</strong>.</p>
+                        </button>
+
+                        <button onclick="applyDemoPower(100)" id="demo-btn-100" class="p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50 shadow-xs transition">
+                            <div class="flex items-center justify-between font-black text-amber-800 text-sm mb-1">
+                                <span>Multiplier par 100</span>
+                                <span class="text-xs bg-amber-200 px-2 py-0.5 rounded-full">+ 2 zéros</span>
+                            </div>
+                            <p class="text-xs text-slate-600">Le nombre devient 100 fois plus grand : on décale de 2 rangs et on ajoute <strong>deux 0 (00)</strong>.</p>
+                        </button>
+
+                        <button onclick="applyDemoPower(1000)" id="demo-btn-1000" class="p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-purple-400 transition">
+                            <div class="flex items-center justify-between font-black text-purple-700 text-sm mb-1">
+                                <span>Multiplier par 1 000</span>
+                                <span class="text-xs bg-purple-100 px-2 py-0.5 rounded-full">+ 3 zéros</span>
+                            </div>
+                            <p class="text-xs text-slate-600">Le nombre devient 1 000 fois plus grand : on décale de 3 rangs et on ajoute <strong>trois 0 (000)</strong>.</p>
+                        </button>
+                    </div>
+
+                    <!-- Attention au piège des nombres terminant par 0 -->
+                    <div class="p-3 bg-amber-100/70 border border-amber-300 rounded-xl text-xs text-amber-950 font-bold flex items-center gap-2">
+                        <span>⚠️</span>
+                        <span><strong>Le Piège Classique :</strong> Si le nombre de départ a déjà un zéro (ex: <strong>50</strong>), on n'oublie pas son zéro d'origine ! <em>50 × 100 = 5 000</em> (1 zéro + 2 zéros = 3 zéros au total).</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RÉGLAGE DE LA SÉLECTION POUR LES EXERCICES -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <h3 class="text-lg font-black font-heading text-slate-800 flex items-center gap-2">
+                        <span>⚙️</span> Paramètres d'entraînement personnalisés :
+                    </h3>
+                    <span class="text-xs font-bold text-slate-400">Modifiable à tout moment</span>
+                </div>
+
+                <!-- Multiplicateurs cibles -->
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">1. Multiplicateurs cibles :</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <button onclick="setTargetMultipliers('mix')" id="mult-btn-mix" class="mult-sel-btn p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-50 font-extrabold text-sm text-indigo-950 transition">
+                            🎲 Mix (×10, ×100, ×1000)
+                        </button>
+                        <button onclick="setTargetMultipliers('10')" id="mult-btn-10" class="mult-sel-btn p-3 rounded-2xl border-2 border-slate-200 bg-white font-bold text-sm text-slate-700 hover:border-slate-300 transition">
+                            × 10 uniquement
+                        </button>
+                        <button onclick="setTargetMultipliers('100')" id="mult-btn-100" class="mult-sel-btn p-3 rounded-2xl border-2 border-slate-200 bg-white font-bold text-sm text-slate-700 hover:border-slate-300 transition">
+                            × 100 uniquement
+                        </button>
+                        <button onclick="setTargetMultipliers('1000')" id="mult-btn-1000" class="mult-sel-btn p-3 rounded-2xl border-2 border-slate-200 bg-white font-bold text-sm text-slate-700 hover:border-slate-300 transition">
+                            × 1 000 uniquement
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Niveau de difficulté des nombres -->
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">2. Difficulté des nombres de départ :</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <button onclick="setDifficultyLevel('easy')" id="diff-btn-easy" class="diff-sel-btn p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left transition">
+                            <div class="font-black text-emerald-900 text-sm">🟢 Débutant (CE2)</div>
+                            <p class="text-xs text-slate-600 mt-0.5">Chiffres de 1 à 9 et dizaines simples (ex: 6 × 100, 20 × 10).</p>
+                        </button>
+                        <button onclick="setDifficultyLevel('medium')" id="diff-btn-medium" class="diff-sel-btn p-3.5 rounded-2xl border-2 border-slate-200 bg-white text-left hover:border-slate-300 transition">
+                            <div class="font-black text-slate-800 text-sm">🟡 Intermédiaire (CM1)</div>
+                            <p class="text-xs text-slate-600 mt-0.5">Nombres à 2 chiffres (ex: 45 × 100, 80 × 1000, 73 × 10).</p>
+                        </button>
+                        <button onclick="setDifficultyLevel('hard')" id="diff-btn-hard" class="diff-sel-btn p-3.5 rounded-2xl border-2 border-slate-200 bg-white text-left hover:border-slate-300 transition">
+                            <div class="font-black text-slate-800 text-sm">🔴 Expert (CM2)</div>
+                            <p class="text-xs text-slate-600 mt-0.5">Grands nombres et zéros intercalés (ex: 308 × 10, 1 250 × 100).</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LES 4 EXERCICES DÉDIÉS -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-black font-heading text-slate-800 flex items-center gap-2">
+                        <span>🎮</span> Les 4 Exercices Dédiés :
+                    </h3>
+                    <span class="text-xs text-slate-500 font-bold">10 questions par série</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Exercice 1 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">🪄</span>
+                                <span class="text-xs bg-sky-100 text-sky-800 font-extrabold px-2.5 py-0.5 rounded-full">Calcul Direct</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 1 : Le Décalage Magique</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Écris directement le résultat. Pavé tactile ou clavier physique. Animation visuelle des zéros qui viennent s'accrocher !
+                            </p>
+                        </div>
+                        <button onclick="startExerciseMode(1)" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Lancer Décalage Magique</span> <span>➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Exercice 2 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">🧩</span>
+                                <span class="text-xs bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full">Calcul à Trous</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 2 : L'Opération Mystère</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Trouve le nombre manquant ou le bon multiplicateur (ex: <strong>?</strong> × 100 = 7 200 ou 36 × <strong>?</strong> = 36 000).
+                            </p>
+                        </div>
+                        <button onclick="startExerciseMode(2)" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Lancer Opération Mystère</span> <span>➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Exercice 3 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">📦</span>
+                                <span class="text-xs bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full">Glisser & Classer</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 3 : Le Laboratoire du Tri</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Range chaque carte dans son bon conteneur : « Famille ×10 », « Famille ×100 » ou « Famille ×1 000 » avec des pièges de zéros !
+                            </p>
+                        </div>
+                        <button onclick="startExerciseMode(3)" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Lancer le Laboratoire</span> <span>➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Exercice 4 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">🕵️‍♂️</span>
+                                <span class="text-xs bg-rose-100 text-rose-800 font-extrabold px-2.5 py-0.5 rounded-full">Chasse aux Pièges</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 4 : Détective des Zéros</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Analyse des égalités pièges d'élèves (ex: « 40 × 100 = 400 ? »). Découvre l'erreur et gagne tes galons d'expert !
+                            </p>
+                        </div>
+                        <button onclick="startExerciseMode(4)" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Lancer la Chasse aux Pièges</span> <span>➔</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 2 : ÉCRAN DES EXERCICES INTERACTIFS                -->
+        <!-- ======================================================== -->
+        <section id="page-exercise" class="page-view space-y-5">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6 max-w-2xl mx-auto">
+                
+                <!-- Barre d'état haute : Exercice, Jauge de progression et score -->
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div class="flex items-center gap-2">
+                        <button onclick="confirmExitToHome()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-xs transition" title="Retour à l'accueil">
+                            ✕ Quitter
+                        </button>
+                        <div>
+                            <span id="gameModeBadge" class="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+                                Décalage Magique
+                            </span>
+                            <div id="gameStepLabel" class="text-xs font-bold text-slate-500 mt-0.5">Calcul 1 / 10</div>
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <span class="text-[10px] text-slate-400 uppercase font-black block leading-none">Score</span>
+                        <span id="gameLiveScore" class="text-xl font-black font-heading text-indigo-600">0</span>
+                    </div>
+                </div>
+
+                <!-- Jauge de progression -->
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div id="gameProgressBar" class="bg-gradient-to-r from-sky-500 to-indigo-600 h-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+
+                <!-- ZONE PRINCIPALE D'ÉNONCÉ -->
+                <div class="text-center py-5 sm:py-7 bg-slate-50 rounded-3xl border-2 border-slate-200 px-4 space-y-4">
+                    <span id="gameInstructionTag" class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Trouve le résultat magique :
+                    </span>
+
+                    <!-- Grand affichage du calcul -->
+                    <div id="gameBigPrompt" class="text-3xl sm:text-5xl font-black font-heading text-slate-800 tracking-tight leading-tight">
+                        <!-- Exemple : 45 × 100 = ? -->
+                    </div>
+
+                    <!-- Indice / Conseil en cas d'hésitation -->
+                    <div id="gameHelpTip" class="hidden text-xs font-bold text-amber-800 bg-amber-100/70 py-1.5 px-3 rounded-xl max-w-sm mx-auto">
+                        💡 Astuce : Compte le nombre de zéros dans le multiplicateur !
+                    </div>
+
+                    <!-- Champ d'affichage du résultat saisi (Exercices 1 et 2) -->
+                    <div id="numericAnswerBox" class="max-w-xs mx-auto">
+                        <div id="displayTypedAnswer" class="w-full py-2.5 px-4 bg-white border-2 border-sky-400 rounded-2xl text-2xl sm:text-3xl font-black text-sky-950 text-center shadow-inner tracking-widest min-h-[54px] flex items-center justify-center">
+                            <span class="text-slate-300 font-normal">...</span>
+                        </div>
+                    </div>
+
+                    <!-- Feedback instantané -->
+                    <div id="gameFeedbackMsg" class="hidden text-sm sm:text-base font-black py-2.5 px-4 rounded-xl"></div>
+                </div>
+
+                <!-- ZONE D'INTERACTION 1 : PAVÉ NUMÉRIQUE (Exercices 1 & 2) -->
+                <div id="numpadSection" class="space-y-2 max-w-sm mx-auto">
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="pressDigit('1')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">1</button>
+                        <button type="button" onclick="pressDigit('2')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">2</button>
+                        <button type="button" onclick="pressDigit('3')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">3</button>
+                        
+                        <button type="button" onclick="pressDigit('4')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">4</button>
+                        <button type="button" onclick="pressDigit('5')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">5</button>
+                        <button type="button" onclick="pressDigit('6')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">6</button>
+                        
+                        <button type="button" onclick="pressDigit('7')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">7</button>
+                        <button type="button" onclick="pressDigit('8')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">8</button>
+                        <button type="button" onclick="pressDigit('9')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">9</button>
+                        
+                        <button type="button" onclick="eraseDigit()" class="numpad-btn p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-bold text-sm shadow-xs transition">⌫ Effacer</button>
+                        <button type="button" onclick="pressDigit('0')" class="numpad-btn p-3 bg-white border-2 border-slate-200 hover:border-sky-400 active:bg-sky-50 rounded-2xl font-black text-xl text-slate-800 shadow-xs transition">0</button>
+                        <button type="button" onclick="submitNumericAnswer()" id="btnNumpadOk" class="numpad-btn p-3 bg-sky-600 hover:bg-sky-700 text-white font-black text-base rounded-2xl shadow transition">OK ↵</button>
+                    </div>
+                </div>
+
+                <!-- ZONE D'INTERACTION 2 : LE LABORATOIRE DU TRI (Exercice 3) -->
+                <div id="sortingSection" class="hidden space-y-4">
+                    <p class="text-xs text-center text-slate-500 font-bold">Clique sur le bon conteneur pour envoyer le calcul :</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="submitSortingAnswer(10)" class="p-4 rounded-2xl border-2 border-sky-400 bg-sky-50 hover:bg-sky-100 text-sky-950 font-black text-base shadow-sm transition active:scale-95 text-center flex flex-col items-center">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span>Famille × 10</span>
+                            <span class="text-[11px] font-normal text-sky-700 mt-1">(+ 1 zéro)</span>
+                        </button>
+
+                        <button onclick="submitSortingAnswer(100)" class="p-4 rounded-2xl border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-950 font-black text-base shadow-sm transition active:scale-95 text-center flex flex-col items-center">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span>Famille × 100</span>
+                            <span class="text-[11px] font-normal text-amber-700 mt-1">(+ 2 zéros)</span>
+                        </button>
+
+                        <button onclick="submitSortingAnswer(1000)" class="p-4 rounded-2xl border-2 border-purple-400 bg-purple-50 hover:bg-purple-100 text-purple-950 font-black text-base shadow-sm transition active:scale-95 text-center flex flex-col items-center">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span>Famille × 1 000</span>
+                            <span class="text-[11px] font-normal text-purple-700 mt-1">(+ 3 zéros)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ZONE D'INTERACTION 3 : DÉTECTIVE VRAI / FAUX & PIÈGES (Exercice 4) -->
+                <div id="detectiveSection" class="hidden space-y-4 max-w-md mx-auto">
+                    <div id="detectiveButtonsGrid" class="grid grid-cols-2 gap-3">
+                        <!-- VRAI / FAUX ou QCM -->
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 3 : BILAN ET RÉSULTATS                             -->
+        <!-- ======================================================== -->
+        <section id="page-results" class="page-view space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-9 border border-slate-200 shadow-xl space-y-7 max-w-2xl mx-auto">
+                
+                <div class="text-center space-y-2 border-b border-slate-100 pb-5">
+                    <div id="resultEmoji" class="text-6xl animate-pulse-soft">🏆</div>
+                    <span id="resultBadgeLabel" class="text-xs uppercase tracking-widest font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full">
+                        Série Terminée !
+                    </span>
+                    <h2 id="resultTitle" class="text-2xl sm:text-4xl font-extrabold font-heading text-slate-900 mt-2">
+                        Superbe Performance !
+                    </h2>
+                    <p id="resultSubtitle" class="text-sm text-slate-600">
+                        Voici le bilan de ta maîtrise des multiplications par 10, 100 et 1 000.
+                    </p>
+                </div>
+
+                <!-- Cartes récapitulatives -->
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200">
+                        <div class="text-[11px] font-bold text-indigo-700 uppercase">Score</div>
+                        <div id="resCorrectScore" class="text-2xl sm:text-3xl font-black font-heading text-indigo-900 mt-1">10 / 10</div>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+                        <div class="text-[11px] font-bold text-emerald-700 uppercase">Précision</div>
+                        <div id="resAccuracyScore" class="text-2xl sm:text-3xl font-black font-heading text-emerald-900 mt-1">100%</div>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
+                        <div class="text-[11px] font-bold text-amber-700 uppercase">Vitesse Moyenne</div>
+                        <div id="resAvgSpeed" class="text-2xl sm:text-3xl font-black font-heading text-amber-900 mt-1">1.8s</div>
+                    </div>
+                </div>
+
+                <!-- Liste des erreurs éventuelles avec explications claires -->
+                <div id="resMistakesSection" class="hidden space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-extrabold text-slate-800 text-sm font-heading flex items-center gap-1.5">
+                            <span>🔍</span> Erreurs à revoir (<span id="resMistakesCount">0</span>) :
+                        </h4>
+                        <span class="text-xs text-slate-500">Comprends pourquoi pour ne plus te faire avoir</span>
+                    </div>
+
+                    <div id="resMistakesList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Boutons d'actions -->
+                <div class="flex flex-wrap items-center justify-center gap-3 pt-3 border-t border-slate-100">
+                    <button onclick="restartCurrentExercise()" class="px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-black text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        <span>🔄</span> Rejouer ce défi
+                    </button>
+                    <button id="btnRetryOnlyMistakes" onclick="retryMistakesOnly()" class="hidden px-5 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        <span>🎯</span> Corriger uniquement mes erreurs
+                    </button>
+                    <button onclick="navigate('landing')" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-2xl transition">
+                        🏠 Choisir un autre exercice
+                    </button>
+                    <button onclick="navigate('trophies')" class="px-5 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-sm rounded-2xl transition flex items-center gap-1.5">
+                        <span>🏆</span> Trophées
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 4 : SALLE DES TROPHÉES                             -->
+        <!-- ======================================================== -->
+        <section id="page-trophies" class="page-view space-y-6">
+            
+            <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 text-white rounded-3xl p-6 sm:p-9 shadow-xl border border-white/10 space-y-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider font-extrabold text-amber-300 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30">
+                            Palmarès des Zéros
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black font-heading mt-2">
+                            🏆 La Salle des 9 Trophées
+                        </h2>
+                        <p class="text-slate-300 text-xs sm:text-sm mt-1">
+                            Relève les défis sur les puissances de 10 pour débloquer tous les badges !
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 p-3.5 rounded-2xl border border-white/15 text-center min-w-[180px]">
+                        <div class="text-[11px] uppercase text-slate-300 font-bold">Progression Totale</div>
+                        <div id="trophyPercentLabel" class="text-3xl font-black font-heading text-amber-300">0%</div>
+                        <div class="w-full bg-black/40 h-2 rounded-full overflow-hidden mt-1.5">
+                            <div id="trophyGlobalBar" class="bg-amber-400 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grille des 9 trophées -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5" id="trophiesListGrid">
+                    <!-- Rempli en JS -->
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs">
+                    <button onclick="navigate('landing')" class="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition">
+                        ← Retour aux exercices
+                    </button>
+                    <button onclick="resetAllDataConfirmation()" class="text-rose-300 hover:text-rose-100 underline transition">
+                        Réinitialiser mes statistiques et trophées
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
+        <p>🪄 <strong>Le Maître des Zéros</strong> • Multiplier par 10, 100 et 1 000 • Application pédagogique autonome CE2-CM1-CM2.</p>
+    </footer>
+
+    <!-- SCRIPT APPLICATION : GESTION DES EXERCICES, AUDIO & GAMIFICATION -->
+    <script>
+        // --- CONFIGURATION DES 9 TROPHÉES DÉDIÉS ---
+        const TROPHIES_LIST = [
+            { id: "t_first", icon: "🌱", title: "Premier Zéro", desc: "Réussir son premier calcul par 10, 100 ou 1 000.", check: (s) => s.totalCorrect >= 1 },
+            { id: "t_p10", icon: "⚡", title: "Maître du Décalage ×10", desc: "Réussir 10 multiplications par 10.", check: (s) => s.count10 >= 10 },
+            { id: "t_p100", icon: "🪐", title: "Expert des Deux Zéros ×100", desc: "Réussir 10 multiplications par 100.", check: (s) => s.count100 >= 10 },
+            { id: "t_p1000", icon: "🚀", title: "Champion du Millier ×1000", desc: "Réussir 10 multiplications par 1 000.", check: (s) => s.count1000 >= 10 },
+            { id: "t_round", icon: "🎯", title: "Dévoreur de Nombres Ronds", desc: "Réussir 8 calculs avec des nombres finissant déjà par 0 (ex: 50×100, 400×10).", check: (s) => s.roundNumbersSolved >= 8 },
+            { id: "t_perfect", icon: "💎", title: "Sans-Faute Magique", desc: "Obtenir 10/10 sans aucune erreur sur un exercice.", check: (s) => s.perfectTens >= 1 },
+            { id: "t_detective", icon: "🕵️‍♂️", title: "Chasseur de Pièges", desc: "Réussir une série de l'Exercice 4 (Détective des Zéros) avec au moins 8/10.", check: (s) => s.detectiveSolved >= 8 },
+            { id: "t_centurion", icon: "💯", title: "Grand Centurion des Zéros", desc: "Résoudre 100 multiplications par 10, 100 ou 1 000.", check: (s) => s.totalCorrect >= 100 },
+            { id: "t_grandmaster", icon: "👑", title: "Grand Maître des Zéros", desc: "Débloquer les 8 autres trophées du jeu.", check: (s, count) => count >= 8 }
+        ];
+
+        // --- ÉTAT GLOBAL DE L'APPLICATION ---
+        const appState = {
+            targetMultiplier: 'mix', // 'mix', '10', '100', '1000'
+            difficulty: 'easy',      // 'easy' (1-9 & 10-90), 'medium' (11-99), 'hard' (100-999)
+            soundEnabled: true,
+
+            // En jeu
+            exerciseMode: 1,         // 1: Direct, 2: Manquant, 3: Tri, 4: Détective
+            questionIndex: 0,
+            totalQuestions: 10,
+            score: 0,
+            userTypedAnswer: "",
+            currentQ: null,
+            questionStartTime: 0,
+            isLocked: false,
+            sessionMistakes: [],
+            sessionTimes: [],
+
+            // Mode réessai d'erreurs
+            isMistakesSession: false,
+            mistakesQueue: []
+        };
+
+        // Statistiques sauvegardées
+        let savedStats = {
+            totalSolved: 0,
+            totalCorrect: 0,
+            count10: 0,
+            count100: 0,
+            count1000: 0,
+            roundNumbersSolved: 0,
+            perfectTens: 0,
+            detectiveSolved: 0,
+            unlockedTrophies: []
+        };
+
+        // --- DEMO INTERACTIVE LANDING PAGE ---
+        let currentDemoBase = 4;
+        let currentDemoPower = 100;
+
+        function setDemoBase(val) {
+            playSound('click');
+            currentDemoBase = val;
+            document.querySelectorAll('.demo-base-btn').forEach(btn => {
+                if (parseInt(btn.innerText) === val) {
+                    btn.className = "demo-base-btn px-4 py-1.5 rounded-xl font-black text-sm bg-indigo-600 text-white shadow-xs";
+                } else {
+                    btn.className = "demo-base-btn px-4 py-1.5 rounded-xl font-bold text-sm bg-white border border-slate-300 text-slate-700 hover:bg-slate-50";
+                }
+            });
+            updateDemoDisplay();
+        }
+
+        function applyDemoPower(power) {
+            playSound('click');
+            currentDemoPower = power;
+            [10, 100, 1000].forEach(p => {
+                const btn = document.getElementById(`demo-btn-${p}`);
+                if (p === power) {
+                    btn.className = "p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50 shadow-xs transition";
+                } else {
+                    btn.className = "p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 transition";
+                }
+            });
+            updateDemoDisplay();
+        }
+
+        function updateDemoDisplay() {
+            document.getElementById('demoNumberA').innerText = currentDemoBase;
+            document.getElementById('demoMultiplier').innerText = currentDemoPower.toLocaleString('fr-FR');
+            document.getElementById('demoResultBase').innerText = currentDemoBase;
+
+            let zerosStr = "";
+            if (currentDemoPower === 10) zerosStr = "0";
+            else if (currentDemoPower === 100) zerosStr = "00";
+            else if (currentDemoPower === 1000) zerosStr = "000";
+
+            const zerosEl = document.getElementById('demoResultZeros');
+            zerosEl.innerText = zerosStr;
+            zerosEl.classList.remove('animate-attach-zeros');
+            void zerosEl.offsetWidth; // reset animation
+            zerosEl.classList.add('animate-attach-zeros');
+        }
+
+        // --- LOCALSTORAGE & STATS ---
+        function loadSavedStats() {
+            try {
+                const raw = localStorage.getItem('maitre_zeros_stats_v1');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    Object.assign(savedStats, parsed);
+                }
+            } catch (e) {}
+            updateStatsUI();
+            checkTrophies(false);
+        }
+
+        function saveStats() {
+            try {
+                localStorage.setItem('maitre_zeros_stats_v1', JSON.stringify(savedStats));
+            } catch (e) {}
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            const count = savedStats.unlockedTrophies.length;
+            document.getElementById('navTrophyBadge').innerText = `${count}/9`;
+
+            const rankEl = document.getElementById('headerRankBadge');
+            if (count === 9) rankEl.innerText = "👑 Grand Maître des Zéros";
+            else if (count >= 6) rankEl.innerText = "⭐ Expert des Milliers";
+            else if (count >= 3) rankEl.innerText = "🚀 Dompteur des Dizaines";
+            else if (count >= 1) rankEl.innerText = "🌱 Apprenti";
+            else rankEl.innerText = "Novice";
+        }
+
+        // --- AUDIO WEB AUDIO API ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!appState.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.15);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.28);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(240, now);
+                    osc.frequency.linearRampToValueAtTime(140, now + 0.22);
+                    gain.gain.setValueAtTime(0.16, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.24);
+                    osc.start(now);
+                    osc.stop(now + 0.24);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(620, now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'fanfare') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'sine';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        g.gain.setValueAtTime(0.12, now + idx * 0.08);
+                        g.gain.linearRampToValueAtTime(0.001, now + idx * 0.08 + 0.3);
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.start(now + idx * 0.08);
+                        o.stop(now + idx * 0.08 + 0.3);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            appState.soundEnabled = !appState.soundEnabled;
+            document.getElementById('soundToggle').innerText = appState.soundEnabled ? '🔊' : '🔇';
+        }
+
+        // --- NAVIGATION DES PAGES ---
+        function navigate(pageId) {
+            playSound('click');
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) target.classList.add('active');
+
+            if (pageId === 'trophies') {
+                renderTrophiesGallery();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- CONFIGURATION MULTIPLICATEURS & DIFFICULTÉ ---
+        function setTargetMultipliers(val) {
+            playSound('click');
+            appState.targetMultiplier = val;
+            document.querySelectorAll('.mult-sel-btn').forEach(btn => {
+                btn.className = "mult-sel-btn p-3 rounded-2xl border-2 border-slate-200 bg-white font-bold text-sm text-slate-700 hover:border-slate-300 transition";
+            });
+            const activeBtn = document.getElementById(`mult-btn-${val}`);
+            if (activeBtn) {
+                activeBtn.className = "mult-sel-btn p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-50 font-extrabold text-sm text-indigo-950 transition";
+            }
+        }
+
+        function setDifficultyLevel(diff) {
+            playSound('click');
+            appState.difficulty = diff;
+            document.querySelectorAll('.diff-sel-btn').forEach(btn => {
+                btn.className = "diff-sel-btn p-3.5 rounded-2xl border-2 border-slate-200 bg-white text-left hover:border-slate-300 transition";
+            });
+            const activeBtn = document.getElementById(`diff-btn-${diff}`);
+            if (activeBtn) {
+                if (diff === 'easy') activeBtn.className = "diff-sel-btn p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-left transition";
+                else if (diff === 'medium') activeBtn.className = "diff-sel-btn p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50 text-left transition";
+                else activeBtn.className = "diff-sel-btn p-3.5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-left transition";
+            }
+        }
+
+        // --- GÉNÉRATEUR SPÉCIFIQUE DE NOMBRES ET MULTIPLICATEURS ---
+        function pickPower() {
+            if (appState.targetMultiplier === '10') return 10;
+            if (appState.targetMultiplier === '100') return 100;
+            if (appState.targetMultiplier === '1000') return 1000;
+            const powers = [10, 100, 1000];
+            return powers[Math.floor(Math.random() * powers.length)];
+        }
+
+        function pickBaseNumber() {
+            if (appState.difficulty === 'easy') {
+                // Chiffres de 1 à 9 et quelques dizaines simples (10, 20, 30...)
+                const pool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90];
+                return pool[Math.floor(Math.random() * pool.length)];
+            } else if (appState.difficulty === 'medium') {
+                // Nombres à 2 chiffres variés (12 à 98)
+                const withZero = Math.random() > 0.65;
+                if (withZero) {
+                    const tens = [20, 30, 40, 50, 60, 70, 80, 90];
+                    return tens[Math.floor(Math.random() * tens.length)];
+                }
+                return Math.floor(Math.random() * 85) + 12; // 12 à 96
+            } else {
+                // Expert : nombres à 3 chiffres ou plus (105, 308, 420, 1250)
+                const variants = [
+                    Math.floor(Math.random() * 800) + 110, // 110 à 910
+                    Math.floor(Math.random() * 80) * 10 + 100, // finissant par 0
+                    Math.floor(Math.random() * 8) * 100 + Math.floor(Math.random() * 9) + 101, // avec un zéro intercalé (ex: 308)
+                    (Math.floor(Math.random() * 40) + 11) * 100 // milliers
+                ];
+                return variants[Math.floor(Math.random() * variants.length)];
+            }
+        }
+
+        function generateExerciseQuestion(mode) {
+            const power = pickPower();
+            const base = pickBaseNumber();
+            const answer = base * power;
+
+            // Détection si c'est un nombre rond (finissant par 0)
+            const isRound = (base % 10 === 0);
+
+            return {
+                mode: mode,
+                base: base,
+                power: power,
+                answer: answer,
+                isRound: isRound
+            };
+        }
+
+        // --- GESTION DU PAVÉ NUMÉRIQUE & CLAVIER ---
+        function pressDigit(d) {
+            playSound('click');
+            if (appState.isLocked) return;
+            if (appState.userTypedAnswer.length >= 8) return;
+            appState.userTypedAnswer += d;
+            updateTypedDisplay();
+        }
+
+        function eraseDigit() {
+            playSound('click');
+            if (appState.isLocked) return;
+            appState.userTypedAnswer = appState.userTypedAnswer.slice(0, -1);
+            updateTypedDisplay();
+        }
+
+        function updateTypedDisplay() {
+            const el = document.getElementById('displayTypedAnswer');
+            if (appState.userTypedAnswer === "") {
+                el.innerHTML = `<span class="text-slate-300 font-normal">...</span>`;
+            } else {
+                el.innerText = appState.userTypedAnswer;
+            }
+        }
+
+        // Écoute clavier physique
+        document.addEventListener('keydown', (e) => {
+            const exPage = document.getElementById('page-exercise');
+            if (!exPage || !exPage.classList.contains('active')) return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                pressDigit(e.key);
+            } else if (e.key === 'Backspace') {
+                eraseDigit();
+            } else if (e.key === 'Enter') {
+                if (appState.exerciseMode === 1 || appState.exerciseMode === 2) {
+                    submitNumericAnswer();
+                }
+            }
+        });
+
+        // --- DÉMARRAGE D'UN DES 4 EXERCICES ---
+        function startExerciseMode(modeNum) {
+            playSound('click');
+            appState.exerciseMode = modeNum;
+            appState.questionIndex = 0;
+            appState.score = 0;
+            appState.sessionMistakes = [];
+            appState.sessionTimes = [];
+            appState.isMistakesSession = false;
+
+            const modeTitles = [
+                "",
+                "Exercice 1 : Le Décalage Magique",
+                "Exercice 2 : L'Opération Mystère",
+                "Exercice 3 : Le Laboratoire du Tri",
+                "Exercice 4 : Détective des Zéros"
+            ];
+            document.getElementById('gameModeBadge').innerText = modeTitles[modeNum];
+            document.getElementById('gameLiveScore').innerText = "0";
+
+            // Affichage des sections d'interaction selon le mode
+            const numpad = document.getElementById('numpadSection');
+            const numericBox = document.getElementById('numericAnswerBox');
+            const sortSec = document.getElementById('sortingSection');
+            const detSec = document.getElementById('detectiveSection');
+
+            numpad.classList.add('hidden');
+            numericBox.classList.add('hidden');
+            sortSec.classList.add('hidden');
+            detSec.classList.add('hidden');
+
+            if (modeNum === 1 || modeNum === 2) {
+                numpad.classList.remove('hidden');
+                numericBox.classList.remove('hidden');
+            } else if (modeNum === 3) {
+                sortSec.classList.remove('hidden');
+            } else if (modeNum === 4) {
+                detSec.classList.remove('hidden');
+            }
+
+            navigate('exercise');
+            loadNextExerciseQuestion();
+        }
+
+        // --- CHARGEMENT DE LA QUESTION COURANTE ---
+        function loadNextExerciseQuestion() {
+            appState.isLocked = false;
+            appState.userTypedAnswer = "";
+            updateTypedDisplay();
+
+            const fb = document.getElementById('gameFeedbackMsg');
+            fb.className = "hidden text-sm sm:text-base font-black py-2.5 px-4 rounded-xl";
+            fb.innerHTML = "";
+
+            const helpTip = document.getElementById('gameHelpTip');
+            helpTip.classList.add('hidden');
+
+            // Génération de la question
+            if (appState.isMistakesSession && appState.mistakesQueue.length > 0) {
+                appState.currentQ = appState.mistakesQueue.shift();
+            } else {
+                appState.currentQ = generateExerciseQuestion(appState.exerciseMode);
+            }
+
+            const q = appState.currentQ;
+            const promptEl = document.getElementById('gameBigPrompt');
+            const tagEl = document.getElementById('gameInstructionTag');
+
+            const currentNum = appState.questionIndex + 1;
+            document.getElementById('gameStepLabel').innerText = `Calcul ${currentNum} / ${appState.totalQuestions}`;
+            const pct = (currentNum / appState.totalQuestions) * 100;
+            document.getElementById('gameProgressBar').style.width = `${pct}%`;
+
+            const format = (n) => n.toLocaleString('fr-FR');
+
+            // Mise en page spécifique selon l'exercice
+            if (appState.exerciseMode === 1) {
+                // Exercice 1 : Calcul direct
+                tagEl.innerText = "Écris le résultat exact :";
+                promptEl.innerHTML = `${format(q.base)} × <span class="text-amber-500 font-extrabold">${format(q.power)}</span> = <span class="text-sky-600 underline">?</span>`;
+                q.expectedNumeric = q.answer;
+            } else if (appState.exerciseMode === 2) {
+                // Exercice 2 : Facteur manquant
+                tagEl.innerText = "Trouve le nombre caché par le point d'interrogation :";
+                const hidePower = Math.random() > 0.45; // parfois on cache 10/100/1000, parfois la base
+                if (hidePower) {
+                    promptEl.innerHTML = `${format(q.base)} × <span class="text-amber-500 underline font-black">?</span> = ${format(q.answer)}`;
+                    q.expectedNumeric = q.power;
+                } else {
+                    promptEl.innerHTML = `<span class="text-sky-600 underline font-black">?</span> × ${format(q.power)} = ${format(q.answer)}`;
+                    q.expectedNumeric = q.base;
+                }
+            } else if (appState.exerciseMode === 3) {
+                // Exercice 3 : Laboratoire de Tri
+                tagEl.innerText = "De quelle famille multiplicatrice s'agit-il ?";
+                // On peut présenter soit l'opération (ex: 45 x 1000), soit le résultat avec son départ (ex: 70 -> 7 000)
+                const showArrow = Math.random() > 0.5;
+                if (showArrow) {
+                    promptEl.innerHTML = `<span class="text-indigo-700">${format(q.base)}</span> <span class="text-slate-400">devient</span> <span class="text-emerald-600 underline font-extrabold">${format(q.answer)}</span>`;
+                } else {
+                    promptEl.innerHTML = `${format(q.base)} × <span class="text-amber-500 underline font-black">?</span> = ${format(q.answer)}`;
+                }
+                q.expectedFamily = q.power;
+            } else if (appState.exerciseMode === 4) {
+                // Exercice 4 : Détective des Pièges
+                setupDetectiveQuestion(q);
+            }
+
+            appState.questionStartTime = performance.now();
+        }
+
+        // Configuration du Mode 4 (Détective des Zéros)
+        function setupDetectiveQuestion(q) {
+            const promptEl = document.getElementById('gameBigPrompt');
+            const tagEl = document.getElementById('gameInstructionTag');
+            const grid = document.getElementById('detectiveButtonsGrid');
+            grid.innerHTML = '';
+
+            const format = (n) => n.toLocaleString('fr-FR');
+            tagEl.innerText = "Observe bien : cette égalité est-elle vraie ou fausse ?";
+
+            // 50% de vrais, 50% d'erreurs typiques d'élèves
+            const isCorrectFormula = Math.random() > 0.5;
+            let displayedAnswer = q.answer;
+            let trapExplanation = "";
+
+            if (!isCorrectFormula) {
+                const trapType = Math.floor(Math.random() * 3);
+                if (trapType === 0 && q.isRound) {
+                    // Piège 1 : L'élève a oublié le zéro déjà présent dans la base (ex: 40 × 100 = 400 au lieu de 4000)
+                    displayedAnswer = (q.base / 10) * q.power;
+                    trapExplanation = `Piège classique ! ${q.base} a déjà un zéro, il ne fallait pas le faire disparaître.`;
+                } else if (trapType === 1) {
+                    // Piège 2 : L'élève a confondu ×10 et ×100 (ou ×100 et ×1000)
+                    displayedAnswer = q.base * (q.power === 10 ? 100 : (q.power === 100 ? 10 : 100));
+                    trapExplanation = `Erreur sur le nombre de zéros ajoutés !`;
+                } else {
+                    // Piège 3 : L'élève a juste additionné (ex: 52 × 100 = 152)
+                    displayedAnswer = q.base + q.power;
+                    trapExplanation = `Attention, c'est une multiplication, pas une addition !`;
+                }
+            } else {
+                trapExplanation = `Exact ! On a bien décalé les rangs et accroché les zéros correctement.`;
+            }
+
+            promptEl.innerHTML = `${format(q.base)} × ${format(q.power)} = <span class="underline">${format(displayedAnswer)}</span>`;
+
+            q.detectiveExpected = isCorrectFormula;
+            q.displayedFormula = `${format(q.base)} × ${format(q.power)} = ${format(displayedAnswer)}`;
+            q.trapReason = trapExplanation;
+
+            grid.innerHTML = `
+                <button onclick="submitDetectiveChoice(true)" class="p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 font-black text-xl shadow-xs transition active:scale-95 flex items-center justify-center gap-2">
+                    <span>✅</span> <span>C'est VRAI</span>
+                </button>
+                <button onclick="submitDetectiveChoice(false)" class="p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 hover:bg-rose-100 text-rose-950 font-black text-xl shadow-xs transition active:scale-95 flex items-center justify-center gap-2">
+                    <span>❌</span> <span>C'est FAUX</span>
+                </button>
+            `;
+        }
+
+        // --- VALIDATIONS DES DIFFÉRENTS MODES ---
+
+        // Validation Modes 1 & 2 (Numérique)
+        function submitNumericAnswer() {
+            if (appState.isLocked) return;
+            if (appState.userTypedAnswer.trim() === "") return;
+
+            const typedNum = parseInt(appState.userTypedAnswer, 10);
+            const isCorrect = (typedNum === appState.currentQ.expectedNumeric);
+            handleResultEvaluation(isCorrect, typedNum);
+        }
+
+        // Validation Mode 3 (Tri)
+        function submitSortingAnswer(chosenPower) {
+            if (appState.isLocked) return;
+            const isCorrect = (chosenPower === appState.currentQ.expectedFamily);
+            handleResultEvaluation(isCorrect, `×${chosenPower}`);
+        }
+
+        // Validation Mode 4 (Détective)
+        function submitDetectiveChoice(userChoice) {
+            if (appState.isLocked) return;
+            const isCorrect = (userChoice === appState.currentQ.detectiveExpected);
+            handleResultEvaluation(isCorrect, userChoice ? "VRAI" : "FAUX");
+        }
+
+        // --- TRAITEMENT GÉNÉRAL DU RÉSULTAT ---
+        function handleResultEvaluation(isCorrect, userResponse) {
+            appState.isLocked = true;
+            const elapsed = (performance.now() - appState.questionStartTime) / 1000;
+            appState.sessionTimes.push(elapsed);
+
+            savedStats.totalSolved++;
+            const q = appState.currentQ;
+            const fb = document.getElementById('gameFeedbackMsg');
+            fb.classList.remove('hidden');
+
+            const format = (n) => n.toLocaleString('fr-FR');
+
+            if (isCorrect) {
+                playSound('correct');
+                appState.score += 10;
+                savedStats.totalCorrect++;
+
+                if (q.power === 10) savedStats.count10++;
+                else if (q.power === 100) savedStats.count100++;
+                else if (q.power === 1000) savedStats.count1000++;
+
+                if (q.isRound) savedStats.roundNumbersSolved++;
+                if (appState.exerciseMode === 4) savedStats.detectiveSolved++;
+
+                fb.className = "text-sm sm:text-base font-black py-2.5 px-4 rounded-xl bg-emerald-100 text-emerald-950 border border-emerald-300 block";
+                fb.innerHTML = `✨ <strong>Excellent !</strong> Réponse exacte en ${elapsed.toFixed(1)}s`;
+            } else {
+                playSound('wrong');
+
+                let rightAnswerText = "";
+                if (appState.exerciseMode === 1 || appState.exerciseMode === 2) {
+                    rightAnswerText = format(q.expectedNumeric);
+                } else if (appState.exerciseMode === 3) {
+                    rightAnswerText = `Famille ×${format(q.expectedFamily)}`;
+                } else if (appState.exerciseMode === 4) {
+                    rightAnswerText = q.detectiveExpected ? "VRAI" : `FAUX (${q.trapReason})`;
+                }
+
+                // Enregistrement de l'erreur pour la synthèse finale
+                appState.sessionMistakes.push({
+                    calcul: `${format(q.base)} × ${format(q.power)}`,
+                    expected: rightAnswerText,
+                    userChoice: userResponse,
+                    reason: (q.isRound ? "Attention au zéro déjà présent dans le premier nombre !" : "Compte bien les zéros à ajouter.")
+                });
+
+                fb.className = "text-sm sm:text-base font-black py-2.5 px-4 rounded-xl bg-rose-100 text-rose-950 border border-rose-300 block";
+                fb.innerHTML = `❌ <strong>Erreur !</strong> La bonne réponse était : <u>${rightAnswerText}</u>`;
+
+                // Montrer l'astuce
+                document.getElementById('gameHelpTip').classList.remove('hidden');
+            }
+
+            document.getElementById('gameLiveScore').innerText = appState.score;
+            saveStats();
+            checkTrophies(true);
+
+            // Temporisation courte avant le calcul suivant
+            const delay = isCorrect ? 420 : 1200;
+            setTimeout(() => {
+                appState.questionIndex++;
+                if (appState.questionIndex < appState.totalQuestions) {
+                    loadNextExerciseQuestion();
+                } else {
+                    showFinalResults();
+                }
+            }, delay);
+        }
+
+        function confirmExitToHome() {
+            if (confirm("Revenir à l'accueil et abandonner cet exercice ?")) {
+                navigate('landing');
+            }
+        }
+
+        // --- ÉCRAN DE RÉSULTATS / BILAN ---
+        function showFinalResults() {
+            navigate('results');
+
+            const total = appState.totalQuestions;
+            const correctCount = total - appState.sessionMistakes.length;
+            const accuracy = Math.round((correctCount / total) * 100);
+            const avgSpeed = appState.sessionTimes.length > 0 
+                ? (appState.sessionTimes.reduce((a, b) => a + b, 0) / appState.sessionTimes.length).toFixed(1)
+                : "0.0";
+
+            document.getElementById('resCorrectScore').innerText = `${correctCount} / ${total}`;
+            document.getElementById('resAccuracyScore').innerText = `${accuracy}%`;
+            document.getElementById('resAvgSpeed').innerText = `${avgSpeed}s`;
+
+            if (accuracy === 100) {
+                savedStats.perfectTens++;
+                saveStats();
+                playSound('fanfare');
+                launchConfetti();
+                document.getElementById('resultEmoji').innerText = "👑";
+                document.getElementById('resultTitle').innerText = "Sans-Faute Magistral !";
+                document.getElementById('resultSubtitle').innerText = "Tu domptes les zéros comme un véritable champion !";
+            } else if (accuracy >= 80) {
+                playSound('correct');
+                launchConfetti();
+                document.getElementById('resultEmoji').innerText = "⭐";
+                document.getElementById('resultTitle').innerText = "Très Beau Travail !";
+                document.getElementById('resultSubtitle').innerText = "La règle d'or est presque parfaitement acquise.";
+            } else {
+                playSound('click');
+                document.getElementById('resultEmoji').innerText = "💪";
+                document.getElementById('resultTitle').innerText = "Garde Courage !";
+                document.getElementById('resultSubtitle').innerText = "Prends le temps de revoir les erreurs ci-dessous pour t'améliorer.";
+            }
+
+            // Gestion de la liste des erreurs
+            const sec = document.getElementById('resMistakesSection');
+            const list = document.getElementById('resMistakesList');
+            const btnRetry = document.getElementById('btnRetryOnlyMistakes');
+
+            if (appState.sessionMistakes.length > 0) {
+                sec.classList.remove('hidden');
+                btnRetry.classList.remove('hidden');
+                document.getElementById('resMistakesCount').innerText = appState.sessionMistakes.length;
+
+                list.innerHTML = appState.sessionMistakes.map(m => `
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="font-extrabold text-slate-800">${m.calcul}</span>
+                            <div>
+                                <span class="text-rose-500 line-through mr-2">"${m.userChoice}"</span>
+                                <span class="text-emerald-700 font-black bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Attendu : ${m.expected}</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-amber-800 font-semibold">💡 ${m.reason}</p>
+                    </div>
+                `).join('');
+            } else {
+                sec.classList.add('hidden');
+                btnRetry.classList.add('hidden');
+            }
+
+            checkTrophies(true);
+        }
+
+        function restartCurrentExercise() {
+            startExerciseMode(appState.exerciseMode);
+        }
+
+        function retryMistakesOnly() {
+            if (appState.sessionMistakes.length === 0) return;
+            appState.isMistakesSession = true;
+            appState.mistakesQueue = appState.sessionMistakes.map(m => {
+                const parts = m.calcul.split('×').map(s => parseInt(s.replace(/\s/g, ''), 10));
+                return {
+                    base: parts[0],
+                    power: parts[1],
+                    answer: parts[0] * parts[1],
+                    isRound: (parts[0] % 10 === 0),
+                    expectedNumeric: parts[0] * parts[1],
+                    expectedFamily: parts[1]
+                };
+            });
+            appState.totalQuestions = appState.mistakesQueue.length;
+            startExerciseMode(appState.exerciseMode);
+        }
+
+        // --- SYSTÈME DES 9 TROPHÉES ---
+        function checkTrophies(showNotification = true) {
+            let newlyUnlocked = false;
+            const currentCount = savedStats.unlockedTrophies.length;
+
+            TROPHIES_LIST.forEach(t => {
+                if (!savedStats.unlockedTrophies.includes(t.id)) {
+                    if (t.check(savedStats, currentCount)) {
+                        savedStats.unlockedTrophies.push(t.id);
+                        newlyUnlocked = true;
+                        if (showNotification) {
+                            displayTrophyToast(t);
+                            playSound('fanfare');
+                            launchConfetti();
+                        }
+                    }
+                }
+            });
+
+            if (newlyUnlocked) {
+                saveStats();
+            }
+        }
+
+        function displayTrophyToast(t) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-amber-400 text-amber-950 px-5 py-3.5 rounded-2xl shadow-2xl font-bold flex items-center gap-3 border-2 border-white transform translate-y-12 opacity-0 transition-all duration-300";
+            toast.innerHTML = `
+                <span class="text-3xl">${t.icon}</span>
+                <div>
+                    <div class="text-[10px] uppercase font-black tracking-wider text-amber-900">Trophée Débloqué !</div>
+                    <div class="font-heading text-base font-black">${t.title}</div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-12', 'opacity-0'), 60);
+            setTimeout(() => {
+                toast.classList.add('translate-y-12', 'opacity-0');
+                setTimeout(() => toast.remove(), 400);
+            }, 3800);
+        }
+
+        function renderTrophiesGallery() {
+            const container = document.getElementById('trophiesListGrid');
+            container.innerHTML = '';
+
+            const unlockedCount = savedStats.unlockedTrophies.length;
+            const percent = Math.round((unlockedCount / TROPHIES_LIST.length) * 100);
+
+            document.getElementById('trophyPercentLabel').innerText = `${percent}%`;
+            document.getElementById('trophyGlobalBar').style.width = `${percent}%`;
+
+            TROPHIES_LIST.forEach(t => {
+                const isUnlocked = savedStats.unlockedTrophies.includes(t.id);
+                const card = document.createElement('div');
+
+                if (isUnlocked) {
+                    card.className = "p-4 rounded-2xl bg-white/10 border-2 border-amber-400/80 shadow-md flex items-center gap-3.5 relative overflow-hidden group";
+                    card.innerHTML = `
+                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-black shrink-0 shadow">
+                            ${t.icon}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-amber-300 text-sm sm:text-base font-heading">${t.title}</h4>
+                                <span class="text-[9px] bg-emerald-500/30 text-emerald-300 font-black px-1.5 py-0.2 rounded-full border border-emerald-400/30">OBTENU</span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${t.desc}</p>
+                        </div>
+                    `;
+                } else {
+                    card.className = "p-4 rounded-2xl bg-black/30 border border-white/5 opacity-55 flex items-center gap-3.5";
+                    card.innerHTML = `
+                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white/5 text-slate-400 flex items-center justify-center text-2xl font-bold shrink-0">
+                            🔒
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-300 text-sm sm:text-base font-heading">${t.title}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">${t.desc}</p>
+                        </div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function resetAllDataConfirmation() {
+            if (confirm("Réinitialiser l'ensemble de tes trophées et de tes statistiques ?")) {
+                localStorage.removeItem('maitre_zeros_stats_v1');
+                savedStats = {
+                    totalSolved: 0,
+                    totalCorrect: 0,
+                    count10: 0,
+                    count100: 0,
+                    count1000: 0,
+                    roundNumbersSolved: 0,
+                    perfectTens: 0,
+                    detectiveSolved: 0,
+                    unlockedTrophies: []
+                };
+                updateStatsUI();
+                renderTrophiesGallery();
+            }
+        }
+
+        // --- ANIMATION DE CONFETTIS (CANVAS AUTONOME) ---
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#f59e0b', '#0284c7', '#10b981', '#8b5cf6', '#f43f5e'];
+
+            for (let i = 0; i < 85; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 8 + 4,
+                    h: Math.random() * 6 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 15,
+                    vy: (Math.random() - 0.7) * 15,
+                    gravity: 0.28,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 8
+                });
+            }
+
+            let frames = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.rot += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+
+                frames++;
+                if (frames < 85) requestAnimationFrame(animate);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            animate();
+        }
+
+        // --- DÉMARRAGE INITIAL ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedStats();
+            updateDemoDisplay();
+        });
+    </script>
+</body>
+</html>

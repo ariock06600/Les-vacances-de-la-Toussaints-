@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Mission Géo-Alimentation : Se nourrir dans le monde</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        accent: '#F59E0B',
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Polices ludiques et ultra lisibles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .page-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+        }
+        .page-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+        .badge-pulse {
+            animation: pulse-slow 2.5s infinite;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        /* Confetti canvas */
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-200">
+
+    <!-- Canvas pour confettis -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- HEADER / NAVIGATION PRINCIPALE -->
+    <header class="sticky top-0 z-40 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-md backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo & Titre -->
+            <button onclick="navigate('landing')" class="flex items-center gap-3 text-left group">
+                <span class="text-3xl p-2 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">🌍</span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs uppercase tracking-wider font-extrabold bg-emerald-900/40 text-emerald-100 px-2.5 py-0.5 rounded-full">Cycle 3 • Géo</span>
+                        <span id="levelBadge" class="text-xs font-bold text-amber-300">Niveau Apprenti</span>
+                    </div>
+                    <h1 class="text-lg md:text-xl font-bold font-heading tracking-tight leading-tight">Mission Géo-Alimentation</h1>
+                </div>
+            </button>
+
+            <!-- Navigation Links -->
+            <nav class="flex items-center gap-1 sm:gap-2 text-sm font-bold bg-black/10 p-1.5 rounded-2xl backdrop-blur-sm">
+                <button onclick="navigate('landing')" id="nav-landing" class="nav-item active px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
+                    <span>🏠</span> <span class="hidden sm:inline">Accueil</span>
+                </button>
+                <button onclick="navigate('lesson')" id="nav-lesson" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
+                    <span>📖</span> <span class="hidden sm:inline">Leçon</span>
+                </button>
+                <button onclick="navigate('exercises')" id="nav-exercises" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
+                    <span>✏️</span> <span>Défis</span>
+                </button>
+                <button onclick="navigate('trophies')" id="nav-trophies" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5 relative">
+                    <span>🏆</span> <span class="hidden sm:inline">Trophées</span>
+                    <span id="unlockedTrophyCountBadge" class="bg-amber-400 text-amber-950 text-xs px-1.5 py-0.2 rounded-full font-black">0/6</span>
+                </button>
+            </nav>
+
+            <!-- Compteur & Statut Score -->
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-950/40 border border-white/20 px-3.5 py-1.5 rounded-2xl flex items-center gap-2.5 shadow-inner">
+                    <span class="text-xl">⭐</span>
+                    <div>
+                        <div class="text-[10px] text-emerald-200 uppercase font-black tracking-wider leading-none">Score Total</div>
+                        <div id="headerScore" class="text-lg font-black font-heading text-amber-300 leading-tight">0 / 20 pts</div>
+                    </div>
+                </div>
+
+                <!-- Son on/off toggle -->
+                <button id="soundToggle" onclick="toggleAudio()" title="Activer/Désactiver le son" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition text-sm">
+                    🔊
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEUR DES PAGES -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6">
+
+        <!-- ======================================================== -->
+        <!-- PAGE 1 : LANDING PAGE                                   -->
+        <!-- ======================================================== -->
+        <section id="page-landing" class="page-view active space-y-10">
+            
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-indigo-900 text-white p-6 sm:p-10 shadow-xl border border-white/10">
+                <div class="absolute -right-12 -top-12 w-64 h-64 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute right-10 bottom-0 text-9xl opacity-20 pointer-events-none select-none hidden lg:block">🥗</div>
+                
+                <div class="relative z-10 max-w-2xl space-y-5">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/15 rounded-full text-xs font-black tracking-wide text-emerald-200 border border-white/15">
+                        <span>🚀</span> QUÊTE ÉDUCATIVE INTERACTIVE
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold font-heading tracking-tight leading-tight">
+                        Mange-t-on de la même manière partout dans le monde ?
+                    </h2>
+                    <p class="text-emerald-100 text-base sm:text-lg leading-relaxed font-medium">
+                        Explore les inégalités d’accès aux aliments sur Terre, décrypte les habitudes des Français et relève <strong>5 défis interactifs</strong> pour remporter les 6 précieux trophées !
+                    </p>
+
+                    <!-- CTAs -->
+                    <div class="pt-2 flex flex-wrap items-center gap-3">
+                        <button onclick="navigate('exercises')" class="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black font-heading text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <span>🎯</span> Choisir un Exercice
+                        </button>
+                        <button onclick="navigate('lesson')" class="px-5 py-3.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-2xl backdrop-blur-md transition flex items-center gap-2">
+                            <span>📖</span> Lire la Leçon
+                        </button>
+                        <button onclick="navigate('trophies')" class="px-5 py-3.5 bg-emerald-950/40 hover:bg-emerald-950/60 text-emerald-200 border border-emerald-400/30 font-bold rounded-2xl transition flex items-center gap-2">
+                            <span>🏆</span> Mes Trophées
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chiffres-chocs & Faits Clés -->
+            <div>
+                <h3 class="text-xl font-bold font-heading text-slate-800 mb-4 flex items-center gap-2">
+                    <span>💡</span> 3 Chiffres Chocs à retenir pour tes missions
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            60x
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">Moins de viande en Inde</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Un habitant de l'Inde consomme en moyenne 60 fois moins de viande qu'un Français !
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            1/5
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">Nourriture gaspillée</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Près d'un cinquième des aliments disponibles chaque jour est jeté alors que beaucoup ont faim.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            ⚖️
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">Inégalités Mondiales</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Les pays d'Asie et d'Afrique consomment bien moins d'aliments que l'Europe et l'Amérique du Nord.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille de sélection directe des 5 Défis -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold font-heading text-slate-800 flex items-center gap-2">
+                            <span>🎮</span> Le Menu des 5 Exercices
+                        </h3>
+                        <p class="text-xs text-slate-500">Chaque exercice réussi rapporte des points et débloque des trophées.</p>
+                    </div>
+                    <span id="completedExercisesCount" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">0 sur 5 terminés</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="landingCardsContainer">
+                    <!-- Cards générées dynamiquement -->
+                </div>
+            </div>
+
+            <!-- Progression & Salle des Trophées preview -->
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
+                <div class="space-y-2 text-center md:text-left">
+                    <span class="text-xs font-black uppercase tracking-wider bg-black/20 px-3 py-1 rounded-full">Objectif 100% Maîtrise</span>
+                    <h3 class="text-2xl font-black font-heading">Deviens « Grand Maître de l'Alimentation »</h3>
+                    <p class="text-amber-100 text-sm max-w-xl">
+                        Débloque les 6 badges exclusifs en réussissant le sans-faute sur les exercices et en consultant le cours.
+                    </p>
+                </div>
+                <button onclick="navigate('trophies')" class="px-6 py-3 bg-white text-amber-900 font-black rounded-2xl shadow hover:bg-amber-50 transition transform hover:scale-105 shrink-0 flex items-center gap-2">
+                    <span>🏆</span> Ouvrir la Galerie des Trophées
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 2 : FICHE LEÇON                                     -->
+        <!-- ======================================================== -->
+        <section id="page-lesson" class="page-view space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden">
+                <div class="max-w-3xl space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+                        <span>📖</span> FICHE DE COURS OFFICIELLE
+                    </div>
+                    
+                    <h2 class="text-2xl sm:text-3xl font-black font-heading text-slate-800">
+                        Leçon 1 : Mange-t-on de la même manière partout dans le monde ?
+                    </h2>
+                    
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        Cette leçon de géographie explore les habitudes de consommation des sociétés humaines, les contrastes entre pays riches et pays en développement, et les grands défis du gaspillage alimentaire.
+                    </p>
+
+                    <!-- Cartes synthèses -->
+                    <div class="space-y-4 pt-2">
+                        
+                        <!-- Bloc 1 : La France -->
+                        <div class="p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-200 flex flex-col sm:flex-row gap-4 items-start">
+                            <span class="text-4xl p-3 bg-white rounded-2xl shadow-sm">🥖</span>
+                            <div class="space-y-1">
+                                <h3 class="font-bold text-amber-900 text-lg font-heading">1. Ce que l'on consomme en France</h3>
+                                <p class="text-slate-700 text-sm leading-relaxed">
+                                    Les Français consomment beaucoup de <strong>produits céréaliers</strong> (pain, pâtes, farine), de <strong>produits laitiers</strong> (fromages, lait, yaourts) et de <strong>viande</strong>.
+                                </p>
+                                <div class="mt-2 text-xs font-bold text-amber-800 bg-amber-200/60 inline-block px-2.5 py-1 rounded-lg">
+                                    📈 Tendance actuelle : La consommation de <strong>sucres</strong> et de <strong>plats préparés</strong> industriels augmente.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bloc 2 : Inégalités -->
+                        <div class="p-5 rounded-2xl bg-blue-50/80 border-2 border-blue-200 flex flex-col sm:flex-row gap-4 items-start">
+                            <span class="text-4xl p-3 bg-white rounded-2xl shadow-sm">🌏</span>
+                            <div class="space-y-1">
+                                <h3 class="font-bold text-blue-900 text-lg font-heading">2. Les inégalités d'accès à la nourriture dans le monde</h3>
+                                <p class="text-slate-700 text-sm leading-relaxed">
+                                    Dans le monde, l'accès à la nourriture est très <strong>inégal</strong> :
+                                </p>
+                                <ul class="list-disc list-inside text-sm text-slate-700 space-y-1 ml-1">
+                                    <li>Les habitants des pays d'<strong>Afrique</strong> et d'<strong>Asie</strong> consomment <strong>moins d'aliments</strong>.</li>
+                                    <li>Les habitants des pays riches d'<strong>Europe</strong> et d'<strong>Amérique</strong> en consomment beaucoup plus.</li>
+                                    <li><em>Exemple marquant :</em> un habitant de l'<strong>Inde</strong> consomme environ <strong>60 fois moins de viande</strong> qu'un Français !</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Bloc 3 : Faim et Gaspillage -->
+                        <div class="p-5 rounded-2xl bg-rose-50/80 border-2 border-rose-200 flex flex-col sm:flex-row gap-4 items-start">
+                            <span class="text-4xl p-3 bg-white rounded-2xl shadow-sm">🗑️</span>
+                            <div class="space-y-1">
+                                <h3 class="font-bold text-rose-900 text-lg font-heading">3. Le grand paradoxe : Faim et Gaspillage</h3>
+                                <p class="text-slate-700 text-sm leading-relaxed">
+                                    Un grand nombre d'êtres humains souffre encore de la <strong>faim</strong> sur notre planète.<br>
+                                    Pourtant, près d'<strong>un cinquième (1/5)</strong> de toute la nourriture disponible sur Terre est <strong>gaspillée chaque jour</strong> !
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-4 flex flex-wrap gap-3">
+                        <button onclick="navigate('exercises')" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow transition flex items-center gap-2">
+                            <span>🚀</span> Je suis prêt, passer aux exercices !
+                        </button>
+                        <button onclick="window.print()" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-2xl transition flex items-center gap-2">
+                            <span>🖨️</span> Imprimer cette fiche
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 3 : EXERCICES AVEC SÉLECTEUR RAPIDE                -->
+        <!-- ======================================================== -->
+        <section id="page-exercises" class="page-view space-y-6">
+            
+            <!-- Sélecteur d'exercices pills / tabs -->
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 overflow-x-auto">
+                <button onclick="selectExercise(1)" id="ex-tab-1" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow">
+                    <span>1. Vrai / Faux</span>
+                    <span id="tab-score-1" class="text-xs bg-black/20 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(2)" id="ex-tab-2" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>2. Texte à Trous</span>
+                    <span id="tab-score-2" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(3)" id="ex-tab-3" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>3. QCM Géographique</span>
+                    <span id="tab-score-3" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(4)" id="ex-tab-4" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>4. Les Chiffres Chocs</span>
+                    <span id="tab-score-4" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(5)" id="ex-tab-5" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>5. Le Grand Tri</span>
+                    <span id="tab-score-5" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+            </div>
+
+            <!-- CONTENEURS D'EXERCICES -->
+            
+            <!-- EXERCICE 1 : VRAI / FAUX -->
+            <div id="exercise-pane-1" class="exercise-pane space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Défi 1 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Vrai ou Faux ?</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Lis chaque affirmation et sélectionne la bonne réponse.</p>
+                    </div>
+
+                    <div class="space-y-4" id="vfQuestionsList">
+                        <!-- Q1 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-base">1. En France, la consommation de sucres et de plats préparés est en augmentation.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF(1, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF(1, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-base">2. Tous les pays du monde consomment exactement la même quantité de nourriture.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF(2, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF(2, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-base">3. Les Français consomment beaucoup de produits céréaliers, laitiers et de viande.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF(3, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF(3, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-base">4. La nourriture disponible est entièrement consommée, il n'y a aucun gaspillage.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF(4, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF(4, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="resetExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            🔄 Réinitialiser l'exercice 1
+                        </button>
+                        <button onclick="selectExercise(2)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Exercice suivant ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 2 : TEXTE À TROUS -->
+            <div id="exercise-pane-2" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-blue-700 bg-blue-100 px-3 py-1 rounded-full">Défi 2 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Texte à Trous</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur un mot ci-dessous, puis sur l'emplacement vide voulu !</p>
+                    </div>
+
+                    <!-- Banque de mots -->
+                    <div class="p-4 bg-blue-50/60 rounded-2xl border border-blue-100 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-blue-900 tracking-wider">Mots disponibles :</span>
+                        <div class="flex flex-wrap gap-2" id="clozeBank">
+                            <button onclick="pickWord(this)" data-word="inégalités" class="cloze-chip px-4 py-2 bg-white border-2 border-blue-300 hover:border-blue-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">inégalités</button>
+                            <button onclick="pickWord(this)" data-word="60" class="cloze-chip px-4 py-2 bg-white border-2 border-blue-300 hover:border-blue-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">60</button>
+                            <button onclick="pickWord(this)" data-word="faim" class="cloze-chip px-4 py-2 bg-white border-2 border-blue-300 hover:border-blue-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">faim</button>
+                            <button onclick="pickWord(this)" data-word="gaspillée" class="cloze-chip px-4 py-2 bg-white border-2 border-blue-300 hover:border-blue-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">gaspillée</button>
+                        </div>
+                    </div>
+
+                    <!-- Phrase avec trous -->
+                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-base sm:text-lg leading-loose text-slate-800 font-medium space-y-3">
+                        Dans le monde, il y a de profondes
+                        <span onclick="dropWord(this)" data-expected="inégalités" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">
+                            ... ? ...
+                        </span>
+                        d’accès à la nourriture. Les habitants des pays riches d'Europe et d'Amérique consomment plus d'aliments. Un habitant de l’Inde consomme par exemple
+                        <span onclick="dropWord(this)" data-expected="60" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[90px] transition">
+                            ... ? ...
+                        </span>
+                        fois moins de viande qu'un Français. De plus, un grand nombre de personnes souffre de la
+                        <span onclick="dropWord(this)" data-expected="faim" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[110px] transition">
+                            ... ? ...
+                        </span>
+                        alors que près d'un cinquième de la nourriture est chaque jour
+                        <span onclick="dropWord(this)" data-expected="gaspillée" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">
+                            ... ? ...
+                        </span> !
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifyCloze()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow transition">
+                            Vérifier mes réponses
+                        </button>
+                        <button onclick="resetExercise(2)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Recommencer
+                        </button>
+                        <div id="clozeFeedback" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Exercice précédent
+                        </button>
+                        <button onclick="selectExercise(3)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Exercice suivant ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 3 : QCM GÉOGRAPHIQUE -->
+            <div id="exercise-pane-3" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-purple-700 bg-purple-100 px-3 py-1 rounded-full">Défi 3 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le QCM Géographique</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">2 questions à choix multiples (2 points chacune)</p>
+                    </div>
+
+                    <!-- Question 3.1 -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3" id="qcm-box-1">
+                        <p class="font-extrabold text-slate-900 text-base">
+                            1. Quels continents sont cités dans la leçon comme consommant globalement MOINS d'aliments ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <button onclick="answerQCM(1, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                A) L'Europe et l'Amérique
+                            </button>
+                            <button onclick="answerQCM(1, true, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                B) L'Afrique et l'Asie
+                            </button>
+                            <button onclick="answerQCM(1, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                C) L'Océanie et l'Antarctique
+                            </button>
+                            <button onclick="answerQCM(1, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                D) L'Australie et le Pôle Nord
+                            </button>
+                        </div>
+                        <div class="qcm-feedback text-xs font-bold mt-2 hidden"></div>
+                    </div>
+
+                    <!-- Question 3.2 -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3" id="qcm-box-2">
+                        <p class="font-extrabold text-slate-900 text-base">
+                            2. Qu'est-ce qui caractérise l'alimentation en France selon le cours ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <button onclick="answerQCM(2, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                A) On ne mange presque pas de céréales ni de viande
+                            </button>
+                            <button onclick="answerQCM(2, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                B) La consommation de sucre est en chute libre
+                            </button>
+                            <button onclick="answerQCM(2, true, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                C) On mange beaucoup de céréales, produits laitiers et viande
+                            </button>
+                            <button onclick="answerQCM(2, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
+                                D) Tous les aliments sont issus à 100% de la cueillette sauvage
+                            </button>
+                        </div>
+                        <div class="qcm-feedback text-xs font-bold mt-2 hidden"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(2)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Exercice précédent
+                        </button>
+                        <button onclick="selectExercise(4)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Exercice suivant ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 4 : RELIER LES CARTES / CHIFFRES CHOCS -->
+            <div id="exercise-pane-4" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-3 py-1 rounded-full">Défi 4 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Associer les Faits & Chiffres Chocs</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique d'abord sur une carte de gauche, puis sur son équivalent à droite.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="matchGameGrid">
+                        <!-- Colonne Gauche -->
+                        <div class="space-y-3" id="matchColLeft">
+                            <button onclick="selectMatchCard(this, 'left', 'inde')" data-key="inde" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                🇮🇳 Habitant de l'Inde
+                            </button>
+                            <button onclick="selectMatchCard(this, 'left', 'gaspillage')" data-key="gaspillage" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                🗑️ Nourriture mondiale disponible
+                            </button>
+                            <button onclick="selectMatchCard(this, 'left', 'riches')" data-key="riches" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                🏙️ Europe et Amérique
+                            </button>
+                            <button onclick="selectMatchCard(this, 'left', 'france')" data-key="france" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                🇫🇷 Consommation en France
+                            </button>
+                        </div>
+
+                        <!-- Colonne Droite (ordre mélangé) -->
+                        <div class="space-y-3" id="matchColRight">
+                            <button onclick="selectMatchCard(this, 'right', 'gaspillage')" data-key="gaspillage" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                Près d'un cinquième (1/5) est gaspillé chaque jour
+                            </button>
+                            <button onclick="selectMatchCard(this, 'right', 'inde')" data-key="inde" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                Consomme 60 fois moins de viande qu'un Français
+                            </button>
+                            <button onclick="selectMatchCard(this, 'right', 'france')" data-key="france" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                Forte consommation de produits céréaliers, laitiers et viande
+                            </button>
+                            <button onclick="selectMatchCard(this, 'right', 'riches')" data-key="riches" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                Pays riches consommant plus d'aliments que l'Afrique et l'Asie
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="matchFeedback" class="text-sm font-bold text-emerald-700 hidden"></div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="resetExercise(4)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            🔄 Recommencer l'association
+                        </button>
+                        <button onclick="selectExercise(5)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Exercice suivant ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 5 : TRI ALIMENTAIRE -->
+            <div id="exercise-pane-5" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-rose-700 bg-rose-100 px-3 py-1 rounded-full">Défi 5 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Grand Tri de l'Alimentation</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur une étiquette ci-dessous pour la sélectionner, puis clique sur la bonne colonne de destination !</p>
+                    </div>
+
+                    <!-- Éléments à trier -->
+                    <div class="p-4 bg-slate-100/70 rounded-2xl border border-slate-200 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-slate-600">Étiquettes à ranger :</span>
+                        <div class="flex flex-wrap gap-2.5 min-h-[48px]" id="sortOriginPool">
+                            <div onclick="selectSortTag(this)" data-category="france-base" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
+                                🥛 Produits laitiers & Fromages
+                            </div>
+                            <div onclick="selectSortTag(this)" data-category="france-hausse" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
+                                🍕 Plats préparés industriels
+                            </div>
+                            <div onclick="selectSortTag(this)" data-category="monde-moins" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
+                                🌍 Habitants d'Afrique et d'Asie
+                            </div>
+                            <div onclick="selectSortTag(this)" data-category="france-base" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
+                                🥖 Produits céréaliers & Viande
+                            </div>
+                            <div onclick="selectSortTag(this)" data-category="france-hausse" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
+                                🍬 Sucres et confiseries
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3 Bacs de destination -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <!-- Bac 1 -->
+                        <div onclick="depositSortTag('france-base')" class="p-4 rounded-2xl bg-emerald-50/70 border-2 border-emerald-300 hover:border-emerald-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-emerald-900 text-sm mb-2 flex items-center justify-between">
+                                <span>Traditionnellement très consommés en France</span>
+                                <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded-full">Base</span>
+                            </div>
+                            <div id="drop-target-france-base" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                        <!-- Bac 2 -->
+                        <div onclick="depositSortTag('france-hausse')" class="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300 hover:border-amber-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-amber-900 text-sm mb-2 flex items-center justify-between">
+                                <span>Consommation qui AUGMENTE en France</span>
+                                <span class="text-xs bg-amber-200 px-2 py-0.5 rounded-full">En hausse</span>
+                            </div>
+                            <div id="drop-target-france-hausse" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                        <!-- Bac 3 -->
+                        <div onclick="depositSortTag('monde-moins')" class="p-4 rounded-2xl bg-purple-50/70 border-2 border-purple-300 hover:border-purple-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-purple-900 text-sm mb-2 flex items-center justify-between">
+                                <span>Consomment MOINS d'aliments</span>
+                                <span class="text-xs bg-purple-200 px-2 py-0.5 rounded-full">Monde</span>
+                            </div>
+                            <div id="drop-target-monde-moins" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifySortExercise()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow transition">
+                            Valider le tri
+                        </button>
+                        <button onclick="resetExercise(5)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Vider les bacs
+                        </button>
+                        <div id="sortFeedback" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(4)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Exercice précédent
+                        </button>
+                        <button onclick="navigate('trophies')" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-sm shadow flex items-center gap-2">
+                            Voir mes Trophées Débloqués 🏆
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 4 : SALLE DES TROPHÉES                              -->
+        <!-- ======================================================== -->
+        <section id="page-trophies" class="page-view space-y-6">
+            
+            <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-white/10 space-y-6">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider font-extrabold text-amber-300 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30">
+                            Salle d'Honneur
+                        </span>
+                        <h2 class="text-3xl font-black font-heading tracking-tight mt-1">
+                            🏆 Galerie des Trophées & Badges
+                        </h2>
+                        <p class="text-slate-300 text-sm">
+                            Accomplis les quêtes géographiques pour décrocher tous les badges et devenir un expert mondial.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-2xl border border-white/15 text-center min-w-[200px]">
+                        <div class="text-xs uppercase text-slate-300 font-bold">Progression Globale</div>
+                        <div id="trophyPercentText" class="text-3xl font-black font-heading text-amber-300">0%</div>
+                        <div class="w-full bg-black/40 h-2 rounded-full overflow-hidden mt-1.5">
+                            <div id="trophyProgressBar" class="bg-amber-400 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grille des 6 Trophées -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="trophiesListContainer">
+                    <!-- Généré dynamiquement par JS -->
+                </div>
+
+                <!-- Barre d'actions & Reset -->
+                <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+                    <button onclick="navigate('exercises')" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm transition">
+                        🎯 Continuer les Défis
+                    </button>
+                    <button onclick="resetWholeGame()" class="text-xs text-rose-300 hover:text-rose-100 underline transition">
+                        ⚠️ Remettre à zéro toutes les données sauvegardées
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>🌍 <strong>Mission Géo-Alimentation</strong> • Application pédagogique de géographie - Cycle 3 / Collège.</p>
+            <p class="text-slate-400">Respecte le programme scolaire • Conçu en HTML/JS pur sans dépendance.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIQUE JAVASCRIPT & STATE MANAGEMENT -->
+    <script>
+        // --- ÉTAT GLOBAL DE L'APPLICATION ---
+        const gameState = {
+            scores: {
+                ex1: 0,
+                ex2: 0,
+                ex3: 0,
+                ex4: 0,
+                ex5: 0
+            },
+            completed: {
+                ex1: false,
+                ex2: false,
+                ex3: false,
+                ex4: false,
+                ex5: false
+            },
+            trophies: {
+                first_step: false,      // "Premier Pas" (Avoir réussi son premier exercice)
+                numbers_expert: false,  // "Expert des Chiffres" (Parfait sur l'exercice 4 des chiffres 60x et 1/5)
+                explorer: false,        // "Explorateur du Monde" (Avoir réussi le QCM géographie)
+                anti_waste: false,      // "Héros Anti-Gaspillage" (Avoir réussi le texte à trous sur le gaspillage)
+                master: false,          // "Maître du Savoir" (20/20 total)
+                curious: false          // "Curieux Infatigable" (Avoir lu la fiche leçon)
+            },
+            soundEnabled: true
+        };
+
+        const TROPHIES_DEF = [
+            { id: 'first_step', icon: '🌱', name: 'Premier Pas', desc: 'Complète au moins un exercice avec brio.' },
+            { id: 'numbers_expert', icon: '🔢', name: 'Expert des Chiffres', desc: 'Associe parfaitement le 60x moins et le 1/5ème gaspillé.' },
+            { id: 'explorer', icon: '🧭', name: 'Explorateur du Monde', desc: 'Identifie les continents dans le QCM Géographique.' },
+            { id: 'anti_waste', icon: '🥦', name: 'Héros Anti-Gaspillage', desc: 'Complète le texte sur la faim et le 1/5ème jeté.' },
+            { id: 'master', icon: '👑', name: 'Maître du Savoir', desc: 'Obtiens la note maximale de 20 sur 20 à tous les défis.' },
+            { id: 'curious', icon: '📜', name: 'Curieux Infatigable', desc: 'Consulte et révise la Fiche de Leçon complète.' }
+        ];
+
+        const EXERCISES_META = [
+            { id: 1, title: 'Vrai ou Faux ?', icon: '⚖️', desc: '4 affirmations sur les habitudes en France et les inégalités.', max: 4 },
+            { id: 2, title: 'Texte à Trous', icon: '✍️', desc: 'Remets les mots clés à leur place exacte dans le texte.', max: 4 },
+            { id: 3, title: 'QCM Géographique', icon: '🌐', desc: 'Teste tes connaissances sur l\'Asie, l\'Afrique et l\'Europe.', max: 4 },
+            { id: 4, title: 'Les Chiffres Chocs', icon: '🧩', desc: 'Associe 60x moins et 1/5ème aux bonnes définitions.', max: 4 },
+            { id: 5, title: 'Le Grand Tri', icon: '📦', desc: 'Classe les aliments selon les tendances de consommation.', max: 4 }
+        ];
+
+        // --- AUDIO SYNTHÉTISEUR (Web Audio API) ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime;
+                if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.linearRampToValueAtTime(140, now + 0.2);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'trophy') {
+                    // Petite mélodie festive
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const noteOsc = ctx.createOscillator();
+                        const noteGain = ctx.createGain();
+                        noteOsc.type = 'sine';
+                        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        noteGain.gain.setValueAtTime(0.15, now + idx * 0.1);
+                        noteGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.2);
+                        noteOsc.connect(noteGain);
+                        noteGain.connect(ctx.destination);
+                        noteOsc.start(now + idx * 0.1);
+                        noteOsc.stop(now + idx * 0.1 + 0.2);
+                    });
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                // Silencieux si non supporté
+            }
+        }
+
+        function toggleAudio() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            const btn = document.getElementById('soundToggle');
+            btn.innerText = gameState.soundEnabled ? '🔊' : '🔇';
+            saveState();
+        }
+
+        // --- LOCAL STORAGE ---
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('geo_food_lesson_save');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    Object.assign(gameState, parsed);
+                }
+            } catch (e) {
+                console.warn("Storage non accessible");
+            }
+            updateUI();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('geo_food_lesson_save', JSON.stringify(gameState));
+            } catch (e) {}
+        }
+
+        // --- NAVIGATION SPA ---
+        function navigate(pageId) {
+            playSound('click');
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            const targetNav = document.getElementById(`nav-${pageId}`);
+            if (targetPage) targetPage.classList.add('active');
+            if (targetNav) targetNav.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Badge curiosité si l'élève consulte la leçon
+            if (pageId === 'lesson' && !gameState.trophies.curious) {
+                unlockTrophy('curious');
+            }
+        }
+
+        // --- SÉLECTION D'EXERCICE ---
+        function selectExercise(num) {
+            playSound('click');
+            navigate('exercises');
+
+            document.querySelectorAll('.exercise-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.ex-tab-btn').forEach(btn => {
+                btn.className = "ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5";
+            });
+
+            const activePane = document.getElementById(`exercise-pane-${num}`);
+            const activeTab = document.getElementById(`ex-tab-${num}`);
+            if (activePane) activePane.classList.remove('hidden');
+            if (activeTab) {
+                activeTab.className = "ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow";
+            }
+        }
+
+        // --- GESTION DU SCORE & TROPHÉES ---
+        function calculateTotalScore() {
+            return gameState.scores.ex1 + gameState.scores.ex2 + gameState.scores.ex3 + gameState.scores.ex4 + gameState.scores.ex5;
+        }
+
+        function checkTrophiesCriteria() {
+            const total = calculateTotalScore();
+
+            // Premier pas : au moins un exercice terminé avec score > 0
+            if (!gameState.trophies.first_step) {
+                const anyDone = Object.values(gameState.scores).some(s => s >= 2);
+                if (anyDone) unlockTrophy('first_step');
+            }
+
+            // Expert des chiffres : Exercice 4 à 4/4
+            if (!gameState.trophies.numbers_expert && gameState.scores.ex4 === 4) {
+                unlockTrophy('numbers_expert');
+            }
+
+            // Explorateur du monde : Exercice 3 à 4/4
+            if (!gameState.trophies.explorer && gameState.scores.ex3 === 4) {
+                unlockTrophy('explorer');
+            }
+
+            // Anti-gaspillage : Exercice 2 à 4/4
+            if (!gameState.trophies.anti_waste && gameState.scores.ex2 === 4) {
+                unlockTrophy('anti_waste');
+            }
+
+            // Maître du savoir : 20/20
+            if (!gameState.trophies.master && total === 20) {
+                unlockTrophy('master');
+            }
+        }
+
+        function unlockTrophy(trophyId) {
+            if (gameState.trophies[trophyId]) return;
+            gameState.trophies[trophyId] = true;
+            saveState();
+            updateUI();
+            launchConfetti();
+            playSound('trophy');
+
+            // Notification visuelle
+            const trophy = TROPHIES_DEF.find(t => t.id === trophyId);
+            if (trophy) {
+                showToast(`🏆 Trophée Débloqué : ${trophy.name} !`);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-amber-400 text-amber-950 px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-3 border-2 border-white transform translate-y-10 opacity-0 transition-all duration-300";
+            toast.innerHTML = `<span class="text-2xl">🎉</span> <span>${msg}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        // --- MISE À JOUR DE L'INTERFACE GLOBALE ---
+        function updateUI() {
+            const total = calculateTotalScore();
+
+            // Header score
+            document.getElementById('headerScore').innerText = `${total} / 20 pts`;
+
+            // Niveau du joueur
+            const levelEl = document.getElementById('levelBadge');
+            if (total >= 20) levelEl.innerText = "👑 Grand Maître";
+            else if (total >= 14) levelEl.innerText = "⭐ Expert";
+            else if (total >= 8) levelEl.innerText = "🌱 Intermédiaire";
+            else levelEl.innerText = "🎒 Apprenti";
+
+            // Exercices tabs scores
+            for (let i = 1; i <= 5; i++) {
+                const s = gameState.scores[`ex${i}`];
+                const badge = document.getElementById(`tab-score-${i}`);
+                if (badge) badge.innerText = `${s}/4`;
+            }
+
+            // Compteur sur Landing
+            let completedCount = 0;
+            for (let i = 1; i <= 5; i++) {
+                if (gameState.completed[`ex${i}`]) completedCount++;
+            }
+            const completedEl = document.getElementById('completedExercisesCount');
+            if (completedEl) completedEl.innerText = `${completedCount} sur 5 terminés`;
+
+            // Rendu des cartes de la Landing
+            renderLandingCards();
+
+            // Trophées counters & liste
+            renderTrophiesView();
+
+            // Check auto des trophées
+            checkTrophiesCriteria();
+        }
+
+        function renderLandingCards() {
+            const container = document.getElementById('landingCardsContainer');
+            if (!container) return;
+
+            container.innerHTML = EXERCISES_META.map(ex => {
+                const score = gameState.scores[`ex${ex.id}`];
+                const isCompleted = gameState.completed[`ex${ex.id}`];
+                let statusBadge = `<span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">Non commencé</span>`;
+                if (isCompleted && score === ex.max) {
+                    statusBadge = `<span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold flex items-center gap-1">⭐ Validé (${score}/${ex.max})</span>`;
+                } else if (isCompleted || score > 0) {
+                    statusBadge = `<span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">En cours (${score}/${ex.max})</span>`;
+                }
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-3xl">${ex.icon}</span>
+                                ${statusBadge}
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base mb-1 font-heading">Exercice ${ex.id} : ${ex.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">${ex.desc}</p>
+                        </div>
+                        <button onclick="selectExercise(${ex.id})" class="w-full py-2 bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                            <span>Lancer le défi</span> <span>➔</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTrophiesView() {
+            let unlockedCount = 0;
+            TROPHIES_DEF.forEach(t => {
+                if (gameState.trophies[t.id]) unlockedCount++;
+            });
+
+            const badge = document.getElementById('unlockedTrophyCountBadge');
+            if (badge) badge.innerText = `${unlockedCount}/${TROPHIES_DEF.length}`;
+
+            const percent = Math.round((unlockedCount / TROPHIES_DEF.length) * 100);
+            const percentText = document.getElementById('trophyPercentText');
+            const pBar = document.getElementById('trophyProgressBar');
+            if (percentText) percentText.innerText = `${percent}%`;
+            if (pBar) pBar.style.width = `${percent}%`;
+
+            const container = document.getElementById('trophiesListContainer');
+            if (!container) return;
+
+            container.innerHTML = TROPHIES_DEF.map(t => {
+                const isUnlocked = gameState.trophies[t.id];
+                if (isUnlocked) {
+                    return `
+                        <div class="p-5 rounded-2xl bg-white/10 border-2 border-amber-400/60 shadow-lg flex items-center gap-4 relative overflow-hidden group">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-black shrink-0 shadow">
+                                ${t.icon}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-amber-300 text-base font-heading">${t.name}</h4>
+                                    <span class="text-[10px] bg-emerald-500/30 text-emerald-300 font-black px-2 py-0.5 rounded-full border border-emerald-400/30">DÉBLOQUÉ</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1 leading-relaxed">${t.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="p-5 rounded-2xl bg-black/30 border border-white/5 opacity-60 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-white/5 text-slate-400 flex items-center justify-center text-2xl font-bold shrink-0">
+                                🔒
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-300 text-base font-heading">${t.name}</h4>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">${t.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // ==========================================
+        // DÉFI 1 : VRAI OU FAUX
+        // ==========================================
+        const vfAnswers = {
+            1: { expected: true, expl: "Vrai ! Les Français se tournent de plus en plus vers les produits sucrés et les plats industriels." },
+            2: { expected: false, expl: "Faux ! Il existe d'énormes disparités d'accès entre pays riches et pays en voie de développement." },
+            3: { expected: true, expl: "Vrai ! Ces aliments constituent les bases traditionnelles de l'alimentation française." },
+            4: { expected: false, expl: "Faux ! Près d'un cinquième (1/5) de la nourriture mondiale est malheureusement jeté chaque jour." }
+        };
+        const vfUserAnswers = { 1: null, 2: null, 3: null, 4: null };
+
+        function answerVF(qNum, choice, btn) {
+            const row = document.getElementById(`vf-row-${qNum}`);
+            const fb = row.querySelector('.feedback-msg');
+            const btns = row.querySelectorAll('.vf-btn');
+
+            btns.forEach(b => {
+                b.className = "vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-slate-500 transition";
+            });
+
+            const isCorrect = (choice === vfAnswers[qNum].expected);
+            vfUserAnswers[qNum] = isCorrect;
+
+            if (isCorrect) {
+                playSound('success');
+                btn.className = "vf-btn px-5 py-2 rounded-xl bg-emerald-500 text-white border-2 border-emerald-600 font-black text-sm shadow";
+                fb.className = "feedback-msg text-xs font-bold mt-2.5 text-emerald-700 block";
+                fb.innerHTML = `✅ Bravo ! ${vfAnswers[qNum].expl}`;
+            } else {
+                playSound('error');
+                btn.className = "vf-btn px-5 py-2 rounded-xl bg-rose-500 text-white border-2 border-rose-600 font-black text-sm shadow";
+                fb.className = "feedback-msg text-xs font-bold mt-2.5 text-rose-700 block";
+                fb.innerHTML = `❌ Erreur : ${vfAnswers[qNum].expl}`;
+            }
+
+            // Calcul du score Ex 1
+            let score = 0;
+            let answeredCount = 0;
+            for (let k = 1; k <= 4; k++) {
+                if (vfUserAnswers[k] !== null) answeredCount++;
+                if (vfUserAnswers[k] === true) score++;
+            }
+            gameState.scores.ex1 = score;
+            if (answeredCount === 4) gameState.completed.ex1 = true;
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 2 : TEXTE À TROUS
+        // ==========================================
+        let selectedChip = null;
+
+        function pickWord(chip) {
+            if (chip.classList.contains('opacity-30')) return;
+            playSound('click');
+            document.querySelectorAll('.cloze-chip').forEach(c => c.classList.remove('border-blue-700', 'bg-blue-100'));
+            selectedChip = chip;
+            chip.classList.add('border-blue-700', 'bg-blue-100');
+        }
+
+        function dropWord(slot) {
+            playSound('click');
+            if (!selectedChip) {
+                // Vider le slot si déjà rempli
+                if (slot.dataset.currentWord) {
+                    const w = slot.dataset.currentWord;
+                    const c = document.querySelector(`.cloze-chip[data-word="${w}"]`);
+                    if (c) c.classList.remove('opacity-30', 'pointer-events-none');
+                    delete slot.dataset.currentWord;
+                    slot.innerText = "... ? ...";
+                    slot.className = "cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[110px] transition";
+                }
+                return;
+            }
+
+            // Si déjà plein, libérer l'ancien mot
+            if (slot.dataset.currentWord) {
+                const prev = slot.dataset.currentWord;
+                const prevChip = document.querySelector(`.cloze-chip[data-word="${prev}"]`);
+                if (prevChip) prevChip.classList.remove('opacity-30', 'pointer-events-none');
+            }
+
+            const word = selectedChip.dataset.word;
+            slot.dataset.currentWord = word;
+            slot.innerText = word;
+            slot.className = "cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-blue-600 bg-blue-600 text-white font-bold rounded-xl cursor-pointer min-w-[110px] shadow-sm";
+
+            selectedChip.classList.add('opacity-30', 'pointer-events-none');
+            selectedChip.classList.remove('border-blue-700', 'bg-blue-100');
+            selectedChip = null;
+        }
+
+        function verifyCloze() {
+            const slots = document.querySelectorAll('.cloze-slot');
+            let score = 0;
+            let full = true;
+
+            slots.forEach(slot => {
+                const word = slot.dataset.currentWord;
+                const expected = slot.dataset.expected;
+                if (!word) full = false;
+
+                if (word === expected) {
+                    score++;
+                    slot.className = "cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-emerald-500 bg-emerald-100 text-emerald-950 font-bold rounded-xl";
+                } else {
+                    slot.className = "cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-rose-500 bg-rose-100 text-rose-950 font-bold rounded-xl";
+                }
+            });
+
+            gameState.scores.ex2 = score;
+            if (full) gameState.completed.ex2 = true;
+
+            const fb = document.getElementById('clozeFeedback');
+            if (score === 4) {
+                playSound('success');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🎉 Magnifique sans-faute ! Le texte est parfaitement complet.";
+            } else {
+                playSound('error');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${score}/4 corrects. Clique sur les cases rouges pour les corriger.`;
+            }
+
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 3 : QCM GÉOGRAPHIQUE
+        // ==========================================
+        const qcmStates = { 1: false, 2: false };
+
+        function answerQCM(qNum, isCorrect, btn) {
+            const container = document.getElementById(`qcm-box-${qNum}`);
+            const allBtns = container.querySelectorAll('.qcm-opt');
+            const fb = container.querySelector('.qcm-feedback');
+
+            allBtns.forEach(b => {
+                b.className = "qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition";
+            });
+
+            if (isCorrect) {
+                playSound('success');
+                btn.className = "qcm-opt p-3.5 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl font-bold text-left shadow-sm";
+                fb.className = "qcm-feedback text-xs font-bold mt-2 text-emerald-700 block";
+                fb.innerText = "✅ Excellente réponse !";
+                qcmStates[qNum] = true;
+            } else {
+                playSound('error');
+                btn.className = "qcm-opt p-3.5 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl font-bold text-left shadow-sm";
+                fb.className = "qcm-feedback text-xs font-bold mt-2 text-rose-700 block";
+                fb.innerText = "❌ Faux, relis bien le passage de la leçon correspondant.";
+                qcmStates[qNum] = false;
+            }
+
+            let sc = 0;
+            if (qcmStates[1]) sc += 2;
+            if (qcmStates[2]) sc += 2;
+            gameState.scores.ex3 = sc;
+            gameState.completed.ex3 = true;
+
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 4 : LES CHIFFRES CHOCS (ASSOCIER)
+        // ==========================================
+        let matchSelectedLeft = null;
+        let matchSelectedRight = null;
+        const matchedPairs = new Set();
+
+        function selectMatchCard(btn, side, key) {
+            if (matchedPairs.has(key)) return;
+            playSound('click');
+
+            if (side === 'left') {
+                document.querySelectorAll('#matchColLeft .match-card').forEach(b => {
+                    if (!matchedPairs.has(b.dataset.key)) b.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition";
+                });
+                matchSelectedLeft = { btn, key };
+                btn.className = "match-card w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-500 font-bold text-left text-sm transition";
+            } else {
+                document.querySelectorAll('#matchColRight .match-card').forEach(b => {
+                    if (!matchedPairs.has(b.dataset.key)) b.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition";
+                });
+                matchSelectedRight = { btn, key };
+                btn.className = "match-card w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-500 font-semibold text-left text-sm transition";
+            }
+
+            if (matchSelectedLeft && matchSelectedRight) {
+                if (matchSelectedLeft.key === matchSelectedRight.key) {
+                    // Match réussi
+                    playSound('success');
+                    matchedPairs.add(matchSelectedLeft.key);
+                    matchSelectedLeft.btn.className = "match-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
+                    matchSelectedRight.btn.className = "match-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
+
+                    gameState.scores.ex4 = matchedPairs.size;
+                    if (matchedPairs.size === 4) gameState.completed.ex4 = true;
+
+                    const fb = document.getElementById('matchFeedback');
+                    fb.classList.remove('hidden');
+                    fb.innerText = `✨ Belle association ! (${matchedPairs.size}/4 validés)`;
+                } else {
+                    // Erreur
+                    playSound('error');
+                    const b1 = matchSelectedLeft.btn;
+                    const b2 = matchSelectedRight.btn;
+                    b1.className = "match-card w-full p-4 rounded-2xl bg-rose-100 border-2 border-rose-400 text-rose-950 font-bold text-left text-sm";
+                    b2.className = "match-card w-full p-4 rounded-2xl bg-rose-100 border-2 border-rose-400 text-rose-950 font-semibold text-left text-sm";
+                    setTimeout(() => {
+                        b1.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-bold text-left text-sm";
+                        b2.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-semibold text-left text-sm";
+                    }, 500);
+                }
+                matchSelectedLeft = null;
+                matchSelectedRight = null;
+                saveState();
+                updateUI();
+            }
+        }
+
+        // ==========================================
+        // DÉFI 5 : LE GRAND TRI
+        // ==========================================
+        let selectedSortTagEl = null;
+
+        function selectSortTag(tag) {
+            playSound('click');
+            document.querySelectorAll('.sort-chip').forEach(t => t.classList.remove('border-rose-600', 'bg-rose-50'));
+            selectedSortTagEl = tag;
+            tag.classList.add('border-rose-600', 'bg-rose-50');
+        }
+
+        function depositSortTag(targetCategory) {
+            if (!selectedSortTagEl) return;
+            playSound('click');
+            const targetContainer = document.getElementById(`drop-target-${targetCategory}`);
+            targetContainer.appendChild(selectedSortTagEl);
+            selectedSortTagEl.dataset.currentCategory = targetCategory;
+            selectedSortTagEl.classList.remove('border-rose-600', 'bg-rose-50');
+            selectedSortTagEl = null;
+        }
+
+        function verifySortExercise() {
+            const tags = document.querySelectorAll('.sort-chip');
+            let correct = 0;
+            let totalPlaced = 0;
+
+            tags.forEach(t => {
+                const current = t.dataset.currentCategory;
+                const expected = t.dataset.category;
+                if (current) {
+                    totalPlaced++;
+                    if (current === expected) {
+                        correct++;
+                        t.className = "sort-chip px-3.5 py-2 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl text-xs sm:text-sm font-bold shadow-sm";
+                    } else {
+                        t.className = "sort-chip px-3.5 py-2 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl text-xs sm:text-sm font-bold shadow-sm";
+                    }
+                }
+            });
+
+            // Conversion sur 4 points (5 éléments = 4 points si tout bon)
+            const finalScore = Math.round((correct / 5) * 4);
+            gameState.scores.ex5 = finalScore;
+            if (totalPlaced === 5) gameState.completed.ex5 = true;
+
+            const fb = document.getElementById('sortFeedback');
+            if (correct === 5) {
+                playSound('success');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🎯 Tri parfait ! Tous les éléments sont dans leur bac approprié.";
+            } else {
+                playSound('error');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${correct}/5 bien rangés. Corrige les étiquettes en rouge.`;
+            }
+
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // RÉINITIALISATIONS
+        // ==========================================
+        function resetExercise(num) {
+            playSound('click');
+            if (num === 1) {
+                for (let k = 1; k <= 4; k++) {
+                    vfUserAnswers[k] = null;
+                    const r = document.getElementById(`vf-row-${k}`);
+                    r.querySelector('.feedback-msg').classList.add('hidden');
+                    r.querySelectorAll('.vf-btn').forEach(b => {
+                        b.className = "vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-slate-500 transition";
+                    });
+                }
+                gameState.scores.ex1 = 0;
+                gameState.completed.ex1 = false;
+            } else if (num === 2) {
+                document.querySelectorAll('.cloze-slot').forEach(s => {
+                    delete s.dataset.currentWord;
+                    s.innerText = "... ? ...";
+                    s.className = "cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[110px] transition";
+                });
+                document.querySelectorAll('.cloze-chip').forEach(c => {
+                    c.classList.remove('opacity-30', 'pointer-events-none', 'border-blue-700', 'bg-blue-100');
+                });
+                document.getElementById('clozeFeedback').innerText = "";
+                gameState.scores.ex2 = 0;
+                gameState.completed.ex2 = false;
+            } else if (num === 4) {
+                matchedPairs.clear();
+                document.querySelectorAll('#matchGameGrid .match-card').forEach(b => {
+                    b.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition";
+                });
+                document.getElementById('matchFeedback').classList.add('hidden');
+                gameState.scores.ex4 = 0;
+                gameState.completed.ex4 = false;
+            } else if (num === 5) {
+                const origin = document.getElementById('sortOriginPool');
+                document.querySelectorAll('.sort-chip').forEach(t => {
+                    delete t.dataset.currentCategory;
+                    t.className = "sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition";
+                    origin.appendChild(t);
+                });
+                document.getElementById('sortFeedback').innerText = "";
+                gameState.scores.ex5 = 0;
+                gameState.completed.ex5 = false;
+            }
+            saveState();
+            updateUI();
+        }
+
+        function resetWholeGame() {
+            if (confirm("Souhaites-tu vraiment réinitialiser l'ensemble des scores et des trophées ?")) {
+                localStorage.removeItem('geo_food_lesson_save');
+                window.location.reload();
+            }
+        }
+
+        // ==========================================
+        // ANIMATION CONFETTIS CANVAS
+        // ==========================================
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#8B5CF6'];
+
+            for (let i = 0; i < 90; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 9 + 4,
+                    h: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: (Math.random() - 0.7) * 16,
+                    gravity: 0.28,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+
+            let frames = 0;
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.rot += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+
+                frames++;
+                if (frames < 100) {
+                    requestAnimationFrame(render);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            render();
+        }
+
+        // --- INITIALISATION AU CHARGEMENT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+        });
+    </script>
+</body>
+</html>

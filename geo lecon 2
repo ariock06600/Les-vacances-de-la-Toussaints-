@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌾 Leçon 2 : D'où proviennent les aliments que nous consommons ?</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Polices adaptées et faciles à lire pour les élèves -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+        .page-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+        }
+        .page-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.24);
+            color: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @media print {
+            header, footer, nav, button, .no-print {
+                display: none !important;
+            }
+            .page-view {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            #page-landing, #page-exercises, #page-trophies {
+                display: none !important;
+            }
+            #page-lesson {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-200">
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 text-white shadow-md backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <button onclick="navigate('landing')" class="flex items-center gap-3 text-left group">
+                <span class="text-3xl p-2 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">🌾</span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs uppercase tracking-wider font-extrabold bg-emerald-950/40 text-emerald-100 px-2.5 py-0.5 rounded-full">Cycle 3 • Géographie & Sciences</span>
+                        <span id="levelBadge" class="text-xs font-bold text-amber-300">Apprenti Fermier</span>
+                    </div>
+                    <h1 class="text-lg md:text-xl font-bold font-heading tracking-tight leading-tight">Leçon 2 : D'où viennent nos aliments ?</h1>
+                </div>
+            </button>
+
+            <!-- Navigation Links -->
+            <nav class="flex items-center gap-1 sm:gap-2 text-sm font-bold bg-black/15 p-1.5 rounded-2xl backdrop-blur-sm">
+                <button onclick="navigate('landing')" id="nav-landing" class="nav-item active px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
+                    <span>🏠</span> <span class="hidden sm:inline">Accueil</span>
+                </button>
+                <button onclick="navigate('lesson')" id="nav-lesson" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
+                    <span>📖</span> <span>Leçon & Doc</span>
+                </button>
+                <button onclick="navigate('exercises')" id="nav-exercises" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
+                    <span>✏️</span> <span>6 Exercices</span>
+                </button>
+                <button onclick="navigate('trophies')" id="nav-trophies" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5 relative">
+                    <span>🏆</span> <span class="hidden sm:inline">Trophées</span>
+                    <span id="unlockedTrophyCountBadge" class="bg-amber-400 text-amber-950 text-xs px-1.5 py-0.2 rounded-full font-black">0/7</span>
+                </button>
+            </nav>
+
+            <!-- Compteur & Statut Score -->
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-950/40 border border-white/20 px-3.5 py-1.5 rounded-2xl flex items-center gap-2.5 shadow-inner">
+                    <span class="text-xl">⭐</span>
+                    <div>
+                        <div class="text-[10px] text-emerald-200 uppercase font-black tracking-wider leading-none">Score Total</div>
+                        <div id="headerScore" class="text-lg font-black font-heading text-amber-300 leading-tight">0 / 24 pts</div>
+                    </div>
+                </div>
+
+                <button id="soundToggle" onclick="toggleAudio()" title="Activer/Désactiver le son" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition text-sm">
+                    🔊
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEUR DES PAGES -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6">
+
+        <!-- ======================================================== -->
+        <!-- PAGE 1 : LANDING PAGE                                   -->
+        <!-- ======================================================== -->
+        <section id="page-landing" class="page-view active space-y-10">
+            
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-amber-700 text-white p-6 sm:p-10 shadow-xl border border-white/10">
+                <div class="absolute -right-12 -top-12 w-64 h-64 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute right-10 bottom-4 text-9xl opacity-20 pointer-events-none select-none hidden lg:block">🥗</div>
+                
+                <div class="relative z-10 max-w-2xl space-y-5">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/15 rounded-full text-xs font-black tracking-wide text-amber-200 border border-white/15">
+                        <span>🚜</span> GÉOGRAPHIE & ALIMENTATION • LEÇON 2
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold font-heading tracking-tight leading-tight">
+                        D'où proviennent les aliments que nous consommons ?
+                    </h2>
+                    <p class="text-emerald-100 text-base sm:text-lg leading-relaxed font-medium">
+                        Découvre les <strong>3 origines</strong> des aliments (végétale, animale, minérale), le voyage des aliments importés, la transformation en usine et la différence entre <strong>circuits courts</strong> et <strong>circuits longs</strong>.
+                    </p>
+
+                    <div class="pt-2 flex flex-wrap items-center gap-3">
+                        <button onclick="navigate('lesson')" class="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black font-heading text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <span>📖</span> Lire la Leçon & Voir l'Image
+                        </button>
+                        <button onclick="navigate('exercises')" class="px-5 py-3.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-2xl backdrop-blur-md transition flex items-center gap-2">
+                            <span>🎯</span> Faire les 6 Exercices
+                        </button>
+                        <button onclick="navigate('trophies')" class="px-5 py-3.5 bg-emerald-950/40 hover:bg-emerald-950/60 text-emerald-200 border border-emerald-400/30 font-bold rounded-2xl transition flex items-center gap-2">
+                            <span>🏆</span> Salle des Trophées
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chiffres & Concepts Clés -->
+            <div>
+                <h3 class="text-xl font-bold font-heading text-slate-800 mb-4 flex items-center gap-2">
+                    <span>💡</span> Les 4 Piliers de la Leçon 2
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            🌱
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">3 Grandes Origines</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>Végétale</strong> (plantes), <strong>Animale</strong> (élevage) ou <strong>Minérale</strong> (eau, sel).
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            🚢
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">France vs Importés</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Certains aliments sont importés car impossibles à faire pousser en France (café, banane) ou produits en quantité insuffisante.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            ⚙️
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">Transformation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Des aliments bruts deviennent des produits finis : le lait devient yaourt, et le blé devient farine puis gâteaux.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                            🛒
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1">Circuits de Distribution</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>Circuit court :</strong> direct du producteur (vente à la ferme).<br>
+                            <strong>Circuit long :</strong> supermarché et plusieurs intermédiaires.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille des 6 Exercices -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold font-heading text-slate-800 flex items-center gap-2">
+                            <span>🎮</span> Le Menu des 6 Exercices
+                        </h3>
+                        <p class="text-xs text-slate-500">Chaque exercice vaut 4 points. Réussis tous les défis pour obtenir 24/24 !</p>
+                    </div>
+                    <span id="completedExercisesCount" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">0 sur 6 terminés</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="landingCardsContainer"></div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 2 : FICHE LEÇON & IMAGE DU DOCUMENT                -->
+        <!-- ======================================================== -->
+        <section id="page-lesson" class="page-view space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-8">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+                            <span>📖</span> LEÇON 2 OFFICIELLE
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black font-heading text-slate-800 mt-2">
+                            D'où proviennent les aliments que nous consommons ?
+                        </h2>
+                    </div>
+                    <button onclick="window.print()" class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs flex items-center gap-2 transition no-print">
+                        <span>🖨️</span> Imprimer la Fiche de Cours
+                    </button>
+                </div>
+
+                <!-- 1. TEXTE INTÉGRAL DE LA LEÇON PLACÉ BIEN AU-DESSUS -->
+                <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-amber-50/60 p-6 sm:p-8 rounded-3xl border-2 border-emerald-300 shadow-sm space-y-5">
+                    <div class="border-b border-emerald-200/80 pb-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs uppercase font-black tracking-widest text-emerald-700">Texte du Cahier / Fiche Élève</span>
+                            <h3 class="text-xl sm:text-2xl font-extrabold font-heading text-emerald-950 mt-0.5">
+                                D'où proviennent les aliments que nous consommons ?
+                            </h3>
+                        </div>
+                        <span class="text-2xl">🚜</span>
+                    </div>
+
+                    <!-- Paragraphe officiel en texte clair et aéré -->
+                    <div class="text-slate-800 space-y-3.5 text-base sm:text-lg leading-relaxed font-medium">
+                        <div class="p-4 bg-white/90 rounded-2xl border border-emerald-200 shadow-xs flex items-start gap-3">
+                            <span class="text-2xl mt-0.5">🌱</span>
+                            <p>
+                                <strong>Les aliments que nous consommons sont d'origine végétale, animale ou minérale.</strong> Ils sont issus de <strong>l'agriculture</strong> et de <strong>l'élevage</strong>.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-white/90 rounded-2xl border border-emerald-200 shadow-xs flex items-start gap-3">
+                            <span class="text-2xl mt-0.5">🚢</span>
+                            <p>
+                                <strong>Certains sont produits en France mais d'autres sont importés de l'étranger</strong> car nous ne pouvons pas les produire (<em>café, banane…</em>) ou pas assez (<em>viande, blé…</em>).
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-white/90 rounded-2xl border border-emerald-200 shadow-xs flex items-start gap-3">
+                            <span class="text-2xl mt-0.5">🥛</span>
+                            <p>
+                                <strong>Avant d'arriver dans notre assiette certains aliments sont transformés</strong> (lait &rarr; yaourt, blé &rarr; gâteaux).
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-white/90 rounded-2xl border border-emerald-200 shadow-xs flex items-start gap-3">
+                            <span class="text-2xl mt-0.5">🛒</span>
+                            <p>
+                                <strong>Pour se procurer les aliments, on peut passer par des circuits courts</strong> (vente à la ferme) <strong>ou des circuits longs</strong> (achat de produits transformés en supermarché).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. DOCUMENT ASSOCIÉ : L'IMAGE DE LA LEÇON VIA LE LIEN FOURNI -->
+                <div class="bg-slate-50 p-5 sm:p-7 rounded-3xl border-2 border-slate-200 shadow-inner space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs uppercase font-extrabold text-amber-800 bg-amber-100 px-3 py-1 rounded-full">Support Visuel • Image de la Leçon</span>
+                            <h4 class="text-xl font-bold font-heading text-slate-800 mt-1">
+                                Document de Travail (Origine, Transformation & Circuits)
+                            </h4>
+                            <p class="text-xs text-slate-500">Document photocopié / illustré de la Leçon 2.</p>
+                        </div>
+                        <div class="flex items-center gap-2 no-print">
+                            <button onclick="toggleImageModal(true)" class="px-3.5 py-2 bg-white border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-100 transition shadow-xs flex items-center gap-1.5">
+                                🔍 Agrandir / Zoom
+                            </button>
+                            <a href="https://photos.app.goo.gl/xYGAZeT19RpytPrJ6" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                                <span>🔗</span> Ouvrir sur Google Photos
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Conteneur de l'image -->
+                    <div class="relative w-full rounded-2xl overflow-hidden bg-white border-2 border-slate-300 shadow-sm flex flex-col items-center justify-center p-3 min-h-[380px]">
+                        <img 
+                            id="lesson2Image"
+                            src="https://photos.app.goo.gl/xYGAZeT19RpytPrJ6" 
+                            alt="Document Leçon 2 : D'où proviennent les aliments" 
+                            class="max-h-[580px] w-auto max-w-full rounded-xl object-contain shadow-sm hover:scale-[1.01] transition-transform cursor-pointer"
+                            onclick="toggleImageModal(true)"
+                            onerror="handleLessonImageError(this)"
+                        />
+                        <div id="imageFallbackMessage" class="hidden text-center p-6 space-y-3">
+                            <div class="text-5xl">📄</div>
+                            <h5 class="font-bold text-slate-800 text-base">Visualisation du Document de Leçon 2</h5>
+                            <p class="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                                Le lien direct Google Photos est sécurisé contre l'intégration automatique sur certains navigateurs. Clique ci-dessous pour voir l'image originale ou utilise les fiches synthétiques détaillées ci-après :
+                            </p>
+                            <a href="https://photos.app.goo.gl/xYGAZeT19RpytPrJ6" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white font-bold text-xs rounded-xl shadow hover:bg-amber-600 transition">
+                                <span>🌐</span> Ouvrir l'image dans Google Photos
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Fiches d'analyse synthétiques sous l'image -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-2">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                            <div class="flex items-center gap-2 font-extrabold text-emerald-800 text-sm mb-1.5">
+                                <span>🌱</span> Les 3 Origines
+                            </div>
+                            <ul class="text-xs text-slate-600 space-y-1">
+                                <li>• <strong>Végétale :</strong> fruits, légumes, blé, riz, café...</li>
+                                <li>• <strong>Animale :</strong> viande, lait, œufs, poissons...</li>
+                                <li>• <strong>Minérale :</strong> eau potable, sel de table.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                            <div class="flex items-center gap-2 font-extrabold text-purple-800 text-sm mb-1.5">
+                                <span>🏭</span> La Transformation
+                            </div>
+                            <ul class="text-xs text-slate-600 space-y-1">
+                                <li>• <strong>Brut :</strong> aliment tel quel (pomme, carotte).</li>
+                                <li>• <strong>Transformé :</strong> modifié par l'industrie (lait en yaourt/fromage, blé en farine puis biscuit).</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                            <div class="flex items-center gap-2 font-extrabold text-amber-800 text-sm mb-1.5">
+                                <span>🚚</span> Les Circuits
+                            </div>
+                            <ul class="text-xs text-slate-600 space-y-1">
+                                <li>• <strong>Court :</strong> 0 ou 1 intermédiaire (vente directe).</li>
+                                <li>• <strong>Long :</strong> plusieurs intermédiaires (grossistes, usines, supermarchés).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex flex-wrap gap-3 no-print">
+                    <button onclick="selectExercise(1)" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow transition flex items-center gap-2">
+                        <span>🎯</span> Commencer les Exercices
+                    </button>
+                    <button onclick="navigate('trophies')" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition">
+                        Voir les Trophées
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- MODAL DE ZOOM PLEIN ÉCRAN POUR L'IMAGE -->
+        <div id="imageModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+            <div class="relative max-w-5xl w-full bg-white rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[92vh]">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
+                    <h4 class="font-bold font-heading text-slate-800 text-base sm:text-lg">
+                        🔎 Zoom Document : Leçon 2
+                    </h4>
+                    <div class="flex items-center gap-2">
+                        <a href="https://photos.app.goo.gl/xYGAZeT19RpytPrJ6" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-amber-700 underline px-2 py-1">
+                            Lien externe Google Photos
+                        </a>
+                        <button onclick="toggleImageModal(false)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black flex items-center justify-center transition">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-auto flex-grow flex items-center justify-center bg-slate-100 rounded-2xl p-2">
+                    <img 
+                        src="https://photos.app.goo.gl/xYGAZeT19RpytPrJ6" 
+                        alt="Zoom Document Leçon 2" 
+                        class="max-w-full h-auto object-contain rounded-lg"
+                        onerror="this.src='https://placehold.co/900x500/f8fafc/047857?text=Document+Lecon+2+(Ouvrir+sur+Google+Photos)';"
+                    />
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 3 : LES 6 EXERCICES INTERACTIFS                    -->
+        <!-- ======================================================== -->
+        <section id="page-exercises" class="page-view space-y-6">
+            
+            <!-- Barre de navigation des 6 onglets -->
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 overflow-x-auto">
+                <button onclick="selectExercise(1)" id="ex-tab-1" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow">
+                    <span>1. Les 3 Origines</span>
+                    <span id="tab-score-1" class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(2)" id="ex-tab-2" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>2. Vrai / Faux</span>
+                    <span id="tab-score-2" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(3)" id="ex-tab-3" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>3. Importation</span>
+                    <span id="tab-score-3" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(4)" id="ex-tab-4" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>4. Transformation</span>
+                    <span id="tab-score-4" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(5)" id="ex-tab-5" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>5. Circuits Courts & Longs</span>
+                    <span id="tab-score-5" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(6)" id="ex-tab-6" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>6. Texte à Trous</span>
+                    <span id="tab-score-6" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+            </div>
+
+            <!-- EXERCICE 1 : LE TRI DES ORIGINES -->
+            <div id="exercise-pane-1" class="exercise-pane space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Défi 1 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Tri des 3 Origines</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur un aliment puis sur le bon panier (Végétale, Animale ou Minérale).</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-100/70 rounded-2xl border border-slate-200 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-slate-600">Aliments à classer :</span>
+                        <div class="flex flex-wrap gap-2.5 min-h-[48px]" id="originPool">
+                            <div onclick="selectOriginItem(this)" data-category="vegetale" class="origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition">
+                                🥕 Carotte
+                            </div>
+                            <div onclick="selectOriginItem(this)" data-category="animale" class="origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition">
+                                🥩 Viande de bœuf
+                            </div>
+                            <div onclick="selectOriginItem(this)" data-category="minerale" class="origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition">
+                                🧂 Sel de cuisine
+                            </div>
+                            <div onclick="selectOriginItem(this)" data-category="vegetale" class="origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition">
+                                🌾 Épi de blé
+                            </div>
+                            <div onclick="selectOriginItem(this)" data-category="animale" class="origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition">
+                                🥛 Lait de vache
+                            </div>
+                            <div onclick="selectOriginItem(this)" data-category="minerale" class="origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition">
+                                💧 Eau minérale
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div onclick="depositOriginItem('vegetale')" class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 hover:border-emerald-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-emerald-900 text-sm mb-2 flex items-center justify-between">
+                                <span>🌱 Origine VÉGÉTALE</span>
+                                <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded-full">Plantes / Terre</span>
+                            </div>
+                            <div id="drop-target-vegetale" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                        <div onclick="depositOriginItem('animale')" class="p-4 rounded-2xl bg-rose-50 border-2 border-rose-300 hover:border-rose-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-rose-900 text-sm mb-2 flex items-center justify-between">
+                                <span>🐄 Origine ANIMALE</span>
+                                <span class="text-xs bg-rose-200 px-2 py-0.5 rounded-full">Élevage</span>
+                            </div>
+                            <div id="drop-target-animale" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                        <div onclick="depositOriginItem('minerale')" class="p-4 rounded-2xl bg-sky-50 border-2 border-sky-300 hover:border-sky-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-sky-900 text-sm mb-2 flex items-center justify-between">
+                                <span>💎 Origine MINÉRALE</span>
+                                <span class="text-xs bg-sky-200 px-2 py-0.5 rounded-full">Nature / Roches</span>
+                            </div>
+                            <div id="drop-target-minerale" class="space-y-2 flex-grow"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifyOriginExercise()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition">
+                            Valider le tri
+                        </button>
+                        <button onclick="resetExercise(1)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Recommencer
+                        </button>
+                        <div id="originFeedback" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <span class="text-xs text-slate-400">Défi 1 sur 6</span>
+                        <button onclick="selectExercise(2)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Défi 2 : Vrai / Faux ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 2 : VRAI OU FAUX -->
+            <div id="exercise-pane-2" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-teal-700 bg-teal-100 px-3 py-1 rounded-full">Défi 2 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Vrai ou Faux ?</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Lis chaque affirmation et clique sur VRAI ou FAUX.</p>
+                    </div>
+
+                    <div class="space-y-4" id="vfQuestionsList">
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf2-row-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">1. L'eau et le sel sont des aliments d'origine minérale.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF2(1, true, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF2(1, false, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf2-row-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">2. La France produit elle-même tout le café et toutes les bananes consommés.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF2(2, true, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF2(2, false, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf2-row-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">3. Le yaourt et le fromage sont des aliments transformés à partir du lait.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF2(3, true, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF2(3, false, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf2-row-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">4. Acheter directement ses légumes à la ferme est un exemple de circuit court.</p>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="answerVF2(4, true, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
+                                    <button onclick="answerVF2(4, false, this)" class="vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
+                                </div>
+                            </div>
+                            <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Défi 1
+                        </button>
+                        <button onclick="selectExercise(3)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Défi 3 : Importation ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 3 : PRODUITS FRANÇAIS VS PRODUITS IMPORTÉS -->
+            <div id="exercise-pane-3" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-sky-700 bg-sky-100 px-3 py-1 rounded-full">Défi 3 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Produits Français vs Importés</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Pourquoi importe-t-on certains aliments ? (2 points par question)</p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3" id="qcm3-box-1">
+                        <p class="font-extrabold text-slate-900 text-base">
+                            1. Pourquoi le <strong>café</strong> et les <strong>bananes</strong> sont-ils importés de l'étranger ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <button onclick="answerQCM3(1, true, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                A) Parce que le climat en France métropolitaine ne permet pas de les cultiver
+                            </button>
+                            <button onclick="answerQCM3(1, false, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                B) Parce que les Français n'aiment pas ces produits
+                            </button>
+                            <button onclick="answerQCM3(1, false, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                C) Parce qu'il est interdit de faire pousser des plantes en France
+                            </button>
+                            <button onclick="answerQCM3(1, false, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                D) Parce que ce sont des produits purement minéraux
+                            </button>
+                        </div>
+                        <div class="qcm3-feedback text-xs font-bold mt-2 hidden"></div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3" id="qcm3-box-2">
+                        <p class="font-extrabold text-slate-900 text-base">
+                            2. Pourquoi la France importe-t-elle parfois de la <strong>viande</strong> ou du <strong>blé</strong> alors qu'elle en produit ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <button onclick="answerQCM3(2, false, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                A) Parce qu'on ne sait pas fabriquer de farine en France
+                            </button>
+                            <button onclick="answerQCM3(2, true, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                B) Parce que la production française ne suffit pas toujours à couvrir tous les besoins (pas assez)
+                            </button>
+                            <button onclick="answerQCM3(2, false, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                C) Pour faire voyager les bateaux pour le plaisir
+                            </button>
+                            <button onclick="answerQCM3(2, false, this)" class="qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition">
+                                D) Parce que la viande et le blé ne viennent pas de l'agriculture
+                            </button>
+                        </div>
+                        <div class="qcm3-feedback text-xs font-bold mt-2 hidden"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(2)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Défi 2
+                        </button>
+                        <button onclick="selectExercise(4)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Défi 4 : Transformation ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 4 : LA CHAÎNE DE TRANSFORMATION -->
+            <div id="exercise-pane-4" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-purple-700 bg-purple-100 px-3 py-1 rounded-full">Défi 4 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">La Chaîne de Transformation</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Associe l'aliment brut (à gauche) au produit transformé (à droite).</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="matchGameGrid2">
+                        <div class="space-y-3" id="matchColLeft2">
+                            <button onclick="selectMatchCard2(this, 'left', 'ble')" data-key="ble" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-bold text-left text-sm transition">
+                                🌾 Blé (céréale récoltée)
+                            </button>
+                            <button onclick="selectMatchCard2(this, 'left', 'lait')" data-key="lait" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-bold text-left text-sm transition">
+                                🥛 Lait de vache
+                            </button>
+                            <button onclick="selectMatchCard2(this, 'left', 'pomme')" data-key="pomme" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-bold text-left text-sm transition">
+                                🍎 Pommes du verger
+                            </button>
+                            <button onclick="selectMatchCard2(this, 'left', 'cacao')" data-key="cacao" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-bold text-left text-sm transition">
+                                🍫 Fèves de cacao importées
+                            </button>
+                        </div>
+
+                        <div class="space-y-3" id="matchColRight2">
+                            <button onclick="selectMatchCard2(this, 'right', 'lait')" data-key="lait" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-semibold text-left text-sm transition">
+                                Yaourt et Fromage
+                            </button>
+                            <button onclick="selectMatchCard2(this, 'right', 'pomme')" data-key="pomme" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-semibold text-left text-sm transition">
+                                Compote et Jus de pomme
+                            </button>
+                            <button onclick="selectMatchCard2(this, 'right', 'ble')" data-key="ble" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-semibold text-left text-sm transition">
+                                Farine, Pain et Gâteaux
+                            </button>
+                            <button onclick="selectMatchCard2(this, 'right', 'cacao')" data-key="cacao" class="match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-semibold text-left text-sm transition">
+                                Tablettes de chocolat
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="matchFeedback2" class="text-sm font-bold text-emerald-700 hidden"></div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="resetExercise(4)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            🔄 Recommencer Défi 4
+                        </button>
+                        <button onclick="selectExercise(5)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Défi 5 : Circuits Courts & Longs ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 5 : CIRCUIT COURT OU CIRCUIT LONG ? -->
+            <div id="exercise-pane-5" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-3 py-1 rounded-full">Défi 5 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Circuit Court ou Circuit Long ?</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Classe chaque situation dans le bon circuit de distribution.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-100/70 rounded-2xl border border-slate-200 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-slate-600">Situations à classer :</span>
+                        <div class="flex flex-wrap gap-2.5 min-h-[48px]" id="circuitOriginPool">
+                            <div onclick="selectCircuitTag(this)" data-category="court" class="circuit-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-amber-400 transition">
+                                🏡 Vente directe d'œufs à la ferme
+                            </div>
+                            <div onclick="selectCircuitTag(this)" data-category="long" class="circuit-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-amber-400 transition">
+                                🛒 Achat de biscuits industriels au supermarché
+                            </div>
+                            <div onclick="selectCircuitTag(this)" data-category="court" class="circuit-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-amber-400 transition">
+                                🍓 Cueillette de fraises chez le producteur local
+                            </div>
+                            <div onclick="selectCircuitTag(this)" data-category="long" class="circuit-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-amber-400 transition">
+                                🚢 Banane importée par cargo et vendue en hypermarché
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div onclick="depositCircuitTag('court')" class="p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 hover:border-emerald-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-emerald-900 text-sm mb-2 flex items-center justify-between">
+                                <span>🚜 CIRCUIT COURT</span>
+                                <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">0 ou 1 intermédiaire</span>
+                            </div>
+                            <p class="text-[11px] text-emerald-700 mb-2">Exemple du cours : vente à la ferme, direct du producteur.</p>
+                            <div id="drop-target-court" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                        <div onclick="depositCircuitTag('long')" class="p-5 rounded-2xl bg-amber-50 border-2 border-amber-300 hover:border-amber-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                            <div class="font-extrabold text-amber-900 text-sm mb-2 flex items-center justify-between">
+                                <span>🏭 CIRCUIT LONG</span>
+                                <span class="text-xs bg-amber-200 px-2 py-0.5 rounded-full font-bold">Plusieurs intermédiaires</span>
+                            </div>
+                            <p class="text-[11px] text-amber-700 mb-2">Exemple du cours : produits transformés en supermarché.</p>
+                            <div id="drop-target-long" class="space-y-2 flex-grow"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifyCircuitExercise()" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow transition">
+                            Valider le classement
+                        </button>
+                        <button onclick="resetExercise(5)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Recommencer
+                        </button>
+                        <div id="circuitFeedback" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(4)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Défi 4
+                        </button>
+                        <button onclick="selectExercise(6)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Défi 6 : Texte à Trous ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 6 : TEXTE À TROUS / SYNTHÈSE DE LA LEÇON -->
+            <div id="exercise-pane-6" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-rose-700 bg-rose-100 px-3 py-1 rounded-full">Défi 6 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Texte à Trous (Synthèse)</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur un mot puis sur la case vide correspondante.</p>
+                    </div>
+
+                    <div class="p-4 bg-rose-50/70 rounded-2xl border border-rose-100 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-rose-900 tracking-wider">Mots à placer :</span>
+                        <div class="flex flex-wrap gap-2" id="clozeBank2">
+                            <button onclick="pickWord2(this)" data-word="minérale" class="cloze2-chip px-4 py-2 bg-white border-2 border-rose-300 hover:border-rose-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">minérale</button>
+                            <button onclick="pickWord2(this)" data-word="importés" class="cloze2-chip px-4 py-2 bg-white border-2 border-rose-300 hover:border-rose-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">importés</button>
+                            <button onclick="pickWord2(this)" data-word="transformés" class="cloze2-chip px-4 py-2 bg-white border-2 border-rose-300 hover:border-rose-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">transformés</button>
+                            <button onclick="pickWord2(this)" data-word="circuits courts" class="cloze2-chip px-4 py-2 bg-white border-2 border-rose-300 hover:border-rose-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">circuits courts</button>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-base leading-loose text-slate-800 font-medium space-y-3">
+                        Les aliments que nous consommons sont d'origine végétale, animale ou
+                        <span onclick="dropWord2(this)" data-expected="minérale" class="cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-rose-400 bg-white text-rose-900 font-bold rounded-xl cursor-pointer min-w-[120px] transition">
+                            ... ? ...
+                        </span>.
+                        Certains sont produits en France mais d'autres sont
+                        <span onclick="dropWord2(this)" data-expected="importés" class="cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-rose-400 bg-white text-rose-900 font-bold rounded-xl cursor-pointer min-w-[120px] transition">
+                            ... ? ...
+                        </span>
+                        de l'étranger (comme le café ou la banane).
+                        Avant d'arriver dans notre assiette, certains aliments sont
+                        <span onclick="dropWord2(this)" data-expected="transformés" class="cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-rose-400 bg-white text-rose-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">
+                            ... ? ...
+                        </span>
+                        (comme le blé en gâteaux). Enfin, on peut privilégier les
+                        <span onclick="dropWord2(this)" data-expected="circuits courts" class="cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-rose-400 bg-white text-rose-900 font-bold rounded-xl cursor-pointer min-w-[140px] transition">
+                            ... ? ...
+                        </span>
+                        en achetant directement ses produits à la ferme !
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifyCloze2()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow transition">
+                            Vérifier le texte
+                        </button>
+                        <button onclick="resetExercise(6)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Recommencer
+                        </button>
+                        <div id="clozeFeedback2" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(5)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Défi 5
+                        </button>
+                        <button onclick="navigate('trophies')" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-sm shadow flex items-center gap-2">
+                            Voir mes Trophées Débloqués 🏆
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 4 : SALLE DES TROPHÉES                              -->
+        <!-- ======================================================== -->
+        <section id="page-trophies" class="page-view space-y-6">
+            
+            <div class="bg-gradient-to-br from-emerald-950 via-slate-900 to-amber-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-white/10 space-y-6">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider font-extrabold text-amber-300 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30">
+                            Palmarès & Récompenses
+                        </span>
+                        <h2 class="text-3xl font-black font-heading tracking-tight mt-1">
+                            🏆 Galerie des 7 Trophées de la Leçon 2
+                        </h2>
+                        <p class="text-slate-300 text-sm">
+                            Réussis les défis sur les origines, la transformation et les circuits alimentaires pour tout débloquer !
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-2xl border border-white/15 text-center min-w-[200px]">
+                        <div class="text-xs uppercase text-slate-300 font-bold">Progression Totale</div>
+                        <div id="trophyPercentText" class="text-3xl font-black font-heading text-amber-300">0%</div>
+                        <div class="w-full bg-black/40 h-2 rounded-full overflow-hidden mt-1.5">
+                            <div id="trophyProgressBar" class="bg-amber-400 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="trophiesListContainer"></div>
+
+                <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+                    <button onclick="navigate('exercises')" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm transition">
+                        🎯 Continuer les Exercices
+                    </button>
+                    <button onclick="resetWholeGame()" class="text-xs text-rose-300 hover:text-rose-100 underline transition">
+                        ⚠️ Remettre à zéro les scores et trophées
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500 no-print">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>🌾 <strong>Leçon 2 : D'où proviennent les aliments que nous consommons ?</strong> • Origines, transformation & circuits.</p>
+            <p class="text-slate-400">Application éducative interactive cycle 3.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIQUE JAVASCRIPT & STATE MANAGEMENT -->
+    <script>
+        const gameState = {
+            scores: { ex1: 0, ex2: 0, ex3: 0, ex4: 0, ex5: 0, ex6: 0 },
+            completed: { ex1: false, ex2: false, ex3: false, ex4: false, ex5: false, ex6: false },
+            trophies: {
+                first_step: false,
+                origins_master: false,
+                commerce_expert: false,
+                factory_pro: false,
+                local_hero: false,
+                grand_master: false,
+                reader: false
+            },
+            soundEnabled: true
+        };
+
+        const TROPHIES_DEF = [
+            { id: 'first_step', icon: '🌱', name: 'Première Récolte', desc: 'Valide ton premier exercice avec succès.' },
+            { id: 'origins_master', icon: '🥗', name: 'Maître des 3 Origines', desc: 'Classe parfaitement le végétal, l\'animal et le minéral (Défi 1).' },
+            { id: 'commerce_expert', icon: '🚢', name: 'Navigateur du Commerce', desc: 'Comprends les raisons des importations (café, banane, blé).' },
+            { id: 'factory_pro', icon: '⚙️', name: 'Génie de la Transformation', desc: 'Associe sans faute les aliments bruts à leurs produits transformés.' },
+            { id: 'local_hero', icon: '🚜', name: 'Champion du Circuit Court', desc: 'Distingue parfaitement la vente à la ferme et les supermarchés.' },
+            { id: 'grand_master', icon: '👑', name: 'Grand Maître de l\'Alimentation', desc: 'Obtiens le score parfait de 24 sur 24 à tous les exercices !' },
+            { id: 'reader', icon: '📜', name: 'Explorateur de la Leçon', desc: 'Consulte la leçon intégrale et le document de cours.' }
+        ];
+
+        const EXERCISES_META = [
+            { id: 1, title: 'Le Tri des 3 Origines', icon: '🌱', desc: 'Range chaque aliment : Végétale, Animale ou Minérale.', max: 4 },
+            { id: 2, title: 'Vrai ou Faux ?', icon: '⚖️', desc: '4 affirmations essentielles pour vérifier ta compréhension.', max: 4 },
+            { id: 3, title: 'France vs Importé', icon: '🚢', desc: 'Pourquoi importe-t-on du café ou de la viande ?', max: 4 },
+            { id: 4, title: 'La Transformation', icon: '🏭', desc: 'Associe l\'aliment brut au produit transformé (blé, lait...).', max: 4 },
+            { id: 5, title: 'Circuits Courts & Longs', icon: '🛒', desc: 'Distingue la vente directe et le supermarché.', max: 4 },
+            { id: 6, title: 'Texte à Trous', icon: '✍️', desc: 'Complète la synthèse officielle de la leçon 2.', max: 4 }
+        ];
+
+        // --- AUDIO SYNTHESIS ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                const now = ctx.currentTime;
+
+                if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.linearRampToValueAtTime(140, now + 0.2);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'trophy') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const nOsc = ctx.createOscillator();
+                        const nGain = ctx.createGain();
+                        nOsc.type = 'sine';
+                        nOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        nGain.gain.setValueAtTime(0.15, now + idx * 0.1);
+                        nGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.2);
+                        nOsc.connect(nGain);
+                        nGain.connect(ctx.destination);
+                        nOsc.start(now + idx * 0.1);
+                        nOsc.stop(now + idx * 0.1 + 0.2);
+                    });
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(550, now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudio() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            document.getElementById('soundToggle').innerText = gameState.soundEnabled ? '🔊' : '🔇';
+            saveState();
+        }
+
+        // --- LOCAL STORAGE ---
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('geo_food_lesson2_save');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    Object.assign(gameState, parsed);
+                }
+            } catch (e) {}
+            updateUI();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('geo_food_lesson2_save', JSON.stringify(gameState));
+            } catch (e) {}
+        }
+
+        // --- NAVIGATION ---
+        function navigate(pageId) {
+            playSound('click');
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            const targetNav = document.getElementById(`nav-${pageId}`);
+            if (targetPage) targetPage.classList.add('active');
+            if (targetNav) targetNav.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (pageId === 'lesson' && !gameState.trophies.reader) {
+                unlockTrophy('reader');
+            }
+        }
+
+        function selectExercise(num) {
+            playSound('click');
+            navigate('exercises');
+
+            document.querySelectorAll('.exercise-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.ex-tab-btn').forEach(btn => {
+                btn.className = "ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5";
+            });
+
+            const activePane = document.getElementById(`exercise-pane-${num}`);
+            const activeTab = document.getElementById(`ex-tab-${num}`);
+            if (activePane) activePane.classList.remove('hidden');
+            if (activeTab) {
+                activeTab.className = "ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow";
+            }
+        }
+
+        // --- TOTAL & TROPHÉES ---
+        function calculateTotalScore() {
+            return gameState.scores.ex1 + gameState.scores.ex2 + gameState.scores.ex3 + gameState.scores.ex4 + gameState.scores.ex5 + gameState.scores.ex6;
+        }
+
+        function checkTrophiesCriteria() {
+            const total = calculateTotalScore();
+
+            if (!gameState.trophies.first_step) {
+                const anyDone = Object.values(gameState.scores).some(s => s >= 2);
+                if (anyDone) unlockTrophy('first_step');
+            }
+            if (!gameState.trophies.origins_master && gameState.scores.ex1 === 4) unlockTrophy('origins_master');
+            if (!gameState.trophies.commerce_expert && gameState.scores.ex3 === 4) unlockTrophy('commerce_expert');
+            if (!gameState.trophies.factory_pro && gameState.scores.ex4 === 4) unlockTrophy('factory_pro');
+            if (!gameState.trophies.local_hero && gameState.scores.ex5 === 4) unlockTrophy('local_hero');
+            if (!gameState.trophies.grand_master && total === 24) unlockTrophy('grand_master');
+        }
+
+        function unlockTrophy(trophyId) {
+            if (gameState.trophies[trophyId]) return;
+            gameState.trophies[trophyId] = true;
+            saveState();
+            updateUI();
+            launchConfetti();
+            playSound('trophy');
+
+            const trophy = TROPHIES_DEF.find(t => t.id === trophyId);
+            if (trophy) showToast(`🏆 Trophée Débloqué : ${trophy.name} !`);
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-amber-400 text-amber-950 px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-3 border-2 border-white transform translate-y-10 opacity-0 transition-all duration-300";
+            toast.innerHTML = `<span class="text-2xl">🎉</span> <span>${msg}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 50);
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        function updateUI() {
+            const total = calculateTotalScore();
+            document.getElementById('headerScore').innerText = `${total} / 24 pts`;
+
+            const levelEl = document.getElementById('levelBadge');
+            if (total >= 24) levelEl.innerText = "👑 Grand Maître de la Terre";
+            else if (total >= 18) levelEl.innerText = "⭐ Expert des Circuits";
+            else if (total >= 10) levelEl.innerText = "🌱 Jardinier Averti";
+            else levelEl.innerText = "🚜 Apprenti Fermier";
+
+            for (let i = 1; i <= 6; i++) {
+                const s = gameState.scores[`ex${i}`];
+                const badge = document.getElementById(`tab-score-${i}`);
+                if (badge) badge.innerText = `${s}/4`;
+            }
+
+            let completedCount = 0;
+            for (let i = 1; i <= 6; i++) {
+                if (gameState.completed[`ex${i}`]) completedCount++;
+            }
+            const completedEl = document.getElementById('completedExercisesCount');
+            if (completedEl) completedEl.innerText = `${completedCount} sur 6 terminés`;
+
+            renderLandingCards();
+            renderTrophiesView();
+            checkTrophiesCriteria();
+        }
+
+        function renderLandingCards() {
+            const container = document.getElementById('landingCardsContainer');
+            if (!container) return;
+
+            container.innerHTML = EXERCISES_META.map(ex => {
+                const score = gameState.scores[`ex${ex.id}`];
+                const isCompleted = gameState.completed[`ex${ex.id}`];
+                let statusBadge = `<span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">Non commencé</span>`;
+                if (isCompleted && score === ex.max) {
+                    statusBadge = `<span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold flex items-center gap-1">⭐ Validé (${score}/${ex.max})</span>`;
+                } else if (isCompleted || score > 0) {
+                    statusBadge = `<span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">En cours (${score}/${ex.max})</span>`;
+                }
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-3xl">${ex.icon}</span>
+                                ${statusBadge}
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base mb-1 font-heading">Exercice ${ex.id} : ${ex.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">${ex.desc}</p>
+                        </div>
+                        <button onclick="selectExercise(${ex.id})" class="w-full py-2 bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                            <span>Lancer le défi</span> <span>➔</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTrophiesView() {
+            let unlockedCount = 0;
+            TROPHIES_DEF.forEach(t => {
+                if (gameState.trophies[t.id]) unlockedCount++;
+            });
+
+            const badge = document.getElementById('unlockedTrophyCountBadge');
+            if (badge) badge.innerText = `${unlockedCount}/${TROPHIES_DEF.length}`;
+
+            const percent = Math.round((unlockedCount / TROPHIES_DEF.length) * 100);
+            const percentText = document.getElementById('trophyPercentText');
+            const pBar = document.getElementById('trophyProgressBar');
+            if (percentText) percentText.innerText = `${percent}%`;
+            if (pBar) pBar.style.width = `${percent}%`;
+
+            const container = document.getElementById('trophiesListContainer');
+            if (!container) return;
+
+            container.innerHTML = TROPHIES_DEF.map(t => {
+                const isUnlocked = gameState.trophies[t.id];
+                if (isUnlocked) {
+                    return `
+                        <div class="p-5 rounded-2xl bg-white/10 border-2 border-amber-400/60 shadow-lg flex items-center gap-4 relative overflow-hidden group">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-black shrink-0 shadow">
+                                ${t.icon}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-amber-300 text-base font-heading">${t.name}</h4>
+                                    <span class="text-[10px] bg-emerald-500/30 text-emerald-300 font-black px-2 py-0.5 rounded-full border border-emerald-400/30">DÉBLOQUÉ</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1 leading-relaxed">${t.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="p-5 rounded-2xl bg-black/30 border border-white/5 opacity-60 flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-white/5 text-slate-400 flex items-center justify-center text-2xl font-bold shrink-0">
+                                🔒
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-300 text-base font-heading">${t.name}</h4>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">${t.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // ==========================================
+        // DÉFI 1 : LE TRI DES 3 ORIGINES
+        // ==========================================
+        let selectedOriginTagEl = null;
+
+        function selectOriginItem(tag) {
+            playSound('click');
+            document.querySelectorAll('.origin-chip').forEach(t => t.classList.remove('border-emerald-600', 'bg-emerald-50'));
+            selectedOriginTagEl = tag;
+            tag.classList.add('border-emerald-600', 'bg-emerald-50');
+        }
+
+        function depositOriginItem(targetCategory) {
+            if (!selectedOriginTagEl) return;
+            playSound('click');
+            const targetContainer = document.getElementById(`drop-target-${targetCategory}`);
+            targetContainer.appendChild(selectedOriginTagEl);
+            selectedOriginTagEl.dataset.currentCategory = targetCategory;
+            selectedOriginTagEl.classList.remove('border-emerald-600', 'bg-emerald-50');
+            selectedOriginTagEl = null;
+        }
+
+        function verifyOriginExercise() {
+            const tags = document.querySelectorAll('.origin-chip');
+            let correct = 0, totalPlaced = 0;
+
+            tags.forEach(t => {
+                const current = t.dataset.currentCategory;
+                const expected = t.dataset.category;
+                if (current) {
+                    totalPlaced++;
+                    if (current === expected) {
+                        correct++;
+                        t.className = "origin-chip px-3.5 py-2 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl text-xs sm:text-sm font-bold shadow-sm";
+                    } else {
+                        t.className = "origin-chip px-3.5 py-2 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl text-xs sm:text-sm font-bold shadow-sm";
+                    }
+                }
+            });
+
+            const finalScore = Math.round((correct / 6) * 4);
+            gameState.scores.ex1 = finalScore;
+            if (totalPlaced === 6) gameState.completed.ex1 = true;
+
+            const fb = document.getElementById('originFeedback');
+            if (correct === 6) {
+                playSound('success');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🌱 Parfait ! 6/6 aliments bien classés dans leur origine.";
+            } else {
+                playSound('error');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${correct}/6 corrects. Reclasse les éléments en rouge.`;
+            }
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 2 : VRAI OU FAUX
+        // ==========================================
+        const vf2Answers = {
+            1: { expected: true, expl: "Vrai ! L'eau et le sel ne proviennent ni des plantes ni des animaux : ils sont d'origine minérale." },
+            2: { expected: false, expl: "Faux ! Le climat en France ne le permet pas : le café et les bananes sont importés des pays tropicaux." },
+            3: { expected: true, expl: "Vrai ! Le lait de vache est transformé en usine pour donner yaourts, beurre et fromages." },
+            4: { expected: true, expl: "Vrai ! Le circuit court compte 0 ou 1 seul intermédiaire entre le producteur et le consommateur." }
+        };
+        const vf2UserAnswers = { 1: null, 2: null, 3: null, 4: null };
+
+        function answerVF2(qNum, choice, btn) {
+            const row = document.getElementById(`vf2-row-${qNum}`);
+            const fb = row.querySelector('.feedback-msg');
+            const btns = row.querySelectorAll('.vf2-btn');
+
+            btns.forEach(b => b.className = "vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-slate-500 transition");
+
+            const isCorrect = (choice === vf2Answers[qNum].expected);
+            vf2UserAnswers[qNum] = isCorrect;
+
+            if (isCorrect) {
+                playSound('success');
+                btn.className = "vf2-btn px-5 py-2 rounded-xl bg-emerald-500 text-white border-2 border-emerald-600 font-black text-sm shadow";
+                fb.className = "feedback-msg text-xs font-bold mt-2.5 text-emerald-700 block";
+                fb.innerHTML = `✅ Bravo ! ${vf2Answers[qNum].expl}`;
+            } else {
+                playSound('error');
+                btn.className = "vf2-btn px-5 py-2 rounded-xl bg-rose-500 text-white border-2 border-rose-600 font-black text-sm shadow";
+                fb.className = "feedback-msg text-xs font-bold mt-2.5 text-rose-700 block";
+                fb.innerHTML = `❌ Erreur : ${vf2Answers[qNum].expl}`;
+            }
+
+            let score = 0, answeredCount = 0;
+            for (let k = 1; k <= 4; k++) {
+                if (vf2UserAnswers[k] !== null) answeredCount++;
+                if (vf2UserAnswers[k] === true) score++;
+            }
+            gameState.scores.ex2 = score;
+            if (answeredCount === 4) gameState.completed.ex2 = true;
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 3 : QCM PRODUITS IMPORTÉS
+        // ==========================================
+        const qcm3States = { 1: false, 2: false };
+
+        function answerQCM3(qNum, isCorrect, btn) {
+            const container = document.getElementById(`qcm3-box-${qNum}`);
+            const allBtns = container.querySelectorAll('.qcm3-opt');
+            const fb = container.querySelector('.qcm3-feedback');
+
+            allBtns.forEach(b => b.className = "qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition");
+
+            if (isCorrect) {
+                playSound('success');
+                btn.className = "qcm3-opt p-3.5 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl font-bold text-left shadow-sm";
+                fb.className = "qcm3-feedback text-xs font-bold mt-2 text-emerald-700 block";
+                fb.innerText = "✅ Excellente réponse !";
+                qcm3States[qNum] = true;
+            } else {
+                playSound('error');
+                btn.className = "qcm3-opt p-3.5 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl font-bold text-left shadow-sm";
+                fb.className = "qcm3-feedback text-xs font-bold mt-2 text-rose-700 block";
+                fb.innerText = "❌ Faux, relis bien la leçon sur l'importation.";
+                qcm3States[qNum] = false;
+            }
+
+            let sc = 0;
+            if (qcm3States[1]) sc += 2;
+            if (qcm3States[2]) sc += 2;
+            gameState.scores.ex3 = sc;
+            gameState.completed.ex3 = true;
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 4 : LA TRANSFORMATION
+        // ==========================================
+        let match2SelectedLeft = null;
+        let match2SelectedRight = null;
+        const matchedPairs2 = new Set();
+
+        function selectMatchCard2(btn, side, key) {
+            if (matchedPairs2.has(key)) return;
+            playSound('click');
+
+            if (side === 'left') {
+                document.querySelectorAll('#matchColLeft2 .match2-card').forEach(b => {
+                    if (!matchedPairs2.has(b.dataset.key)) b.className = "match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-bold text-left text-sm transition";
+                });
+                match2SelectedLeft = { btn, key };
+                btn.className = "match2-card w-full p-4 rounded-2xl bg-purple-100 border-2 border-purple-500 font-bold text-left text-sm transition";
+            } else {
+                document.querySelectorAll('#matchColRight2 .match2-card').forEach(b => {
+                    if (!matchedPairs2.has(b.dataset.key)) b.className = "match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-semibold text-left text-sm transition";
+                });
+                match2SelectedRight = { btn, key };
+                btn.className = "match2-card w-full p-4 rounded-2xl bg-purple-100 border-2 border-purple-500 font-semibold text-left text-sm transition";
+            }
+
+            if (match2SelectedLeft && match2SelectedRight) {
+                if (match2SelectedLeft.key === match2SelectedRight.key) {
+                    playSound('success');
+                    matchedPairs2.add(match2SelectedLeft.key);
+                    match2SelectedLeft.btn.className = "match2-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
+                    match2SelectedRight.btn.className = "match2-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
+
+                    gameState.scores.ex4 = matchedPairs2.size;
+                    if (matchedPairs2.size === 4) gameState.completed.ex4 = true;
+
+                    const fb = document.getElementById('matchFeedback2');
+                    fb.classList.remove('hidden');
+                    fb.innerText = `✨ Belle association ! (${matchedPairs2.size}/4 validés)`;
+                } else {
+                    playSound('error');
+                    const b1 = match2SelectedLeft.btn;
+                    const b2 = match2SelectedRight.btn;
+                    b1.className = "match2-card w-full p-4 rounded-2xl bg-rose-100 border-2 border-rose-400 text-rose-950 font-bold text-left text-sm";
+                    b2.className = "match2-card w-full p-4 rounded-2xl bg-rose-100 border-2 border-rose-400 text-rose-950 font-semibold text-left text-sm";
+                    setTimeout(() => {
+                        b1.className = "match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-bold text-left text-sm";
+                        b2.className = "match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-semibold text-left text-sm";
+                    }, 500);
+                }
+                match2SelectedLeft = null;
+                match2SelectedRight = null;
+                saveState();
+                updateUI();
+            }
+        }
+
+        // ==========================================
+        // DÉFI 5 : CIRCUITS COURTS & LONGS
+        // ==========================================
+        let selectedCircuitTagEl = null;
+
+        function selectCircuitTag(tag) {
+            playSound('click');
+            document.querySelectorAll('.circuit-chip').forEach(t => t.classList.remove('border-amber-600', 'bg-amber-50'));
+            selectedCircuitTagEl = tag;
+            tag.classList.add('border-amber-600', 'bg-amber-50');
+        }
+
+        function depositCircuitTag(targetCategory) {
+            if (!selectedCircuitTagEl) return;
+            playSound('click');
+            const targetContainer = document.getElementById(`drop-target-${targetCategory}`);
+            targetContainer.appendChild(selectedCircuitTagEl);
+            selectedCircuitTagEl.dataset.currentCategory = targetCategory;
+            selectedCircuitTagEl.classList.remove('border-amber-600', 'bg-amber-50');
+            selectedCircuitTagEl = null;
+        }
+
+        function verifyCircuitExercise() {
+            const tags = document.querySelectorAll('.circuit-chip');
+            let correct = 0, totalPlaced = 0;
+
+            tags.forEach(t => {
+                const current = t.dataset.currentCategory;
+                const expected = t.dataset.category;
+                if (current) {
+                    totalPlaced++;
+                    if (current === expected) {
+                        correct++;
+                        t.className = "circuit-chip px-3.5 py-2 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl text-xs sm:text-sm font-bold shadow-sm";
+                    } else {
+                        t.className = "circuit-chip px-3.5 py-2 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl text-xs sm:text-sm font-bold shadow-sm";
+                    }
+                }
+            });
+
+            gameState.scores.ex5 = correct;
+            if (totalPlaced === 4) gameState.completed.ex5 = true;
+
+            const fb = document.getElementById('circuitFeedback');
+            if (correct === 4) {
+                playSound('success');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🛒 Bravo ! Les circuits de distribution sont parfaitement compris.";
+            } else {
+                playSound('error');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${correct}/4 bien placés. Reclasse les étiquettes en rouge.`;
+            }
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 6 : TEXTE À TROUS (SYNTHÈSE)
+        // ==========================================
+        let selectedChip2 = null;
+
+        function pickWord2(chip) {
+            if (chip.classList.contains('opacity-30')) return;
+            playSound('click');
+            document.querySelectorAll('.cloze2-chip').forEach(c => c.classList.remove('border-rose-700', 'bg-rose-100'));
+            selectedChip2 = chip;
+            chip.classList.add('border-rose-700', 'bg-rose-100');
+        }
+
+        function dropWord2(slot) {
+            playSound('click');
+            if (!selectedChip2) {
+                if (slot.dataset.currentWord) {
+                    const w = slot.dataset.currentWord;
+                    const c = document.querySelector(`.cloze2-chip[data-word="${w}"]`);
+                    if (c) c.classList.remove('opacity-30', 'pointer-events-none');
+                    delete slot.dataset.currentWord;
+                    slot.innerText = "... ? ...";
+                    slot.className = "cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-rose-400 bg-white text-rose-900 font-bold rounded-xl cursor-pointer min-w-[120px] transition";
+                }
+                return;
+            }
+
+            if (slot.dataset.currentWord) {
+                const prev = slot.dataset.currentWord;
+                const prevChip = document.querySelector(`.cloze2-chip[data-word="${prev}"]`);
+                if (prevChip) prevChip.classList.remove('opacity-30', 'pointer-events-none');
+            }
+
+            const word = selectedChip2.dataset.word;
+            slot.dataset.currentWord = word;
+            slot.innerText = word;
+            slot.className = "cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-rose-600 bg-rose-600 text-white font-bold rounded-xl cursor-pointer min-w-[120px] shadow-sm";
+
+            selectedChip2.classList.add('opacity-30', 'pointer-events-none');
+            selectedChip2.classList.remove('border-rose-700', 'bg-rose-100');
+            selectedChip2 = null;
+        }
+
+        function verifyCloze2() {
+            const slots = document.querySelectorAll('.cloze2-slot');
+            let score = 0, full = true;
+
+            slots.forEach(slot => {
+                const word = slot.dataset.currentWord;
+                const expected = slot.dataset.expected;
+                if (!word) full = false;
+
+                if (word === expected) {
+                    score++;
+                    slot.className = "cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-emerald-500 bg-emerald-100 text-emerald-950 font-bold rounded-xl";
+                } else {
+                    slot.className = "cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-rose-500 bg-rose-100 text-rose-950 font-bold rounded-xl";
+                }
+            });
+
+            gameState.scores.ex6 = score;
+            if (full) gameState.completed.ex6 = true;
+
+            const fb = document.getElementById('clozeFeedback2');
+            if (score === 4) {
+                playSound('success');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🎉 Félicitations ! Synthèse de la Leçon 2 validée à 100%.";
+            } else {
+                playSound('error');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${score}/4 corrects. Clique sur les cases rouges pour modifier.`;
+            }
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // RÉINITIALISATIONS
+        // ==========================================
+        function resetExercise(num) {
+            playSound('click');
+            if (num === 1) {
+                const origin = document.getElementById('originPool');
+                document.querySelectorAll('.origin-chip').forEach(t => {
+                    delete t.dataset.currentCategory;
+                    t.className = "origin-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-emerald-500 transition";
+                    origin.appendChild(t);
+                });
+                document.getElementById('originFeedback').innerText = "";
+                gameState.scores.ex1 = 0;
+                gameState.completed.ex1 = false;
+            } else if (num === 2) {
+                for (let k = 1; k <= 4; k++) {
+                    vf2UserAnswers[k] = null;
+                    const r = document.getElementById(`vf2-row-${k}`);
+                    r.querySelector('.feedback-msg').classList.add('hidden');
+                    r.querySelectorAll('.vf2-btn').forEach(b => {
+                        b.className = "vf2-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-slate-500 transition";
+                    });
+                }
+                gameState.scores.ex2 = 0;
+                gameState.completed.ex2 = false;
+            } else if (num === 3) {
+                qcm3States[1] = false;
+                qcm3States[2] = false;
+                document.querySelectorAll('.qcm3-opt').forEach(b => {
+                    b.className = "qcm3-opt p-3.5 bg-white border-2 border-slate-200 hover:border-sky-400 rounded-xl font-bold text-left transition";
+                });
+                document.querySelectorAll('.qcm3-feedback').forEach(fb => fb.classList.add('hidden'));
+                gameState.scores.ex3 = 0;
+                gameState.completed.ex3 = false;
+            } else if (num === 4) {
+                matchedPairs2.clear();
+                document.querySelectorAll('#matchGameGrid2 .match2-card').forEach(b => {
+                    b.className = "match2-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 font-bold text-left text-sm transition";
+                });
+                document.getElementById('matchFeedback2').classList.add('hidden');
+                gameState.scores.ex4 = 0;
+                gameState.completed.ex4 = false;
+            } else if (num === 5) {
+                const origin = document.getElementById('circuitOriginPool');
+                document.querySelectorAll('.circuit-chip').forEach(t => {
+                    delete t.dataset.currentCategory;
+                    t.className = "circuit-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-amber-400 transition";
+                    origin.appendChild(t);
+                });
+                document.getElementById('circuitFeedback').innerText = "";
+                gameState.scores.ex5 = 0;
+                gameState.completed.ex5 = false;
+            } else if (num === 6) {
+                document.querySelectorAll('.cloze2-slot').forEach(s => {
+                    delete s.dataset.currentWord;
+                    s.innerText = "... ? ...";
+                    s.className = "cloze2-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-rose-400 bg-white text-rose-900 font-bold rounded-xl cursor-pointer min-w-[120px] transition";
+                });
+                document.querySelectorAll('.cloze2-chip').forEach(c => {
+                    c.classList.remove('opacity-30', 'pointer-events-none', 'border-rose-700', 'bg-rose-100');
+                });
+                document.getElementById('clozeFeedback2').innerText = "";
+                gameState.scores.ex6 = 0;
+                gameState.completed.ex6 = false;
+            }
+            saveState();
+            updateUI();
+        }
+
+        function resetWholeGame() {
+            if (confirm("Réinitialiser tous les scores et trophées de la Leçon 2 ?")) {
+                localStorage.removeItem('geo_food_lesson2_save');
+                window.location.reload();
+            }
+        }
+
+        // ==========================================
+        // CONFETTIS ANIMATION
+        // ==========================================
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#16A34A', '#F59E0B', '#0284C7', '#9333EA', '#F43F5E'];
+
+            for (let i = 0; i < 90; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 9 + 4,
+                    h: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: (Math.random() - 0.7) * 16,
+                    gravity: 0.28,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+
+            let frames = 0;
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.rot += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+
+                frames++;
+                if (frames < 100) requestAnimationFrame(render);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            render();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+        });
+
+        // Gestion de la modale de zoom et fallback image
+        function toggleImageModal(show) {
+            const modal = document.getElementById('imageModal');
+            if (!modal) return;
+            if (show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function handleLessonImageError(imgEl) {
+            const fallback = document.getElementById('imageFallbackMessage');
+            if (fallback) fallback.classList.remove('hidden');
+            imgEl.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

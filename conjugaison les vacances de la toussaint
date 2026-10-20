@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Défi Conjugaison - Le Présent de l'Indicatif</title>
+    <!-- Tailwind CSS pour un design moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Polices adaptées à la lecture scolaire -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+        .screen-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+        }
+        .screen-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes bounce-short {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-bounce-short {
+            animation: bounce-short 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-200">
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- EN-TÊTE PRINCIPAL -->
+    <header class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-3">
+            <button onclick="goToHome()" class="flex items-center gap-3 text-left group">
+                <span class="text-3xl p-2 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">⚡</span>
+                <div>
+                    <span class="text-xs uppercase font-extrabold tracking-wider bg-black/20 text-indigo-100 px-2.5 py-0.5 rounded-full">Français • Conjugaison</span>
+                    <h1 class="text-lg sm:text-2xl font-black font-heading tracking-tight leading-tight mt-0.5">
+                        Le Présent de l'Indicatif
+                    </h1>
+                </div>
+            </button>
+            <div class="flex items-center gap-2">
+                <button id="soundToggle" onclick="toggleAudio()" title="Activer/Couper le son" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition">
+                    🔊
+                </button>
+                <button onclick="goToHome()" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition">
+                    <span>🏠</span> <span class="hidden sm:inline">Accueil</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEUR DES ÉCRANS -->
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 1 : ACCUEIL ET SÉLECTION                          -->
+        <!-- ======================================================== -->
+        <section id="screen-home" class="screen-view active space-y-6">
+            
+            <!-- Bannière d'accueil -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-800 text-white p-6 sm:p-8 shadow-xl border border-white/10">
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-xs font-black tracking-wide text-indigo-100">
+                        <span>🎯</span> ENTRAÎNEMENT PERSONNALISÉ
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold font-heading leading-tight">
+                        Maîtrise les 11 verbes incontournables !
+                    </h2>
+                    <p class="text-indigo-100 text-sm sm:text-base font-medium">
+                        Choisis ton mode d'entraînement, coche les verbes que tu souhaites réviser et relève le défi.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Choix du Mode d'Exercice -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-4">
+                <h3 class="text-lg font-black font-heading text-slate-800 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-bold">1</span>
+                    Choisis le type d'exercice :
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="modesContainer">
+                    <button type="button" onclick="selectMode(1)" id="mode-btn-1" class="mode-card p-4 rounded-2xl border-2 border-indigo-600 bg-indigo-50/70 text-left transition relative">
+                        <div class="text-2xl mb-1">🔢</div>
+                        <div class="font-extrabold text-slate-900 text-base">Dans l'ordre</div>
+                        <p class="text-xs text-slate-600 mt-1">De <em>je</em> à <em>ils/elles</em> de façon méthodique.</p>
+                        <span class="active-badge absolute top-3 right-3 text-xs bg-indigo-600 text-white font-black px-2 py-0.5 rounded-full">Actif</span>
+                    </button>
+
+                    <button type="button" onclick="selectMode(2)" id="mode-btn-2" class="mode-card p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition relative">
+                        <div class="text-2xl mb-1">🎲</div>
+                        <div class="font-extrabold text-slate-900 text-base">Dans le désordre</div>
+                        <p class="text-xs text-slate-600 mt-1">Pronoms et verbes mélangés pour tester tes réflexes.</p>
+                        <span class="active-badge hidden absolute top-3 right-3 text-xs bg-indigo-600 text-white font-black px-2 py-0.5 rounded-full">Actif</span>
+                    </button>
+
+                    <button type="button" onclick="selectMode(3)" id="mode-btn-3" class="mode-card p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition relative">
+                        <div class="text-2xl mb-1">💬</div>
+                        <div class="font-extrabold text-slate-900 text-base">Dans une phrase</div>
+                        <p class="text-xs text-slate-600 mt-1">Conjugue le verbe dans un contexte de la vie quotidienne.</p>
+                        <span class="active-badge hidden absolute top-3 right-3 text-xs bg-indigo-600 text-white font-black px-2 py-0.5 rounded-full">Actif</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Choix des Verbes -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="text-lg font-black font-heading text-slate-800 flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-bold">2</span>
+                        Sélectionne les verbes à travailler :
+                    </h3>
+                    
+                    <!-- Raccourcis de sélection -->
+                    <div class="flex items-center gap-1.5 text-xs font-bold">
+                        <button type="button" onclick="quickSelect('all')" class="px-3 py-1.5 bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-800 rounded-xl transition">
+                            Tout sélectionner
+                        </button>
+                        <button type="button" onclick="quickSelect('aux')" class="px-3 py-1.5 bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-800 rounded-xl transition">
+                            Être & Avoir
+                        </button>
+                        <button type="button" onclick="quickSelect('none')" class="px-3 py-1.5 bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 rounded-xl transition">
+                            Vider
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grille des 11 verbes -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5" id="verbsContainer">
+                    <!-- Généré dynamiquement en JS -->
+                </div>
+
+                <!-- Indicateur de calcul du nombre de questions (6 par verbe sélectionné) -->
+                <div class="p-4 bg-indigo-50/80 rounded-2xl border border-indigo-200 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+                    <div class="flex items-center gap-2 font-bold text-indigo-950">
+                        <span>ℹ️</span>
+                        <span>Règle : <strong>6 questions par verbe</strong> (une pour chaque pronom personnel : <em>je, tu, il/elle/on, nous, vous, ils/elles</em>).</span>
+                    </div>
+                    <div class="bg-indigo-600 text-white font-black px-3 py-1 rounded-xl shadow-xs">
+                        <span id="selectedCountText">2 verbes = 12 questions</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton de Démarrage -->
+            <div class="pt-2 text-center">
+                <button type="button" onclick="startExercise()" id="btnStart" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-600 hover:to-indigo-700 text-white font-black text-lg sm:text-xl font-heading rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center justify-center gap-3 mx-auto">
+                    <span>🚀</span> <span id="startBtnLabel">Commencer avec 12 questions</span>
+                </button>
+                <p id="startValidationMsg" class="hidden text-xs font-bold text-rose-600 mt-2">
+                    ⚠️ Veuillez sélectionner au moins 1 verbe pour commencer.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 2 : JEU / EXERCICE EN DIRECT                      -->
+        <!-- ======================================================== -->
+        <section id="screen-game" class="screen-view space-y-6">
+            
+            <!-- Carte d'entraînement -->
+            <div class="bg-white rounded-3xl p-6 sm:p-9 border border-slate-200 shadow-md space-y-6 relative overflow-hidden">
+                
+                <!-- Barre de progression -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-500">
+                        <div class="flex items-center gap-2">
+                            <span id="gameModeBadge" class="bg-indigo-100 text-indigo-800 px-2.5 py-0.5 rounded-full font-bold">
+                                Exercice 1 : Dans l'ordre
+                            </span>
+                            <span id="gameVerbBadge" class="bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full font-bold">
+                                Verbe ÊTRE
+                            </span>
+                        </div>
+                        <span id="gameProgressText" class="font-mono text-sm text-indigo-600 font-black">Question 1 / 12</span>
+                    </div>
+
+                    <div class="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden border border-slate-200">
+                        <div id="gameProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 rounded-full" style="width: 8%;"></div>
+                    </div>
+                </div>
+
+                <!-- Zone d'énoncé de la question -->
+                <div class="py-6 sm:py-8 text-center space-y-4 bg-slate-50 rounded-2xl border-2 border-slate-200/80 px-4">
+                    
+                    <div id="verbTargetDisplay" class="text-xs uppercase font-black tracking-widest text-indigo-600">
+                        Conjugue au présent de l'indicatif :
+                    </div>
+
+                    <!-- Enoncé principal (Pronom ou Phrase avec trou) -->
+                    <div id="questionPrompt" class="text-2xl sm:text-4xl font-extrabold text-slate-800 tracking-tight leading-relaxed">
+                        <!-- Exemple : Tu (être) -->
+                    </div>
+
+                    <!-- Champ de réponse interactif -->
+                    <div class="max-w-md mx-auto pt-2">
+                        <input 
+                            type="text" 
+                            id="answerInput" 
+                            autocomplete="off" 
+                            spellcheck="false" 
+                            autocapitalize="none"
+                            placeholder="Écris le verbe conjugué..."
+                            class="w-full text-center text-xl sm:text-2xl font-bold py-3 px-5 rounded-2xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition bg-white text-slate-900 shadow-inner"
+                        />
+                    </div>
+
+                    <!-- Clavier virtuel des accents français -->
+                    <div class="flex flex-wrap justify-center items-center gap-1.5 pt-1">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Accents :</span>
+                        <button type="button" onclick="insertAccent('é')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">é</button>
+                        <button type="button" onclick="insertAccent('è')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">è</button>
+                        <button type="button" onclick="insertAccent('ê')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">ê</button>
+                        <button type="button" onclick="insertAccent('à')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">à</button>
+                        <button type="button" onclick="insertAccent('â')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">â</button>
+                        <button type="button" onclick="insertAccent('ç')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">ç</button>
+                        <button type="button" onclick="insertAccent('î')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">î</button>
+                        <button type="button" onclick="insertAccent('ô')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">ô</button>
+                        <button type="button" onclick="insertAccent('û')" class="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 font-black text-slate-700 text-sm shadow-xs transition">û</button>
+                    </div>
+
+                    <!-- Zone de Feedback Immédiat -->
+                    <div id="feedbackBox" class="hidden p-4 rounded-2xl border text-sm sm:text-base font-bold transition"></div>
+                </div>
+
+                <!-- Boutons d'Action -->
+                <div class="flex items-center justify-between gap-3 pt-2">
+                    <button type="button" onclick="confirmQuit()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs sm:text-sm transition">
+                        ✕ Quitter
+                    </button>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btnValidate" onclick="validateAnswer()" class="px-7 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-base rounded-2xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+                            <span>Valider</span> <span class="text-xs bg-indigo-800/60 px-2 py-0.5 rounded-lg">↵ Entrée</span>
+                        </button>
+                        <button type="button" id="btnNext" onclick="nextQuestion()" class="hidden px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-base rounded-2xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+                            <span>Suivant</span> <span>➔</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 3 : BILAN ET RÉSULTATS                            -->
+        <!-- ======================================================== -->
+        <section id="screen-results" class="screen-view space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-9 border border-slate-200 shadow-xl space-y-7">
+                
+                <!-- En-tête des résultats -->
+                <div class="text-center space-y-3 border-b border-slate-100 pb-6">
+                    <div id="resultIcon" class="text-6xl animate-bounce-short">🏆</div>
+                    <span id="resultSubtitle" class="text-xs uppercase tracking-widest font-extrabold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+                        Session Terminée !
+                    </span>
+                    <h2 id="resultTitle" class="text-2xl sm:text-4xl font-extrabold font-heading text-slate-900">
+                        Excellent travail !
+                    </h2>
+                    <p id="resultMsg" class="text-sm text-slate-600 max-w-md mx-auto">
+                        Tu as complété l'ensemble de la série avec succès.
+                    </p>
+                </div>
+
+                <!-- Cartes des Scores -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                    <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-200">
+                        <div class="text-xs font-bold text-indigo-700 uppercase">Note sur 20</div>
+                        <div id="resultScore20" class="text-3xl font-black font-heading text-indigo-900 mt-1">20 / 20</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                        <div class="text-xs font-bold text-emerald-700 uppercase">Réponses Correctes</div>
+                        <div id="resultCorrectCount" class="text-3xl font-black font-heading text-emerald-900 mt-1">12 / 12</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                        <div class="text-xs font-bold text-amber-700 uppercase">Taux de Réussite</div>
+                        <div id="resultPercent" class="text-3xl font-black font-heading text-amber-900 mt-1">100%</div>
+                    </div>
+                </div>
+
+                <!-- Trophée Débloqué -->
+                <div id="trophyContainer" class="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 flex items-center gap-4">
+                    <div id="trophyBadgeIcon" class="w-14 h-14 rounded-2xl bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-black shrink-0 shadow-sm">
+                        👑
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black uppercase text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-md">Badge Obtenu</span>
+                            <h4 id="trophyBadgeName" class="font-extrabold text-slate-900 text-base font-heading">Maître Absolu de la Conjugaison</h4>
+                        </div>
+                        <p id="trophyBadgeDesc" class="text-xs text-slate-600 mt-0.5">Un score parfait sur l'ensemble de la sélection !</p>
+                    </div>
+                </div>
+
+                <!-- Liste Récapitulative des Erreurs (si applicable) -->
+                <div id="errorsSection" class="hidden space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-extrabold text-slate-800 text-base font-heading flex items-center gap-2">
+                            <span>🔍</span> Mots à réviser (<span id="errorsCount">0</span>) :
+                        </h4>
+                        <span class="text-xs text-slate-500">Observe bien les terminaisons</span>
+                    </div>
+
+                    <div id="errorsList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- Rempli par JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Boutons d'Action Finale -->
+                <div class="flex flex-wrap items-center justify-center gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="restartSame()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        <span>🔄</span> Recommencer la même sélection
+                    </button>
+
+                    <button type="button" id="btnRetryErrors" onclick="retryOnlyErrors()" class="hidden px-5 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        <span>🎯</span> Rejouer uniquement les erreurs
+                    </button>
+
+                    <button type="button" onclick="goToHome()" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-2xl transition flex items-center gap-2">
+                        <span>⚙️</span> Changer de verbes ou d'exercice
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PIED DE PAGE -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
+        <p>⚡ <strong>Entraînement de Conjugaison au Présent</strong> • 11 verbes essentiels (être, avoir, aller, dire, faire, voir, partir, prendre, venir, vouloir, pouvoir).</p>
+    </footer>
+
+    <!-- SCRIPT DE JEU ET DONNÉES -->
+    <script>
+        // --- BASE DE DONNÉES DES 11 VERBES AU PRÉSENT ---
+        const PRONOUNS = [
+            { key: "je", label: "je / j'", display: "je" },
+            { key: "tu", label: "tu", display: "tu" },
+            { key: "il", label: "il / elle / on", display: "il" },
+            { key: "nous", label: "nous", display: "nous" },
+            { key: "vous", label: "vous", display: "vous" },
+            { key: "ils", label: "ils / elles", display: "ils" }
+        ];
+
+        const VERBS_DB = {
+            etre: {
+                id: "etre",
+                name: "être",
+                forms: { je: "suis", tu: "es", il: "est", nous: "sommes", vous: "êtes", ils: "sont" },
+                sentences: {
+                    je: "Actuellement, je ___ très attentif en classe.",
+                    tu: "Tu ___ toujours prêt pour de nouvelles aventures.",
+                    il: "Ce matin, le maître ___ ravi de notre travail.",
+                    nous: "Nous ___ heureux de partager ce moment ensemble.",
+                    vous: "Vous ___ de très bons élèves.",
+                    ils: "Les oiseaux ___ perchés sur la plus haute branche."
+                }
+            },
+            avoir: {
+                id: "avoir",
+                name: "avoir",
+                forms: { je: "ai", tu: "as", il: "a", nous: "avons", vous: "avez", ils: "ont" },
+                sentences: {
+                    je: "J'___ hâte de découvrir la surprise de ce soir.",
+                    tu: "Tu ___ une belle écriture sur ton cahier.",
+                    il: "Mon voisin ___ un nouveau vélo rouge.",
+                    nous: "Nous ___ beaucoup d'énergie pour cette journée.",
+                    vous: "Vous ___ la bonne réponse à cette question.",
+                    ils: "Les enfants ___ faim après cette longue marche."
+                }
+            },
+            aller: {
+                id: "aller",
+                name: "aller",
+                forms: { je: "vais", tu: "vas", il: "va", nous: "allons", vous: "allez", ils: "vont" },
+                sentences: {
+                    je: "Tous les matins, je ___ à l'école à pied.",
+                    tu: "Tu ___ chez le médecin cet après-midi.",
+                    il: "Le train ___ à toute allure vers la capitale.",
+                    nous: "Ce week-end, nous ___ faire un pique-nique en forêt.",
+                    vous: "Vous ___ souvent à la piscine municipale.",
+                    ils: "Ces bateaux ___ vers le grand large."
+                }
+            },
+            dire: {
+                id: "dire",
+                name: "dire",
+                forms: { je: "dis", tu: "dis", il: "dit", nous: "disons", vous: "dites", ils: "disent" },
+                sentences: {
+                    je: "Je ___ toujours la vérité à mes parents.",
+                    tu: "Tu ___ bonjour poliment aux personnes que tu croises.",
+                    il: "Le présentateur ___ les dernières nouvelles à la radio.",
+                    nous: "Nous ___ un grand merci pour ce bon repas.",
+                    vous: "Que ___ -vous de cette nouvelle proposition ?",
+                    ils: "Les témoins ___ exactement ce qu'ils ont observé."
+                }
+            },
+            faire: {
+                id: "faire",
+                name: "faire",
+                forms: { je: "fais", tu: "fais", il: "fait", nous: "faisons", vous: "faites", ils: "font" },
+                sentences: {
+                    je: "Le samedi, je ___ du sport avec mon frère.",
+                    tu: "Tu ___ attention en traversant la rue.",
+                    il: "Aujourd'hui, il ___ un soleil magnifique.",
+                    nous: "Nous ___ un gâteau au chocolat pour le goûter.",
+                    vous: "Vous ___ de gros progrès en conjugaison.",
+                    ils: "Ces enfants ___ une course dans la cour de récréation."
+                }
+            },
+            voir: {
+                id: "voir",
+                name: "voir",
+                forms: { je: "vois", tu: "vois", il: "voit", nous: "voyons", vous: "voyez", ils: "voient" },
+                sentences: {
+                    je: "De ma fenêtre, je ___ les cimes enneigées.",
+                    tu: "Tu ___ très bien sans tes lunettes aujourd'hui.",
+                    il: "Le renard ___ une proie au loin dans les champs.",
+                    nous: "Nous ___ rarement des étoiles filantes en ville.",
+                    vous: "Est-ce que vous ___ le panneau sur le bord du chemin ?",
+                    ils: "Ces deux amis se ___ chaque jour à la récréation."
+                }
+            },
+            partir: {
+                id: "partir",
+                name: "partir",
+                forms: { je: "pars", tu: "pars", il: "part", nous: "partons", vous: "partez", ils: "partent" },
+                sentences: {
+                    je: "Dès que la cloche sonne, je ___ à la maison.",
+                    tu: "Tu ___ en vacances à la mer demain matin.",
+                    il: "L'autobus ___ à huit heures précises de la place.",
+                    nous: "Nous ___ explorer le sentier de randonnée.",
+                    vous: "À quelle heure ___ -vous pour la gare ?",
+                    ils: "Les randonneurs ___ de bon matin à la fraîche."
+                }
+            },
+            prendre: {
+                id: "prendre",
+                name: "prendre",
+                forms: { je: "prends", tu: "prends", il: "prend", nous: "prenons", vous: "prenez", ils: "prennent" },
+                sentences: {
+                    je: "Chaque matin, je ___ un chocolat chaud au petit-déjeuner.",
+                    tu: "Tu ___ ton manteau car il fait froid dehors.",
+                    il: "Le photographe ___ un joli cliché du coucher de soleil.",
+                    nous: "Nous ___ le temps de bien relire nos phrases.",
+                    vous: "Vous ___ une feuille double pour l'évaluation.",
+                    ils: "Ces élèves ___ leur cartable avant de sortir."
+                }
+            },
+            venir: {
+                id: "venir",
+                name: "venir",
+                forms: { je: "viens", tu: "viens", il: "vient", nous: "venons", vous: "venez", ils: "viennent" },
+                sentences: {
+                    je: "Je ___ te voir dès que j'ai terminé mes devoirs.",
+                    tu: "Tu ___ souvent jouer dans notre jardin.",
+                    il: "Le facteur ___ déposer le courrier dans la boîte.",
+                    nous: "Nous ___ d'apprendre une excellente nouvelle.",
+                    vous: "D'où ___ -vous avec tous ces paquets ?",
+                    ils: "Mes cousins ___ passer tout le week-end chez nous."
+                }
+            },
+            vouloir: {
+                id: "vouloir",
+                name: "vouloir",
+                forms: { je: "veux", tu: "veux", il: "veut", nous: "voulons", vous: "voulez", ils: "veulent" },
+                sentences: {
+                    je: "Je ___ apprendre à bien conjuguer tous mes verbes.",
+                    tu: "Tu ___ un morceau de tarte aux pommes ?",
+                    il: "Mon petit frère ___ écouter une belle histoire.",
+                    nous: "Nous ___ réussir notre exercice avec un sans-faute.",
+                    vous: "Que ___ -vous faire pendant les vacances ?",
+                    ils: "Les supporters ___ que leur équipe remporte le match."
+                }
+            },
+            pouvoir: {
+                id: "pouvoir",
+                name: "pouvoir",
+                forms: { je: "peux", tu: "peux", il: "peut", nous: "pouvons", vous: "pouvez", ils: "peuvent" },
+                sentences: {
+                    je: "Je ___ t'aider si tu ne comprends pas la consigne.",
+                    tu: "Tu ___ courir plus vite que moi sur cette distance.",
+                    il: "Cet oiseau ___ voler à une vitesse impressionnante.",
+                    nous: "En unissant nos forces, nous ___ y arriver.",
+                    vous: "Vous ___ entrer dans la salle dès maintenant.",
+                    ils: "Ces champions ___ soulever des charges très lourdes."
+                }
+            }
+        };
+
+        const VERB_KEYS = Object.keys(VERBS_DB);
+
+        // --- ÉTAT GLOBAL DE L'APPLICATION ---
+        const appState = {
+            selectedMode: 1, // 1: dans l'ordre, 2: désordre, 3: dans une phrase
+            selectedVerbs: ["etre", "avoir"], // Sélection par défaut (2 verbes = 12 questions)
+            soundEnabled: true,
+            // En jeu
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            userMistakes: [],
+            isAnswerValidated: false
+        };
+
+        // --- GESTION DU SON (Web Audio API synthétisé) ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!appState.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'success') {
+                    // Ding mélodieux ascendant
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.15); // G5
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'error') {
+                    // Buzzer doux descendant
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(260, now);
+                    osc.frequency.linearRampToValueAtTime(160, now + 0.22);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'click') {
+                    // Petit pop de clic
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'fanfare') {
+                    // Accord triomphal
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.type = 'sine';
+                        o.frequency.setValueAtTime(freq, now + i * 0.08);
+                        g.gain.setValueAtTime(0.12, now + i * 0.08);
+                        g.gain.linearRampToValueAtTime(0.001, now + i * 0.08 + 0.35);
+                        o.start(now + i * 0.08);
+                        o.stop(now + i * 0.08 + 0.35);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudio() {
+            appState.soundEnabled = !appState.soundEnabled;
+            document.getElementById('soundToggle').innerText = appState.soundEnabled ? '🔊' : '🔇';
+        }
+
+        // --- AFFICHAGE / NAVIGATION DES ÉCRANS ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToHome() {
+            playSound('click');
+            showScreen('screen-home');
+        }
+
+        function confirmQuit() {
+            if (confirm("Veux-tu vraiment quitter cet exercice en cours ?")) {
+                goToHome();
+            }
+        }
+
+        // --- GESTION DE LA SÉLECTION D'ACCUEIL ---
+        function renderVerbsList() {
+            const container = document.getElementById('verbsContainer');
+            container.innerHTML = '';
+
+            VERB_KEYS.forEach(vKey => {
+                const verb = VERBS_DB[vKey];
+                const isSelected = appState.selectedVerbs.includes(vKey);
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = `verb-chip-${vKey}`;
+                btn.onclick = () => toggleVerb(vKey);
+
+                if (isSelected) {
+                    btn.className = "verb-chip p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-600 text-white font-extrabold text-sm sm:text-base transition transform active:scale-95 shadow-sm flex items-center justify-between";
+                    btn.innerHTML = `<span>${verb.name}</span> <span class="text-xs bg-white/25 px-1.5 py-0.5 rounded-md font-black">✓</span>`;
+                } else {
+                    btn.className = "verb-chip p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 text-slate-700 font-bold text-sm sm:text-base transition transform active:scale-95 flex items-center justify-between";
+                    btn.innerHTML = `<span>${verb.name}</span> <span class="text-xs text-slate-300 font-mono">+</span>`;
+                }
+
+                container.appendChild(btn);
+            });
+
+            updateCalculationDisplay();
+        }
+
+        function toggleVerb(vKey) {
+            playSound('click');
+            const idx = appState.selectedVerbs.indexOf(vKey);
+            if (idx > -1) {
+                appState.selectedVerbs.splice(idx, 1);
+            } else {
+                appState.selectedVerbs.push(vKey);
+            }
+            renderVerbsList();
+        }
+
+        function quickSelect(type) {
+            playSound('click');
+            if (type === 'all') {
+                appState.selectedVerbs = [...VERB_KEYS];
+            } else if (type === 'aux') {
+                appState.selectedVerbs = ["etre", "avoir"];
+            } else if (type === 'none') {
+                appState.selectedVerbs = [];
+            }
+            renderVerbsList();
+        }
+
+        function selectMode(mNum) {
+            playSound('click');
+            appState.selectedMode = mNum;
+
+            document.querySelectorAll('.mode-card').forEach((btn, i) => {
+                const badge = btn.querySelector('.active-badge');
+                if (i + 1 === mNum) {
+                    btn.className = "mode-card p-4 rounded-2xl border-2 border-indigo-600 bg-indigo-50/70 text-left transition relative";
+                    if (badge) badge.classList.remove('hidden');
+                } else {
+                    btn.className = "mode-card p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-300 text-left transition relative";
+                    if (badge) badge.classList.add('hidden');
+                }
+            });
+        }
+
+        function updateCalculationDisplay() {
+            const count = appState.selectedVerbs.length;
+            const totalQuestions = count * 6; // Règle stricte : 6 questions par verbe
+
+            const textEl = document.getElementById('selectedCountText');
+            const btnLabel = document.getElementById('startBtnLabel');
+            const validationMsg = document.getElementById('startValidationMsg');
+
+            if (count === 0) {
+                textEl.innerText = "0 verbe = 0 question";
+                btnLabel.innerText = "Sélectionne au moins 1 verbe";
+            } else {
+                textEl.innerText = `${count} verbe${count > 1 ? 's' : ''} = ${totalQuestions} questions`;
+                btnLabel.innerText = `Commencer avec ${totalQuestions} questions`;
+                validationMsg.classList.add('hidden');
+            }
+        }
+
+        // --- GÉNÉRATION DES QUESTIONS SELON LE MODE ---
+        function buildQuestionsQueue(verbsListToUse = null) {
+            const verbs = verbsListToUse || appState.selectedVerbs;
+            let questions = [];
+
+            verbs.forEach(vKey => {
+                const verb = VERBS_DB[vKey];
+                PRONOUNS.forEach(pr => {
+                    let promptHtml = "";
+                    const expectedForm = verb.forms[pr.key];
+
+                    if (appState.selectedMode === 1) {
+                        // Mode 1 : Dans l'ordre (Pronom + verbe entre parenthèses)
+                        let displayPronom = pr.display;
+                        if (pr.key === 'je' && (expectedForm.startsWith('a') || expectedForm.startsWith('e') || expectedForm.startsWith('i') || expectedForm.startsWith('o') || expectedForm.startsWith('u') || expectedForm.startsWith('é') || expectedForm.startsWith('è'))) {
+                            displayPronom = "j'";
+                        }
+                        promptHtml = `<span class="text-indigo-600">${displayPronom}</span> (${verb.name})`;
+                    } else if (appState.selectedMode === 2) {
+                        // Mode 2 : Dans le désordre
+                        let displayPronom = pr.display;
+                        if (pr.key === 'je' && (expectedForm.startsWith('a') || expectedForm.startsWith('e') || expectedForm.startsWith('i') || expectedForm.startsWith('o') || expectedForm.startsWith('u') || expectedForm.startsWith('é') || expectedForm.startsWith('è'))) {
+                            displayPronom = "j'";
+                        }
+                        promptHtml = `<span class="text-indigo-600">${displayPronom}</span> (${verb.name})`;
+                    } else if (appState.selectedMode === 3) {
+                        // Mode 3 : Dans une phrase avec trou
+                        const sentenceTemplate = verb.sentences[pr.key];
+                        promptHtml = `<span class="text-slate-500 text-sm block mb-1">Verbe (${verb.name})</span>` + sentenceTemplate.replace("___", `<span class="text-indigo-600 underline font-black tracking-normal px-2 bg-indigo-50 rounded-lg">... ? ...</span>`);
+                    }
+
+                    questions.push({
+                        verbId: vKey,
+                        verbName: verb.name,
+                        pronounKey: pr.key,
+                        pronounLabel: pr.label,
+                        expected: expectedForm,
+                        prompt: promptHtml
+                    });
+                });
+            });
+
+            // Si Mode 2 ou 3 : Mélanger aléatoirement les questions
+            if (appState.selectedMode === 2 || appState.selectedMode === 3) {
+                for (let i = questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [questions[i], questions[j]] = [questions[j], questions[i]];
+                }
+            }
+
+            return questions;
+        }
+
+        // --- DÉMARRAGE DU JEU ---
+        function startExercise(customQuestions = null) {
+            if (!customQuestions && appState.selectedVerbs.length === 0) {
+                document.getElementById('startValidationMsg').classList.remove('hidden');
+                playSound('error');
+                return;
+            }
+
+            playSound('click');
+            appState.questions = customQuestions || buildQuestionsQueue();
+            appState.currentIndex = 0;
+            appState.score = 0;
+            appState.userMistakes = [];
+            appState.isAnswerValidated = false;
+
+            // Mise à jour de l'étiquette de mode
+            const modeNames = ["", "Exercice 1 : Dans l'ordre", "Exercice 2 : Dans le désordre", "Exercice 3 : Dans une phrase"];
+            document.getElementById('gameModeBadge').innerText = modeNames[appState.selectedMode];
+
+            showScreen('screen-game');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = appState.questions[appState.currentIndex];
+            const total = appState.questions.length;
+            const currentNum = appState.currentIndex + 1;
+
+            // Barre de progression
+            const percent = Math.round((currentNum / total) * 100);
+            document.getElementById('gameProgressBar').style.width = `${percent}%`;
+            document.getElementById('gameProgressText').innerText = `Question ${currentNum} / ${total}`;
+
+            // Badge du verbe
+            document.getElementById('gameVerbBadge').innerText = `Verbe ${q.verbName.toUpperCase()}`;
+
+            // Énoncé
+            document.getElementById('questionPrompt').innerHTML = q.prompt;
+
+            // Réinitialiser le champ et les boutons
+            const input = document.getElementById('answerInput');
+            input.value = '';
+            input.disabled = false;
+            input.className = "w-full text-center text-xl sm:text-2xl font-bold py-3 px-5 rounded-2xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition bg-white text-slate-900 shadow-inner";
+
+            const fb = document.getElementById('feedbackBox');
+            fb.className = "hidden p-4 rounded-2xl border text-sm sm:text-base font-bold transition";
+            fb.innerHTML = "";
+
+            document.getElementById('btnValidate').classList.remove('hidden');
+            document.getElementById('btnNext').classList.add('hidden');
+
+            appState.isAnswerValidated = false;
+
+            // Autofocus
+            setTimeout(() => {
+                input.focus();
+            }, 50);
+        }
+
+        // Insertion d'accents
+        function insertAccent(char) {
+            playSound('click');
+            const input = document.getElementById('answerInput');
+            if (input.disabled) return;
+            const start = input.selectionStart || input.value.length;
+            const end = input.selectionEnd || input.value.length;
+            const val = input.value;
+            input.value = val.substring(0, start) + char + val.substring(end);
+            input.focus();
+            input.setSelectionRange(start + 1, start + 1);
+        }
+
+        // --- VALIDATION DE LA RÉPONSE ---
+        function cleanString(str) {
+            return (str || "").trim().toLowerCase();
+        }
+
+        function validateAnswer() {
+            if (appState.isAnswerValidated) return;
+
+            const input = document.getElementById('answerInput');
+            const userAns = cleanString(input.value);
+
+            if (!userAns) {
+                // Petite secousse visuelle
+                input.classList.add('border-rose-400');
+                setTimeout(() => input.classList.remove('border-rose-400'), 400);
+                return;
+            }
+
+            appState.isAnswerValidated = true;
+            input.disabled = true;
+
+            const q = appState.questions[appState.currentIndex];
+            const expected = cleanString(q.expected);
+            const isCorrect = (userAns === expected);
+
+            const fb = document.getElementById('feedbackBox');
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('success');
+                appState.score++;
+                input.className = "w-full text-center text-xl sm:text-2xl font-black py-3 px-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 shadow-inner";
+                fb.className = "p-4 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-sm sm:text-base font-extrabold flex items-center justify-center gap-2";
+                fb.innerHTML = `<span>🎉</span> <span>Bravo ! C'est exactement <strong>${q.expected}</strong>.</span>`;
+            } else {
+                playSound('error');
+                input.className = "w-full text-center text-xl sm:text-2xl font-black py-3 px-5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-900 shadow-inner";
+                fb.className = "p-4 rounded-2xl border border-rose-300 bg-rose-50 text-rose-950 text-sm sm:text-base font-extrabold flex flex-col items-center justify-center gap-1";
+                fb.innerHTML = `
+                    <div class="flex items-center gap-1.5 text-rose-700">
+                        <span>❌</span> <span>Pas tout à fait !</span>
+                    </div>
+                    <div>
+                        La bonne réponse est : <span class="underline text-emerald-700 text-lg sm:text-xl font-black">${q.expected}</span>
+                        <span class="text-xs font-normal text-slate-600 block">(Tu avais écrit : "${userAns}")</span>
+                    </div>
+                `;
+
+                // Enregistrement de l'erreur pour le bilan
+                appState.userMistakes.push({
+                    verbName: q.verbName,
+                    pronounLabel: q.pronounLabel,
+                    expected: q.expected,
+                    userTyped: userAns
+                });
+            }
+
+            document.getElementById('btnValidate').classList.add('hidden');
+            document.getElementById('btnNext').classList.remove('hidden');
+            document.getElementById('btnNext').focus();
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            appState.currentIndex++;
+            if (appState.currentIndex < appState.questions.length) {
+                loadQuestion();
+            } else {
+                finishExercise();
+            }
+        }
+
+        // Raccourci Clavier Entrée
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const gameScreen = document.getElementById('screen-game');
+                if (gameScreen && gameScreen.classList.contains('active')) {
+                    if (!appState.isAnswerValidated) {
+                        validateAnswer();
+                    } else {
+                        nextQuestion();
+                    }
+                }
+            }
+        });
+
+        // --- BILAN ET RÉSULTATS ---
+        function finishExercise() {
+            showScreen('screen-results');
+
+            const total = appState.questions.length;
+            const score = appState.score;
+            const percent = Math.round((score / total) * 100);
+            const note20 = ((score / total) * 20).toFixed(1).replace('.0', '');
+
+            document.getElementById('resultScore20').innerText = `${note20} / 20`;
+            document.getElementById('resultCorrectCount').innerText = `${score} / ${total}`;
+            document.getElementById('resultPercent').innerText = `${percent}%`;
+
+            const iconEl = document.getElementById('resultIcon');
+            const titleEl = document.getElementById('resultTitle');
+            const msgEl = document.getElementById('resultMsg');
+            const trophyIcon = document.getElementById('trophyBadgeIcon');
+            const trophyName = document.getElementById('trophyBadgeName');
+            const trophyDesc = document.getElementById('trophyBadgeDesc');
+
+            if (percent === 100) {
+                playSound('fanfare');
+                launchConfetti();
+                iconEl.innerText = "👑";
+                titleEl.innerText = "Sans-Faute Parfait !";
+                msgEl.innerText = "Quelle maîtrise impressionnante de la conjugaison au présent !";
+                trophyIcon.innerText = "🏆";
+                trophyName.innerText = "Grand Maître du Présent";
+                trophyDesc.innerText = `100% de réussite sur les ${total} questions. Respect !`;
+            } else if (percent >= 80) {
+                playSound('fanfare');
+                launchConfetti();
+                iconEl.innerText = "⭐";
+                titleEl.innerText = "Très Bon Travail !";
+                msgEl.innerText = "Tu as une excellente connaissance de ces verbes essentiels.";
+                trophyIcon.innerText = "🥇";
+                trophyName.innerText = "Conjugueur Émérite";
+                trophyDesc.innerText = `Note de ${note20}/20 : presque un sans-faute !`;
+            } else if (percent >= 50) {
+                playSound('click');
+                iconEl.innerText = "🌱";
+                titleEl.innerText = "Bon Début !";
+                msgEl.innerText = "La plupart des formes sont comprises, continue de t'entraîner.";
+                trophyIcon.innerText = "🥈";
+                trophyName.innerText = "Apprenti Conjugueur";
+                trophyDesc.innerText = "Encore un peu d'entraînement pour atteindre les sommets.";
+            } else {
+                playSound('error');
+                iconEl.innerText = "💪";
+                titleEl.innerText = "Garde Courage !";
+                msgEl.innerText = "Ces verbes ont souvent des irrégularités. Prends le temps de réviser les erreurs ci-dessous.";
+                trophyIcon.innerText = "🥉";
+                trophyName.innerText = "Persévérant";
+                trophyDesc.innerText = "La répétition est la clé de la réussite en conjugaison.";
+            }
+
+            // Gestion de la section des erreurs
+            const errorsSec = document.getElementById('errorsSection');
+            const errorsList = document.getElementById('errorsList');
+            const btnRetryErr = document.getElementById('btnRetryErrors');
+
+            if (appState.userMistakes.length > 0) {
+                errorsSec.classList.remove('hidden');
+                btnRetryErr.classList.remove('hidden');
+                document.getElementById('errorsCount').innerText = appState.userMistakes.length;
+
+                errorsList.innerHTML = appState.userMistakes.map(m => `
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                        <div>
+                            <span class="font-extrabold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md text-xs uppercase mr-1">${m.verbName}</span>
+                            <span class="font-bold text-slate-800">${m.pronounLabel}</span> :
+                            <span class="line-through text-rose-500 font-semibold ml-1">"${m.userTyped}"</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-500 mr-1">Attendu :</span>
+                            <span class="text-emerald-700 font-black text-sm bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">${m.expected}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                errorsSec.classList.add('hidden');
+                btnRetryErr.classList.add('hidden');
+            }
+        }
+
+        function restartSame() {
+            playSound('click');
+            startExercise();
+        }
+
+        function retryOnlyErrors() {
+            if (appState.userMistakes.length === 0) return;
+            playSound('click');
+
+            // Recréer la liste des questions contenant uniquement les erreurs commises
+            const mistakeQuestions = appState.userMistakes.map(m => {
+                const verb = VERBS_DB[m.verbName];
+                let promptHtml = "";
+                if (appState.selectedMode === 3) {
+                    promptHtml = `<span class="text-slate-500 text-sm block mb-1">Verbe (${verb.name})</span>` + verb.sentences[m.pronounKey || 'je']?.replace("___", `<span class="text-indigo-600 underline font-black tracking-normal px-2 bg-indigo-50 rounded-lg">... ? ...</span>`) || `${m.pronounLabel} (${verb.name})`;
+                } else {
+                    promptHtml = `<span class="text-indigo-600">${m.pronounLabel}</span> (${verb.name})`;
+                }
+                return {
+                    verbId: m.verbName,
+                    verbName: m.verbName,
+                    pronounKey: m.pronounKey || 'je',
+                    pronounLabel: m.pronounLabel,
+                    expected: m.expected,
+                    prompt: promptHtml
+                };
+            });
+
+            startExercise(mistakeQuestions);
+        }
+
+        // --- ANIMATION CONFETTIS (CANVAS AUTONOME) ---
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#3b82f6', '#8b5cf6'];
+
+            for (let i = 0; i < 90; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 8 + 4,
+                    h: Math.random() * 6 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: (Math.random() - 0.7) * 16,
+                    gravity: 0.28,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 8
+                });
+            }
+
+            let frames = 0;
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.rot += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+
+                frames++;
+                if (frames < 90) requestAnimationFrame(render);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            render();
+        }
+
+        // --- INITIALISATION AU CHARGEMENT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderVerbsList();
+        });
+    </script>
+</body>
+</html>

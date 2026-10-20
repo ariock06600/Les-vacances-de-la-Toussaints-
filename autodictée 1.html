@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodictée : La confiture de Berbéranza</title>
+    <!-- Tailwind CSS pour un rendu soigné -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts : Fredoka (chaleureuse), Patrick Hand (écriture cahier) et Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --seyes-sub: rgba(186, 215, 233, 0.45);
+            --seyes-main: rgba(94, 153, 196, 0.7);
+            --seyes-margin: rgba(239, 68, 68, 0.4);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        .font-school {
+            font-family: 'Patrick Hand', cursive, sans-serif;
+        }
+
+        .font-title {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        /* Texture Réglure de Cahier d'écolier */
+        .seyes-paper {
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(to right, transparent 58px, var(--seyes-margin) 58px, var(--seyes-margin) 60px, transparent 60px),
+                repeating-linear-gradient(to bottom, var(--seyes-main) 0px, var(--seyes-main) 2px, transparent 2px, transparent 32px),
+                repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, var(--seyes-sub) 7px, var(--seyes-sub) 8px, transparent 8px, transparent 15px, var(--seyes-sub) 15px, var(--seyes-sub) 16px, transparent 16px, transparent 23px, var(--seyes-sub) 23px, var(--seyes-sub) 24px, transparent 24px, transparent 32px);
+            background-size: 100% 100%, 100% 32px, 100% 32px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Onglet Actif */
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+            transform: translateY(-2px);
+        }
+
+        /* Masquage des sections non actives */
+        .exercise-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+        }
+        .exercise-section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Animation pulsation pour les boutons audio */
+        @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+        .animate-speaking {
+            animation: pulse-subtle 1.2s infinite ease-in-out;
+            background-color: #fef08a !important;
+            border-color: #eab308 !important;
+        }
+
+        /* Animation confettis plein écran */
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased selection:bg-amber-200">
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- EN-TÊTE PRINCIPAL DE L'APPLICATION -->
+    <header class="bg-gradient-to-r from-sky-600 via-indigo-600 to-violet-700 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-3">
+                <span class="text-3xl p-2 bg-white/20 rounded-2xl shadow-inner backdrop-blur-sm">📚</span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider bg-amber-400 text-amber-950 px-2.5 py-0.5 rounded-full">
+                            Autodictée de rentrée • Lundi 2 nov.
+                        </span>
+                        <span id="starRatingBadge" class="hidden sm:inline-flex items-center gap-1 text-xs font-black text-amber-300 bg-black/20 px-2 py-0.5 rounded-full">
+                            ⭐ <span id="starCount">0</span> étoiles
+                        </span>
+                    </div>
+                    <h1 class="text-lg sm:text-2xl font-black font-title tracking-tight leading-tight mt-0.5">
+                        La confiture de Berbéranza
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Barre de Contrôle Audio Globale & Bruitages -->
+            <div class="flex items-center gap-2">
+                <div class="flex items-center bg-white/10 backdrop-blur-md rounded-2xl p-1 border border-white/20">
+                    <button id="btnPlayAll" onclick="playGlobalAudio()" title="Écouter le texte complet" class="px-3 py-1.5 rounded-xl hover:bg-white/20 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition">
+                        <span>🔊</span> <span class="hidden md:inline">Écouter la dictée</span>
+                    </button>
+                    <button id="btnPauseAudio" onclick="pauseAudio()" title="Pause / Reprendre" class="px-2 py-1.5 rounded-xl hover:bg-white/20 text-white font-bold text-xs transition">
+                        ⏸️
+                    </button>
+                    <button id="btnStopAudio" onclick="stopAudio()" title="Arrêter" class="px-2 py-1.5 rounded-xl hover:bg-white/20 text-white font-bold text-xs transition">
+                        ⏹️
+                    </button>
+                </div>
+
+                <!-- Réglage vitesse -->
+                <select id="audioSpeedSelect" onchange="updateAudioRate()" class="bg-white/10 border border-white/20 text-white text-xs rounded-xl px-2 py-2 focus:ring-2 focus:ring-amber-300 font-bold outline-none cursor-pointer">
+                    <option value="0.75" class="text-slate-800">Lent (0.75x)</option>
+                    <option value="0.9" selected class="text-slate-800">Rythme enfant (0.9x)</option>
+                    <option value="1.0" class="text-slate-800">Normal (1.0x)</option>
+                </select>
+
+                <!-- Bouton muet -->
+                <button id="toggleSoundFX" onclick="toggleAudioFX()" title="Activer/Désactiver les bruitages" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition text-sm">
+                    🔔
+                </button>
+            </div>
+        </div>
+
+        <!-- BARRE DE NAVIGATION DES 4 EXERCICES -->
+        <div class="max-w-6xl mx-auto px-4 pb-2 pt-1 flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <button onclick="switchTab(1)" id="tab-1" class="tab-btn active px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold shrink-0 transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white">
+                <span>✍️ 1. Recopier le modèle</span>
+            </button>
+            <button onclick="switchTab(2)" id="tab-2" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold shrink-0 transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white">
+                <span>🎯 2. Dictée à trous personnalisée</span>
+            </button>
+            <button onclick="switchTab(3)" id="tab-3" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold shrink-0 transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white">
+                <span>📏 3. Écrire avec les tirets</span>
+            </button>
+            <button onclick="switchTab(4)" id="tab-4" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold shrink-0 transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white">
+                <span>🧠 4. Sans aide (De mémoire)</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+        <!-- ======================================================== -->
+        <!-- EXERCICE 1 : RECOPIER LE MODÈLE                          -->
+        <!-- ======================================================== -->
+        <section id="exercise-1" class="exercise-section active space-y-6">
+            
+            <!-- Carte Modèle avec points de vigilance orthographiques -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden">
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-black uppercase tracking-wider text-sky-700 bg-sky-100 px-3 py-1 rounded-full">Étape 1 • Observation et mémorisation</span>
+                        <h2 class="text-2xl font-black font-title text-slate-800 mt-1">Le Modèle Sous les Yeux</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="speakSentence(FULL_TEXT)" class="px-3.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs border border-sky-200 flex items-center gap-1.5 transition">
+                            <span>🔊</span> Écouter le texte
+                        </button>
+                        <button onclick="toggleHighlightDifficulties()" id="btnHighlight" class="px-3.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-300 flex items-center gap-1.5 transition">
+                            <span>🔍</span> Pièges & Accents
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Texte modèle dans le cahier -->
+                <div class="mt-4 p-6 sm:p-8 seyes-paper rounded-2xl border border-slate-300 text-slate-800 text-lg sm:text-2xl leading-[32px] font-school select-none">
+                    <p id="modelDisplay">
+                        Regardez autour de vous, les arbres, le ciel, les cailloux, les rivières, les insectes, vos animaux de compagnie, les astres, ce qu'il y a dans votre assiette, même ! Tout ! Tout ce qui vous procure une sensation, vous émerveille, vous fait rire, vous met des gargouillis dans le ventre ou des fourmis dans les jambes. Cultivez vos petits plaisirs (...)
+                    </p>
+                    <div class="mt-4 pt-2 text-right text-xs sm:text-sm font-sans font-bold text-slate-500 italic">
+                        — Extrait de « La confiture de Berbéranza » de Florence Médina
+                    </div>
+                </div>
+
+                <!-- Légende des difficultés -->
+                <div id="difficultyLegend" class="hidden mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs sm:text-sm text-amber-900 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div><span class="font-black text-rose-600 font-mono">cailloux, animaux</span> : pluriels particuliers en -x.</div>
+                    <div><span class="font-black text-indigo-600 font-mono">Regardez, Cultivez</span> : impératif pluriel en -ez.</div>
+                    <div><span class="font-black text-emerald-700 font-mono">émerveille, gargouillis</span> : lettres doubles (ll) & -is.</div>
+                </div>
+            </div>
+
+            <!-- Espace de Recopie -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold font-title text-slate-800 flex items-center gap-2">
+                        <span>✏️</span> À ton tour de recopier fidèlement :
+                    </h3>
+                    <span id="copyStats" class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                        0 / 59 mots
+                    </span>
+                </div>
+
+                <div class="relative">
+                    <textarea 
+                        id="copyInput" 
+                        rows="5" 
+                        oninput="checkCopyProgress()"
+                        placeholder="Clique ici et commence à recopier le texte mot à mot, sans oublier les majuscules, les accents et la ponctuation..."
+                        class="w-full p-5 rounded-2xl border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 font-school text-xl sm:text-2xl text-slate-800 placeholder:font-sans placeholder:text-sm placeholder:text-slate-400 outline-none transition leading-relaxed"
+                    ></textarea>
+                </div>
+
+                <!-- Feedback interactif de comparaison -->
+                <div id="copyFeedback" class="hidden p-4 rounded-2xl border text-sm font-semibold space-y-2"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center gap-2">
+                        <button onclick="verifyCopy(true)" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-black text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+                            <span>✅</span> Vérifier ma copie
+                        </button>
+                        <button onclick="clearCopyInput()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm rounded-2xl transition">
+                            Effacer
+                        </button>
+                    </div>
+
+                    <button onclick="switchTab(2)" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        Passer à l'Exercice 2 : Dictée à trous ➡️
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- EXERCICE 2 : DICTÉE À TROUS PERSONNALISÉE                -->
+        <!-- ======================================================== -->
+        <section id="exercise-2" class="exercise-section space-y-6">
+
+            <!-- BANDEAU DE COMMUTATION PARENT / ENFANT -->
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-5 text-white shadow-md flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl p-2 bg-white/20 rounded-2xl">👨‍👩‍👧</span>
+                    <div>
+                        <span class="text-xs uppercase font-black tracking-widest text-amber-100 bg-black/15 px-2.5 py-0.5 rounded-full">Outil Pédagogique Collaboratif</span>
+                        <h2 class="text-xl sm:text-2xl font-black font-title">Dictée à trous personnalisable</h2>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl backdrop-blur-sm">
+                    <button onclick="setClozeSubMode('parent')" id="btnClozeParent" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition bg-white text-slate-800 shadow">
+                        ⚙️ Espace Parents (Préparer)
+                    </button>
+                    <button onclick="setClozeSubMode('child')" id="btnClozeChild" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition text-white hover:bg-white/10">
+                        🎒 Espace Enfant (S'entraîner)
+                    </button>
+                </div>
+            </div>
+
+            <!-- SOUS-VUE A : MODE PRÉPARATION PARENTS -->
+            <div id="clozeParentView" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <h3 class="text-lg sm:text-xl font-bold font-title text-slate-800 flex items-center gap-2">
+                            <span>🛠️</span> Sélectionnez les mots à masquer pour votre enfant :
+                        </h3>
+                        <div class="flex items-center gap-2 font-mono text-xs font-bold bg-slate-100 px-3.5 py-1.5 rounded-xl border border-slate-200">
+                            <span>Total : <strong class="text-slate-800" id="parentTotalWords">59</strong> mots</span>
+                            <span>•</span>
+                            <span class="text-amber-700">✏️ <strong id="parentBlankCount">0</strong> trou(s)</span>
+                            <span>•</span>
+                            <span class="text-emerald-700">👁️ <strong id="parentVisibleCount">59</strong> visibles</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Cliquez directement sur un mot pour le basculer en <strong>Trou à compléter</strong> (orange) ou le laisser <strong>Visible</strong> (vert/bleu). Vous pouvez aussi utiliser les réglages express ci-dessous.
+                    </p>
+                </div>
+
+                <!-- Boutons de préréglages rapides -->
+                <div class="flex flex-wrap items-center gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                    <span class="text-xs font-extrabold text-slate-600 uppercase tracking-wider mr-1">Préréglages :</span>
+                    <button onclick="applyClozePreset('difficult')" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-black rounded-xl border border-amber-300 transition">
+                        🎯 Mots clés difficiles (11)
+                    </button>
+                    <button onclick="applyClozePreset('third')" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition">
+                        🔢 1 mot sur 3
+                    </button>
+                    <button onclick="applyClozePreset('half')" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition">
+                        ½ 1 mot sur 2
+                    </button>
+                    <button onclick="applyClozePreset('none')" class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-xs font-bold rounded-xl border border-emerald-300 transition">
+                        👁️ Tout afficher
+                    </button>
+                    <button onclick="applyClozePreset('all')" class="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-900 text-xs font-bold rounded-xl border border-rose-300 transition">
+                        ✏️ Tout masquer
+                    </button>
+                </div>
+
+                <!-- Grille interactive des vignettes de mots -->
+                <div class="p-6 seyes-paper rounded-2xl border border-slate-300 flex flex-wrap gap-2 items-center leading-relaxed" id="parentTokensContainer">
+                    <!-- Généré par JavaScript -->
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                    <div class="text-xs text-slate-500">
+                        💡 Astuce : Commencez par masquer les mots difficiles comme <em>cailloux</em> ou <em>émerveille</em>, puis augmentez progressivement le nombre de trous !
+                    </div>
+
+                    <button onclick="setClozeSubMode('child')" class="px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-base rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <span>🚀 Lancer l'exercice pour l'enfant</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SOUS-VUE B : MODE ENFANT (EXERCICE EN DIRECT) -->
+            <div id="clozeChildView" class="hidden bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-black uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Espace Enfant • Complète les trous</span>
+                        <h3 class="text-xl sm:text-2xl font-black font-title text-slate-800 mt-1">À toi de jouer !</h3>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="giveFirstLetterClueAll()" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs rounded-xl border border-amber-300 transition flex items-center gap-1.5">
+                            <span>💡</span> Indice (1ère lettre partout)
+                        </button>
+                        <button onclick="speakSentence(FULL_TEXT)" class="px-3.5 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs rounded-xl border border-sky-300 transition flex items-center gap-1.5">
+                            <span>🔊</span> Écouter la dictée
+                        </button>
+                        <button onclick="setClozeSubMode('parent')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition flex items-center gap-1">
+                            <span>⚙️</span> Régler les trous
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Page de cahier enfant avec champs de saisie dynamiques -->
+                <div class="p-6 sm:p-8 seyes-paper rounded-2xl border border-slate-300 text-slate-800 text-lg sm:text-2xl font-school leading-[42px]" id="childInputsContainer">
+                    <!-- Généré par JavaScript -->
+                </div>
+
+                <!-- Rapport de score et correction enfant -->
+                <div id="clozeResultPanel" class="hidden p-5 rounded-2xl border space-y-3"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center gap-2">
+                        <button onclick="verifyClozeAnswers()" id="btnValidateCloze" class="px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+                            <span>✅</span> Valider mes réponses
+                        </button>
+                        <button onclick="retryOnlyClozeErrors()" id="btnRetryErrors" class="hidden px-5 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-sm rounded-2xl transition flex items-center gap-2">
+                            <span>🔄</span> Corriger mes erreurs uniquement
+                        </button>
+                    </div>
+
+                    <button onclick="switchTab(3)" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        Exercice 3 : Écrire avec les tirets ➡️
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- EXERCICE 3 : ÉCRIRE AVEC L'AIDE DES TIRETS               -->
+        <!-- ======================================================== -->
+        <section id="exercise-3" class="exercise-section space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-black uppercase tracking-wider text-indigo-700 bg-indigo-100 px-3 py-1 rounded-full">Étape 3 • Guide lettre par lettre</span>
+                        <h2 class="text-2xl font-black font-title text-slate-800 mt-1">Le Guide des Tirets</h2>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="revealDashHint()" class="px-3.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-300 flex items-center gap-1.5 transition">
+                            <span>💡</span> Révéler une lettre secrète
+                        </button>
+                        <button onclick="speakSentence(FULL_TEXT)" class="px-3.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs border border-sky-300 flex items-center gap-1.5 transition">
+                            <span>🔊</span> Écouter
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Chaque mot est représenté par des cases ou tirets correspondant <strong>exactement à son nombre de lettres</strong>. Remplis les cases pour mémoriser la forme des mots !
+                </p>
+
+                <!-- Zone interactive des tirets -->
+                <div class="p-6 sm:p-8 seyes-paper rounded-2xl border border-slate-300 text-slate-800 flex flex-wrap gap-x-2 gap-y-3 items-center text-lg sm:text-2xl font-school" id="dashContainer">
+                    <!-- Généré par JS -->
+                </div>
+
+                <div id="dashFeedback" class="hidden p-4 rounded-2xl border text-sm font-semibold"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <button onclick="verifyDashExercise()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow transition flex items-center gap-2">
+                            <span>✅</span> Vérifier mes mots
+                        </button>
+                        <button onclick="resetDashExercise()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-2xl transition">
+                            Recommencer
+                        </button>
+                    </div>
+
+                    <button onclick="switchTab(4)" class="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-2xl shadow transition flex items-center gap-2">
+                        Passer au Défi Final Sans Aide ➡️
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- EXERCICE 4 : SANS AIDE (DE MÉMOIRE - LE GRAND DÉFI)     -->
+        <!-- ======================================================== -->
+        <section id="exercise-4" class="exercise-section space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-black uppercase tracking-wider text-purple-700 bg-purple-100 px-3 py-1 rounded-full">Étape 4 • L'Autodictée Finale</span>
+                        <h2 class="text-2xl font-black font-title text-slate-800 mt-1">Écrire Totalement de Mémoire</h2>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="speakSentenceBySentence()" id="btnDictateStep" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow flex items-center gap-2 transition">
+                            <span>🗣️</span> Dictée phrase par phrase
+                        </button>
+                        <button onclick="speakSentence(FULL_TEXT)" class="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold text-xs border border-purple-200 transition">
+                            <span>🔊</span> Tout écouter
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-purple-50 rounded-2xl border border-purple-200 text-purple-900 text-xs sm:text-sm">
+                    🔒 <strong>Le modèle est complètement masqué.</strong> Ferme les yeux si besoin, récite dans ta tête et écris le texte de Florence Médina dans le cahier ci-dessous. Tu pourras ensuite comparer mot à mot ta version avec le modèle original !
+                </div>
+
+                <!-- Cahier d'écriture libre -->
+                <div class="relative">
+                    <textarea 
+                        id="finalMemoryInput" 
+                        rows="7" 
+                        placeholder="Regardez autour de vous..."
+                        class="w-full p-6 seyes-paper rounded-2xl border-2 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 font-school text-xl sm:text-2xl text-slate-800 outline-none transition leading-[36px]"
+                    ></textarea>
+                </div>
+
+                <!-- Bilan Détaillé et Comparaison Mot à Mot -->
+                <div id="finalReport" class="hidden p-6 rounded-3xl border-2 space-y-4"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <button onclick="evaluateFinalMemory()" class="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-base rounded-2xl shadow-lg hover:shadow-xl transition flex items-center gap-2">
+                        <span>🏆 Corriger mon autodictée finale</span>
+                    </button>
+
+                    <button onclick="resetWholeMemoryTest()" class="text-xs font-bold text-slate-400 hover:text-slate-600 underline">
+                        Effacer et recommencer l'épreuve
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PIED DE PAGE -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>📖 <strong>Autodictée du lundi 2 novembre</strong> • Extrait de <em>« La confiture de Berbéranza »</em> de Florence Médina.</p>
+            <p>Application pédagogique conçue pour l'école primaire.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIQUE JAVASCRIPT & AUDIO -->
+    <script>
+        // --- TEXTE MODÈLE ET DÉCOUPAGE RIGOUREUX ---
+        const FULL_TEXT = "Regardez autour de vous, les arbres, le ciel, les cailloux, les rivières, les insectes, vos animaux de compagnie, les astres, ce qu'il y a dans votre assiette, même ! Tout ! Tout ce qui vous procure une sensation, vous émerveille, vous fait rire, vous met des gargouillis dans le ventre ou des fourmis dans les jambes. Cultivez vos petits plaisirs (...)";
+
+        // Découpage en unités mot + ponctuation attachée
+        // On sépare par les espaces tout en conservant la ponctuation
+        const rawTokens = FULL_TEXT.split(' ');
+        const textWords = rawTokens.map((raw, idx) => {
+            // Extrait le mot nettoyé (lettres et apostrophes internes comme "qu'il")
+            const clean = raw.replace(/^[^a-zA-ZÀ-ÿ0-9']+|[^a-zA-ZÀ-ÿ0-9'.()]+$/g, '');
+            // Identifie la ponctuation de fin éventuelle
+            const trailing = raw.replace(/^.*?([,;!?.()]+)$/, '$1');
+            const hasTrailing = trailing !== raw;
+            return {
+                id: idx,
+                raw: raw,
+                cleanWord: clean,
+                trailingPunct: hasTrailing ? trailing : '',
+                // Par défaut, certains mots clés difficiles sont cochés
+                isBlank: false
+            };
+        });
+
+        // Mots clés difficiles pour le préréglage
+        const DIFFICULT_WORDS = ["cailloux", "rivières", "insectes", "animaux", "compagnie", "assiette", "procure", "émerveille", "gargouillis", "fourmis", "Cultivez"];
+
+        // Initialisation de la sélection des trous par défaut (mots difficiles)
+        textWords.forEach(w => {
+            if (DIFFICULT_WORDS.some(dw => dw.toLowerCase() === w.cleanWord.toLowerCase())) {
+                w.isBlank = true;
+            }
+        });
+
+        // --- GESTION AUDIO (SYNTHÈSE VOCALE & FX SANS DÉPENDANCE) ---
+        let audioFXEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playTone(freq, type, duration, gainVal = 0.15) {
+            if (!audioFXEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playSoundSuccess() {
+            playTone(523.25, 'sine', 0.12);
+            setTimeout(() => playTone(659.25, 'sine', 0.15), 100);
+            setTimeout(() => playTone(783.99, 'sine', 0.25), 200);
+        }
+
+        function playSoundError() {
+            playTone(280, 'sawtooth', 0.15, 0.1);
+            setTimeout(() => playTone(210, 'sawtooth', 0.2, 0.1), 120);
+        }
+
+        function playSoundClick() {
+            playTone(450, 'sine', 0.04, 0.05);
+        }
+
+        function toggleAudioFX() {
+            audioFXEnabled = !audioFXEnabled;
+            document.getElementById('toggleSoundFX').innerText = audioFXEnabled ? '🔔' : '🔕';
+        }
+
+        // Synthèse Vocale Web Speech API
+        let speechRate = 0.9;
+        function updateAudioRate() {
+            speechRate = parseFloat(document.getElementById('audioSpeedSelect').value) || 0.9;
+        }
+
+        function speakSentence(text, onEnd) {
+            if (!('speechSynthesis' in window)) {
+                alert("Votre navigateur ne supporte pas la synthèse vocale intégrée.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fr-FR';
+            utterance.rate = speechRate;
+            utterance.pitch = 1.05;
+
+            // Choisir une voix française naturelle si disponible
+            const voices = window.speechSynthesis.getVoices();
+            const frVoice = voices.find(v => v.lang.startsWith('fr') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Amélie') || v.name.includes('Thomas')));
+            if (frVoice) utterance.voice = frVoice;
+
+            const btn = document.getElementById('btnPlayAll');
+            btn.classList.add('animate-speaking');
+
+            utterance.onend = () => {
+                btn.classList.remove('animate-speaking');
+                if (onEnd) onEnd();
+            };
+            utterance.onerror = () => {
+                btn.classList.remove('animate-speaking');
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playGlobalAudio() {
+            speakSentence(FULL_TEXT);
+        }
+
+        function pauseAudio() {
+            if (window.speechSynthesis.speaking) {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                } else {
+                    window.speechSynthesis.pause();
+                }
+            }
+        }
+
+        function stopAudio() {
+            window.speechSynthesis.cancel();
+            document.getElementById('btnPlayAll').classList.remove('animate-speaking');
+        }
+
+        // --- NAVIGATION INTER-EXERCICES ---
+        function switchTab(num) {
+            playSoundClick();
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.exercise-section').forEach(s => s.classList.remove('active'));
+
+            const tab = document.getElementById(`tab-${num}`);
+            const sec = document.getElementById(`exercise-${num}`);
+            if (tab) tab.classList.add('active');
+            if (sec) sec.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // EXERCICE 1 : RECOPIE DU MODÈLE
+        // ==========================================
+        let isLegendVisible = false;
+        function toggleHighlightDifficulties() {
+            playSoundClick();
+            isLegendVisible = !isLegendVisible;
+            const legend = document.getElementById('difficultyLegend');
+            const btn = document.getElementById('btnHighlight');
+            const display = document.getElementById('modelDisplay');
+
+            if (isLegendVisible) {
+                legend.classList.remove('hidden');
+                btn.classList.add('bg-amber-200');
+                // Surlignage intelligent
+                let html = FULL_TEXT;
+                html = html.replace(/(cailloux|animaux)/g, '<span class="bg-rose-200 text-rose-900 font-bold px-1 rounded">$1</span>');
+                html = html.replace(/(Regardez|Cultivez)/g, '<span class="bg-indigo-200 text-indigo-900 font-bold px-1 rounded">$1</span>');
+                html = html.replace(/(émerveille|gargouillis|fourmis|assiette|compagnie)/g, '<span class="bg-emerald-200 text-emerald-900 font-bold px-1 rounded">$1</span>');
+                display.innerHTML = html;
+            } else {
+                legend.classList.add('hidden');
+                btn.classList.remove('bg-amber-200');
+                display.innerText = FULL_TEXT;
+            }
+        }
+
+        function checkCopyProgress() {
+            const input = document.getElementById('copyInput').value.trim();
+            const wordsTyped = input ? input.split(/\s+/).length : 0;
+            const totalWords = textWords.length;
+            document.getElementById('copyStats').innerText = `${wordsTyped} / ${totalWords} mots`;
+        }
+
+        function clearCopyInput() {
+            document.getElementById('copyInput').value = '';
+            document.getElementById('copyFeedback').classList.add('hidden');
+            checkCopyProgress();
+        }
+
+        function verifyCopy(showSuccessSound = false) {
+            const input = document.getElementById('copyInput').value.trim();
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.remove('hidden');
+
+            if (!input) {
+                feedback.className = "p-4 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900 text-xs sm:text-sm font-semibold";
+                feedback.innerHTML = "⚠️ N'hésite pas à commencer à écrire quelques mots pour tester !";
+                return;
+            }
+
+            // Comparaison normalisée et détaillée
+            const modelTokens = FULL_TEXT.trim().split(/\s+/);
+            const userTokens = input.split(/\s+/);
+
+            let correctCount = 0;
+            let diffHtml = '<div class="space-y-2"><p class="font-bold text-sm">Analyse de ta copie :</p><div class="flex flex-wrap gap-1.5 leading-relaxed p-3 bg-white rounded-xl border border-slate-200 font-school text-xl">';
+
+            userTokens.forEach((token, idx) => {
+                if (idx < modelTokens.length) {
+                    const expected = modelTokens[idx];
+                    if (token === expected) {
+                        correctCount++;
+                        diffHtml += `<span class="text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">${token}</span>`;
+                    } else if (token.toLowerCase() === expected.toLowerCase()) {
+                        diffHtml += `<span class="text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300" title="Attention aux majuscules ou accents">${token} <small class="text-slate-500 font-sans">(${expected})</small></span>`;
+                    } else {
+                        diffHtml += `<span class="text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-300" title="Attendu : ${expected}">${token} <small class="text-slate-500 font-sans">(${expected})</small></span>`;
+                    }
+                } else {
+                    diffHtml += `<span class="text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded line-through">${token}</span>`;
+                }
+            });
+
+            diffHtml += '</div></div>';
+
+            const percent = Math.round((correctCount / modelTokens.length) * 100);
+
+            if (percent >= 95 && userTokens.length >= modelTokens.length) {
+                if (showSuccessSound) playSoundSuccess();
+                feedback.className = "p-4 rounded-2xl border border-emerald-400 bg-emerald-50 text-emerald-950 text-xs sm:text-sm space-y-2";
+                feedback.innerHTML = `🎉 <strong>Bravo ! Copie parfaite à ${percent}% !</strong> Tu as su mémoriser les accords et la ponctuation.<br>` + diffHtml;
+                addStars(3);
+                launchConfetti();
+            } else {
+                if (showSuccessSound) playSoundError();
+                feedback.className = "p-4 rounded-2xl border border-amber-300 bg-amber-50 text-amber-950 text-xs sm:text-sm space-y-2";
+                feedback.innerHTML = `👍 <strong>Beau travail ! (${correctCount}/${modelTokens.length} mots exacts).</strong> Regarde bien les mots surlignés pour corriger les petites erreurs :<br>` + diffHtml;
+            }
+        }
+
+        // ==========================================
+        // EXERCICE 2 : DICTÉE À TROUS PERSONNALISÉE
+        // ==========================================
+        let clozeSubMode = 'parent'; // 'parent' ou 'child'
+
+        function setClozeSubMode(mode) {
+            playSoundClick();
+            clozeSubMode = mode;
+            const parentView = document.getElementById('clozeParentView');
+            const childView = document.getElementById('clozeChildView');
+            const btnP = document.getElementById('btnClozeParent');
+            const btnC = document.getElementById('btnClozeChild');
+
+            if (mode === 'parent') {
+                parentView.classList.remove('hidden');
+                childView.classList.add('hidden');
+                btnP.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition bg-white text-slate-800 shadow";
+                btnC.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition text-white hover:bg-white/10";
+                renderParentTokens();
+            } else {
+                parentView.classList.add('hidden');
+                childView.classList.remove('hidden');
+                btnC.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition bg-white text-slate-800 shadow";
+                btnP.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition text-white hover:bg-white/10";
+                renderChildExercise();
+            }
+        }
+
+        function renderParentTokens() {
+            const container = document.getElementById('parentTokensContainer');
+            container.innerHTML = '';
+
+            let blankCount = 0;
+
+            textWords.forEach(w => {
+                if (w.isBlank) blankCount++;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = w.isBlank
+                    ? "px-3 py-1.5 rounded-xl text-base sm:text-xl font-school font-bold transition transform active:scale-95 border-2 border-amber-400 bg-amber-100 text-amber-900 shadow-sm"
+                    : "px-3 py-1.5 rounded-xl text-base sm:text-xl font-school font-bold transition transform active:scale-95 border border-slate-200 bg-white text-slate-700 hover:border-slate-400";
+
+                btn.innerHTML = `${w.cleanWord} <span class="text-xs font-sans">${w.isBlank ? '✏️' : '👁️'}</span>${w.trailingPunct ? `<span class="text-slate-500 font-sans">${w.trailingPunct}</span>` : ''}`;
+
+                btn.onclick = () => {
+                    playSoundClick();
+                    w.isBlank = !w.isBlank;
+                    renderParentTokens();
+                };
+
+                container.appendChild(btn);
+            });
+
+            document.getElementById('parentTotalWords').innerText = textWords.length;
+            document.getElementById('parentBlankCount').innerText = blankCount;
+            document.getElementById('parentVisibleCount').innerText = textWords.length - blankCount;
+        }
+
+        function applyClozePreset(preset) {
+            playSoundClick();
+            textWords.forEach((w, idx) => {
+                if (preset === 'difficult') {
+                    w.isBlank = DIFFICULT_WORDS.some(dw => dw.toLowerCase() === w.cleanWord.toLowerCase());
+                } else if (preset === 'third') {
+                    w.isBlank = (idx % 3 === 0);
+                } else if (preset === 'half') {
+                    w.isBlank = (idx % 2 === 0);
+                } else if (preset === 'none') {
+                    w.isBlank = false;
+                } else if (preset === 'all') {
+                    w.isBlank = true;
+                }
+            });
+            renderParentTokens();
+        }
+
+        // Mode Enfant : Construction des inputs
+        function renderChildExercise() {
+            const container = document.getElementById('childInputsContainer');
+            container.innerHTML = '';
+            document.getElementById('clozeResultPanel').classList.add('hidden');
+            document.getElementById('btnRetryErrors').classList.add('hidden');
+
+            textWords.forEach((w, idx) => {
+                if (w.isBlank) {
+                    const span = document.createElement('span');
+                    span.className = "inline-flex items-center mx-1 my-1 align-baseline relative";
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = `cloze-input-${idx}`;
+                    input.dataset.expected = w.cleanWord;
+                    input.dataset.idx = idx;
+                    input.autocomplete = "off";
+                    input.spellcheck = false;
+
+                    // Largeur adaptée à la longueur du mot attendu + un peu d'aisance
+                    const charCount = Math.max(w.cleanWord.length, 3);
+                    input.style.width = `${charCount * 1.3 + 1.2}rem`;
+                    input.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-white border-2 border-dashed border-amber-400 rounded-xl focus:border-amber-600 focus:bg-amber-50 focus:outline-none shadow-inner text-amber-950 transition";
+
+                    // Navigation au clavier : Entrée ou Tab va au suivant
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            focusNextClozeInput(idx);
+                        }
+                    });
+
+                    span.appendChild(input);
+
+                    if (w.trailingPunct) {
+                        const punctSpan = document.createElement('span');
+                        punctSpan.innerText = w.trailingPunct;
+                        punctSpan.className = "text-slate-800 ml-0.5 select-none font-school";
+                        span.appendChild(punctSpan);
+                    }
+
+                    container.appendChild(span);
+                } else {
+                    const wordSpan = document.createElement('span');
+                    wordSpan.innerText = w.raw + ' ';
+                    wordSpan.className = "select-none font-school";
+                    container.appendChild(wordSpan);
+                }
+            });
+
+            // Focus automatique sur le premier champ à trou
+            const firstInput = container.querySelector('input');
+            if (firstInput) firstInput.focus();
+        }
+
+        function focusNextClozeInput(currentIdx) {
+            const inputs = Array.from(document.querySelectorAll('#childInputsContainer input'));
+            const currentIndex = inputs.findIndex(inp => parseInt(inp.dataset.idx) === currentIdx);
+            if (currentIndex !== -1 && currentIndex < inputs.length - 1) {
+                inputs[currentIndex + 1].focus();
+            } else {
+                verifyClozeAnswers();
+            }
+        }
+
+        function giveFirstLetterClueAll() {
+            playSoundClick();
+            const inputs = document.querySelectorAll('#childInputsContainer input');
+            inputs.forEach(inp => {
+                const expected = inp.dataset.expected;
+                if (!inp.value || inp.value.trim() === '') {
+                    inp.value = expected.charAt(0);
+                    inp.classList.add('bg-amber-50');
+                }
+            });
+        }
+
+        function verifyClozeAnswers() {
+            const inputs = document.querySelectorAll('#childInputsContainer input');
+            if (inputs.length === 0) {
+                alert("Aucun trou n'a été créé dans l'Espace Parents ! Cliquez sur 'Régler les trous' pour en ajouter.");
+                return;
+            }
+
+            let correctCount = 0;
+            let errorCount = 0;
+
+            inputs.forEach(inp => {
+                const expected = inp.dataset.expected;
+                const typed = inp.value.trim();
+
+                // Supprimer les bulles de correction existantes
+                const parent = inp.parentElement;
+                const oldClue = parent.querySelector('.correction-tag');
+                if (oldClue) oldClue.remove();
+
+                if (typed.toLowerCase() === expected.toLowerCase()) {
+                    correctCount++;
+                    inp.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-emerald-100 border-2 border-emerald-500 rounded-xl text-emerald-950";
+                } else {
+                    errorCount++;
+                    inp.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-rose-100 border-2 border-rose-500 rounded-xl text-rose-950";
+
+                    // Affichage du mot correct au-dessus
+                    const tag = document.createElement('span');
+                    tag.className = "correction-tag absolute -top-6 left-1/2 transform -translate-x-1/2 bg-rose-600 text-white text-[11px] font-sans font-bold px-2 py-0.5 rounded-md shadow whitespace-nowrap z-10";
+                    tag.innerText = expected;
+                    parent.appendChild(tag);
+                }
+            });
+
+            const percent = Math.round((correctCount / inputs.length) * 100);
+            const panel = document.getElementById('clozeResultPanel');
+            panel.classList.remove('hidden');
+
+            if (percent === 100) {
+                playSoundSuccess();
+                launchConfetti();
+                addStars(4);
+                panel.className = "p-5 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-950 space-y-2";
+                panel.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🌟</span>
+                        <div>
+                            <h4 class="font-bold text-lg font-title">Excellent travail ! Un sans-faute parfait (100%) !</h4>
+                            <p class="text-xs sm:text-sm">Tous les ${inputs.length} mots masqués ont été correctement orthographiés.</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('btnRetryErrors').classList.add('hidden');
+            } else {
+                playSoundError();
+                panel.className = "p-5 rounded-2xl border-2 border-amber-300 bg-amber-50 text-amber-950 space-y-3";
+                panel.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-base font-title">Score : ${percent}% (${correctCount} réussis / ${inputs.length})</h4>
+                            <p class="text-xs text-amber-800">Regarde les étiquettes rouges au-dessus des mots pour corriger tes erreurs !</p>
+                        </div>
+                        <span class="text-2xl">💪</span>
+                    </div>
+                `;
+                document.getElementById('btnRetryErrors').classList.remove('hidden');
+            }
+        }
+
+        function retryOnlyClozeErrors() {
+            playSoundClick();
+            const inputs = document.querySelectorAll('#childInputsContainer input');
+            let firstError = null;
+
+            inputs.forEach(inp => {
+                const expected = inp.dataset.expected;
+                const typed = inp.value.trim();
+                const parent = inp.parentElement;
+                const tag = parent.querySelector('.correction-tag');
+
+                if (typed.toLowerCase() !== expected.toLowerCase()) {
+                    inp.value = '';
+                    inp.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-white border-2 border-dashed border-amber-400 rounded-xl focus:border-amber-600 focus:bg-amber-50 focus:outline-none shadow-inner text-amber-950";
+                    if (tag) tag.remove();
+                    if (!firstError) firstError = inp;
+                }
+            });
+
+            if (firstError) firstError.focus();
+            document.getElementById('clozeResultPanel').classList.add('hidden');
+            document.getElementById('btnRetryErrors').classList.add('hidden');
+        }
+
+        // ==========================================
+        // EXERCICE 3 : ÉCRIRE AVEC LES TIRETS
+        // ==========================================
+        function initDashExercise() {
+            const container = document.getElementById('dashContainer');
+            container.innerHTML = '';
+            document.getElementById('dashFeedback').classList.add('hidden');
+
+            textWords.forEach((w, idx) => {
+                const wordBox = document.createElement('div');
+                wordBox.className = "inline-flex items-center my-1";
+
+                const input = document.createElement('input');
+                input.type = "text";
+                input.id = `dash-word-${idx}`;
+                input.dataset.expected = w.cleanWord;
+                input.maxLength = w.cleanWord.length;
+
+                // Tirets indicatifs de la taille exacte
+                const dashes = "_ ".repeat(w.cleanWord.length).trim();
+                input.placeholder = dashes;
+
+                const charCount = Math.max(w.cleanWord.length, 3);
+                input.style.width = `${charCount * 1.35 + 1.2}rem`;
+                input.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-white border-2 border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none shadow-xs text-indigo-950 placeholder:font-mono placeholder:text-xs placeholder:text-slate-400";
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const next = document.getElementById(`dash-word-${idx + 1}`);
+                        if (next) next.focus();
+                        else verifyDashExercise();
+                    }
+                });
+
+                wordBox.appendChild(input);
+
+                if (w.trailingPunct) {
+                    const punct = document.createElement('span');
+                    punct.innerText = w.trailingPunct;
+                    punct.className = "text-slate-700 ml-1 font-bold font-school";
+                    wordBox.appendChild(punct);
+                }
+
+                container.appendChild(wordBox);
+            });
+        }
+
+        function revealDashHint() {
+            playSoundClick();
+            const inputs = Array.from(document.querySelectorAll('#dashContainer input'));
+            const emptyInputs = inputs.filter(inp => inp.value.trim().length < inp.dataset.expected.length);
+            if (emptyInputs.length > 0) {
+                const target = emptyInputs[Math.floor(Math.random() * emptyInputs.length)];
+                const expected = target.dataset.expected;
+                const currentLen = target.value.length;
+                target.value = expected.substring(0, currentLen + 1);
+                target.focus();
+            }
+        }
+
+        function verifyDashExercise() {
+            const inputs = document.querySelectorAll('#dashContainer input');
+            let correct = 0;
+
+            inputs.forEach(inp => {
+                const expected = inp.dataset.expected;
+                const typed = inp.value.trim();
+
+                if (typed.toLowerCase() === expected.toLowerCase()) {
+                    correct++;
+                    inp.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-emerald-100 border-2 border-emerald-500 rounded-xl text-emerald-950";
+                } else {
+                    inp.className = "px-2 py-0.5 text-center font-school text-lg sm:text-2xl font-bold bg-rose-100 border-2 border-rose-400 rounded-xl text-rose-950";
+                }
+            });
+
+            const percent = Math.round((correct / inputs.length) * 100);
+            const fb = document.getElementById('dashFeedback');
+            fb.classList.remove('hidden');
+
+            if (percent === 100) {
+                playSoundSuccess();
+                launchConfetti();
+                addStars(4);
+                fb.className = "p-4 rounded-2xl border border-emerald-400 bg-emerald-50 text-emerald-950 font-bold text-sm";
+                fb.innerHTML = `🎉 <strong>Félicitations ! 100% de réussite !</strong> Tous les mots correspondent parfaitement au gabarit.`;
+            } else {
+                playSoundError();
+                fb.className = "p-4 rounded-2xl border border-amber-300 bg-amber-50 text-amber-950 font-bold text-sm";
+                fb.innerHTML = `💪 <strong>Tu y es presque !</strong> ${correct} sur ${inputs.length} mots exacts. Vérifie le nombre de lettres dans les cases en rouge.`;
+            }
+        }
+
+        function resetDashExercise() {
+            playSoundClick();
+            initDashExercise();
+        }
+
+        // ==========================================
+        // EXERCICE 4 : DE MÉMOIRE (L'AUTODICTÉE FINALE)
+        // ==========================================
+        const SENTENCES_LIST = [
+            "Regardez autour de vous, les arbres, le ciel, les cailloux, les rivières, les insectes, vos animaux de compagnie, les astres, ce qu'il y a dans votre assiette, même !",
+            "Tout !",
+            "Tout ce qui vous procure une sensation, vous émerveille, vous fait rire, vous met des gargouillis dans le ventre ou des fourmis dans les jambes.",
+            "Cultivez vos petits plaisirs (...)"
+        ];
+        let currentSentenceIdx = 0;
+
+        function speakSentenceBySentence() {
+            const btn = document.getElementById('btnDictateStep');
+            const sentence = SENTENCES_LIST[currentSentenceIdx];
+            btn.innerHTML = `<span>🗣️</span> Phrase ${currentSentenceIdx + 1}/4`;
+            speakSentence(sentence, () => {
+                currentSentenceIdx = (currentSentenceIdx + 1) % SENTENCES_LIST.length;
+                btn.innerHTML = `<span>🗣️</span> Phrase suivante (${currentSentenceIdx + 1}/4)`;
+            });
+        }
+
+        function evaluateFinalMemory() {
+            const userText = document.getElementById('finalMemoryInput').value.trim();
+            const report = document.getElementById('finalReport');
+            report.classList.remove('hidden');
+
+            if (!userText) {
+                report.className = "p-6 rounded-3xl border-2 border-amber-300 bg-amber-50 text-amber-950 space-y-2";
+                report.innerHTML = `<h4 class="font-bold text-lg">⚠️ Le cahier est vide !</h4><p class="text-sm">Écris le texte dont tu te souviens avant de lancer la correction.</p>`;
+                return;
+            }
+
+            const modelWords = FULL_TEXT.trim().split(/\s+/);
+            const userWords = userText.split(/\s+/);
+
+            let matchedCount = 0;
+            let comparedHtml = '<div class="space-y-3"><div class="flex flex-wrap gap-1.5 leading-relaxed p-4 bg-white rounded-2xl border border-slate-300 font-school text-xl sm:text-2xl">';
+
+            userWords.forEach((word, idx) => {
+                if (idx < modelWords.length) {
+                    const expected = modelWords[idx];
+                    if (word === expected) {
+                        matchedCount++;
+                        comparedHtml += `<span class="bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-300 font-bold">${word}</span>`;
+                    } else if (word.toLowerCase() === expected.toLowerCase()) {
+                        matchedCount += 0.75;
+                        comparedHtml += `<span class="bg-amber-100 text-amber-950 px-2 py-0.5 rounded-lg border border-amber-300" title="Attendu : ${expected}">${word} <small class="text-xs font-sans text-slate-500">(${expected})</small></span>`;
+                    } else {
+                        comparedHtml += `<span class="bg-rose-100 text-rose-950 px-2 py-0.5 rounded-lg border border-rose-300" title="Attendu : ${expected}">${word} <small class="text-xs font-sans text-slate-500">(${expected})</small></span>`;
+                    }
+                } else {
+                    comparedHtml += `<span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-lg line-through">${word}</span>`;
+                }
+            });
+
+            comparedHtml += '</div></div>';
+
+            const scorePercent = Math.min(100, Math.round((matchedCount / modelWords.length) * 100));
+            const note20 = (scorePercent / 5).toFixed(1);
+
+            if (scorePercent >= 85) {
+                playSoundSuccess();
+                launchConfetti();
+                addStars(5);
+
+                report.className = "p-6 rounded-3xl border-2 border-emerald-400 bg-emerald-50 text-emerald-950 space-y-4 shadow-md";
+                report.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-4">
+                        <div>
+                            <span class="text-xs uppercase font-black tracking-widest text-emerald-800 bg-emerald-200 px-3 py-1 rounded-full">Diplôme d'Autodictée Réussie</span>
+                            <h3 class="text-2xl sm:text-3xl font-black font-title text-emerald-950 mt-1">Magnifique travail ! 🎉</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl sm:text-4xl font-black font-title text-emerald-700">${note20} / 20</span>
+                            <div class="text-xs font-bold text-emerald-800">${scorePercent}% de conformité</div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold">Tu maîtrises l'autodictée de Florence Médina pour la rentrée ! Voici la comparaison détaillée de ton écrit :</p>
+                    ${comparedHtml}
+                `;
+            } else {
+                playSoundError();
+                report.className = "p-6 rounded-3xl border-2 border-amber-300 bg-amber-50 text-amber-950 space-y-4 shadow-sm";
+                report.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-amber-200 pb-4">
+                        <div>
+                            <span class="text-xs uppercase font-black tracking-widest text-amber-900 bg-amber-200 px-3 py-1 rounded-full">Encouragements</span>
+                            <h3 class="text-2xl font-black font-title text-amber-950 mt-1">Bel effort ! Continue ainsi 👍</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-black font-title text-amber-700">${note20} / 20</span>
+                            <div class="text-xs font-bold text-amber-800">${scorePercent}% de conformité</div>
+                        </div>
+                    </div>
+                    <p class="text-sm">Prends le temps d'observer les mots en rouge ci-dessous. Tu peux revenir à l'Exercice 2 pour t'entraîner sur les mots oubliés !</p>
+                    ${comparedHtml}
+                `;
+            }
+        }
+
+        function resetWholeMemoryTest() {
+            playSoundClick();
+            document.getElementById('finalMemoryInput').value = '';
+            document.getElementById('finalReport').classList.add('hidden');
+            currentSentenceIdx = 0;
+            document.getElementById('btnDictateStep').innerHTML = "<span>🗣️</span> Dictée phrase par phrase";
+        }
+
+        // --- COMPTEUR D'ÉTOILES ---
+        let totalStars = 0;
+        function addStars(num) {
+            totalStars += num;
+            const badge = document.getElementById('starRatingBadge');
+            const count = document.getElementById('starCount');
+            if (badge) badge.classList.remove('hidden');
+            if (count) count.innerText = totalStars;
+        }
+
+        // --- ANIMATION CONFETTIS (CANVAS AUTONOME) ---
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 8 + 4,
+                    h: Math.random() * 6 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: (Math.random() - 0.7) * 16,
+                    gravity: 0.28,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 8
+                });
+            }
+
+            let frames = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.rot += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+
+                frames++;
+                if (frames < 90) {
+                    requestAnimationFrame(animate);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animate();
+        }
+
+        // --- INITIALISATION AU CHARGEMENT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderParentTokens();
+            initDashExercise();
+            // Pré-chargement des voix synthétiques
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    window.speechSynthesis.getVoices();
+                };
+            }
+        });
+    </script>
+</body>
+</html>

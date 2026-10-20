@@ -30,7 +30,7 @@
             }
         }
     </script>
-    <!-- Polices ludiques et ultra lisibles -->
+    <!-- Polices ludiques et très lisibles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -42,7 +42,6 @@
         h1, h2, h3, h4, .font-heading {
             font-family: 'Fredoka', cursive, sans-serif;
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -73,14 +72,14 @@
             color: #ffffff;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
-        .badge-pulse {
-            animation: pulse-slow 2.5s infinite;
+        /* SVG Map Interactivity */
+        .map-region {
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        @keyframes pulse-slow {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .map-region:hover {
+            filter: brightness(1.15) drop-shadow(0 0 6px rgba(0,0,0,0.3));
         }
-        /* Confetti canvas */
         #confettiCanvas {
             position: fixed;
             top: 0;
@@ -94,19 +93,17 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-200">
 
-    <!-- Canvas pour confettis -->
     <canvas id="confettiCanvas"></canvas>
 
-    <!-- HEADER / NAVIGATION PRINCIPALE -->
+    <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-40 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-md backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             
-            <!-- Logo & Titre -->
             <button onclick="navigate('landing')" class="flex items-center gap-3 text-left group">
                 <span class="text-3xl p-2 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">🌍</span>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xs uppercase tracking-wider font-extrabold bg-emerald-900/40 text-emerald-100 px-2.5 py-0.5 rounded-full">Cycle 3 • Géo</span>
+                        <span class="text-xs uppercase tracking-wider font-extrabold bg-emerald-900/40 text-emerald-100 px-2.5 py-0.5 rounded-full">Cycle 3 / Collège • Géo</span>
                         <span id="levelBadge" class="text-xs font-bold text-amber-300">Niveau Apprenti</span>
                     </div>
                     <h1 class="text-lg md:text-xl font-bold font-heading tracking-tight leading-tight">Mission Géo-Alimentation</h1>
@@ -119,14 +116,14 @@
                     <span>🏠</span> <span class="hidden sm:inline">Accueil</span>
                 </button>
                 <button onclick="navigate('lesson')" id="nav-lesson" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
-                    <span>📖</span> <span class="hidden sm:inline">Leçon</span>
+                    <span>🗺️</span> <span>Carte & Cours</span>
                 </button>
                 <button onclick="navigate('exercises')" id="nav-exercises" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5">
-                    <span>✏️</span> <span>Défis</span>
+                    <span>✏️</span> <span>6 Défis</span>
                 </button>
                 <button onclick="navigate('trophies')" id="nav-trophies" class="nav-item px-3 py-1.5 rounded-xl hover:bg-white/10 transition flex items-center gap-1.5 relative">
                     <span>🏆</span> <span class="hidden sm:inline">Trophées</span>
-                    <span id="unlockedTrophyCountBadge" class="bg-amber-400 text-amber-950 text-xs px-1.5 py-0.2 rounded-full font-black">0/6</span>
+                    <span id="unlockedTrophyCountBadge" class="bg-amber-400 text-amber-950 text-xs px-1.5 py-0.2 rounded-full font-black">0/7</span>
                 </button>
             </nav>
 
@@ -136,11 +133,10 @@
                     <span class="text-xl">⭐</span>
                     <div>
                         <div class="text-[10px] text-emerald-200 uppercase font-black tracking-wider leading-none">Score Total</div>
-                        <div id="headerScore" class="text-lg font-black font-heading text-amber-300 leading-tight">0 / 20 pts</div>
+                        <div id="headerScore" class="text-lg font-black font-heading text-amber-300 leading-tight">0 / 24 pts</div>
                     </div>
                 </div>
 
-                <!-- Son on/off toggle -->
                 <button id="soundToggle" onclick="toggleAudio()" title="Activer/Désactiver le son" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition text-sm">
                     🔊
                 </button>
@@ -156,29 +152,27 @@
         <!-- ======================================================== -->
         <section id="page-landing" class="page-view active space-y-10">
             
-            <!-- Hero Banner -->
             <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-indigo-900 text-white p-6 sm:p-10 shadow-xl border border-white/10">
                 <div class="absolute -right-12 -top-12 w-64 h-64 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="absolute right-10 bottom-0 text-9xl opacity-20 pointer-events-none select-none hidden lg:block">🥗</div>
+                <div class="absolute right-10 bottom-0 text-9xl opacity-20 pointer-events-none select-none hidden lg:block">🗺️</div>
                 
                 <div class="relative z-10 max-w-2xl space-y-5">
                     <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/15 rounded-full text-xs font-black tracking-wide text-emerald-200 border border-white/15">
-                        <span>🚀</span> QUÊTE ÉDUCATIVE INTERACTIVE
+                        <span>🚀</span> QUÊTE GÉOGRAPHIQUE & ALIMENTAIRE
                     </div>
                     <h2 class="text-3xl sm:text-5xl font-extrabold font-heading tracking-tight leading-tight">
                         Mange-t-on de la même manière partout dans le monde ?
                     </h2>
                     <p class="text-emerald-100 text-base sm:text-lg leading-relaxed font-medium">
-                        Explore les inégalités d’accès aux aliments sur Terre, décrypte les habitudes des Français et relève <strong>5 défis interactifs</strong> pour remporter les 6 précieux trophées !
+                        Découvre le planisphère mondial de la <strong>ration calorique</strong> et de <strong>l'alimentation carnée</strong>. Relève les <strong>6 défis interactifs</strong> pour devenir le grand cartographe de l'alimentation !
                     </p>
 
-                    <!-- CTAs -->
                     <div class="pt-2 flex flex-wrap items-center gap-3">
-                        <button onclick="navigate('exercises')" class="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black font-heading text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
-                            <span>🎯</span> Choisir un Exercice
+                        <button onclick="navigate('lesson')" class="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black font-heading text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <span>🗺️</span> Explorer la Carte & Leçon
                         </button>
-                        <button onclick="navigate('lesson')" class="px-5 py-3.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-2xl backdrop-blur-md transition flex items-center gap-2">
-                            <span>📖</span> Lire la Leçon
+                        <button onclick="navigate('exercises')" class="px-5 py-3.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-2xl backdrop-blur-md transition flex items-center gap-2">
+                            <span>🎯</span> Choisir un Exercice (1 à 6)
                         </button>
                         <button onclick="navigate('trophies')" class="px-5 py-3.5 bg-emerald-950/40 hover:bg-emerald-950/60 text-emerald-200 border border-emerald-400/30 font-bold rounded-2xl transition flex items-center gap-2">
                             <span>🏆</span> Mes Trophées
@@ -187,189 +181,341 @@
                 </div>
             </div>
 
-            <!-- Chiffres-chocs & Faits Clés -->
+            <!-- Chiffres-chocs & Carte aperçu -->
             <div>
                 <h3 class="text-xl font-bold font-heading text-slate-800 mb-4 flex items-center gap-2">
-                    <span>💡</span> 3 Chiffres Chocs à retenir pour tes missions
+                    <span>💡</span> Repères fondamentaux du document
                 </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                        <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold mb-2 font-heading">
+                            >3200
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm mb-1">Calories / jour</h4>
+                        <p class="text-xs text-slate-600">En Amérique du Nord et Europe : surabondance calorique.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl font-bold mb-2 font-heading">
+                            🥩
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm mb-1">Origine Animale</h4>
+                        <p class="text-xs text-slate-600">Plus de 1000 kcal carnées en Occident contre &lt;200 en Afrique/Inde.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-bold mb-2 font-heading">
                             60x
                         </div>
-                        <h4 class="font-bold text-slate-900 text-base mb-1">Moins de viande en Inde</h4>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Un habitant de l'Inde consomme en moyenne 60 fois moins de viande qu'un Français !
-                        </p>
+                        <h4 class="font-bold text-slate-900 text-sm mb-1">Inde vs France</h4>
+                        <p class="text-xs text-slate-600">Un Indien consomme 60 fois moins de viande qu'un Français.</p>
                     </div>
 
-                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold mb-2 font-heading">
                             1/5
                         </div>
-                        <h4 class="font-bold text-slate-900 text-base mb-1">Nourriture gaspillée</h4>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Près d'un cinquième des aliments disponibles chaque jour est jeté alors que beaucoup ont faim.
-                        </p>
-                    </div>
-
-                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold mb-3 font-heading">
-                            ⚖️
-                        </div>
-                        <h4 class="font-bold text-slate-900 text-base mb-1">Inégalités Mondiales</h4>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Les pays d'Asie et d'Afrique consomment bien moins d'aliments que l'Europe et l'Amérique du Nord.
-                        </p>
+                        <h4 class="font-bold text-slate-900 text-sm mb-1">Gaspillage</h4>
+                        <p class="text-xs text-slate-600">Près d'un cinquième des vivres disponibles chaque jour est jeté.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Grille de sélection directe des 5 Défis -->
+            <!-- Grille des 6 Exercices -->
             <div>
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="text-xl font-bold font-heading text-slate-800 flex items-center gap-2">
-                            <span>🎮</span> Le Menu des 5 Exercices
+                            <span>🎮</span> Le Menu des 6 Exercices
                         </h3>
-                        <p class="text-xs text-slate-500">Chaque exercice réussi rapporte des points et débloque des trophées.</p>
+                        <p class="text-xs text-slate-500">Chaque exercice vaut 4 points. Fais un sans-faute pour obtenir 24/24 !</p>
                     </div>
-                    <span id="completedExercisesCount" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">0 sur 5 terminés</span>
+                    <span id="completedExercisesCount" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">0 sur 6 terminés</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="landingCardsContainer">
-                    <!-- Cards générées dynamiquement -->
-                </div>
-            </div>
-
-            <!-- Progression & Salle des Trophées preview -->
-            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
-                <div class="space-y-2 text-center md:text-left">
-                    <span class="text-xs font-black uppercase tracking-wider bg-black/20 px-3 py-1 rounded-full">Objectif 100% Maîtrise</span>
-                    <h3 class="text-2xl font-black font-heading">Deviens « Grand Maître de l'Alimentation »</h3>
-                    <p class="text-amber-100 text-sm max-w-xl">
-                        Débloque les 6 badges exclusifs en réussissant le sans-faute sur les exercices et en consultant le cours.
-                    </p>
-                </div>
-                <button onclick="navigate('trophies')" class="px-6 py-3 bg-white text-amber-900 font-black rounded-2xl shadow hover:bg-amber-50 transition transform hover:scale-105 shrink-0 flex items-center gap-2">
-                    <span>🏆</span> Ouvrir la Galerie des Trophées
-                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="landingCardsContainer"></div>
             </div>
 
         </section>
 
         <!-- ======================================================== -->
-        <!-- PAGE 2 : FICHE LEÇON                                     -->
+        <!-- PAGE 2 : FICHE LEÇON & CARTE VECTORIELLE INTERACTIVE     -->
         <!-- ======================================================== -->
         <section id="page-lesson" class="page-view space-y-6">
             
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden">
-                <div class="max-w-3xl space-y-6">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
-                        <span>📖</span> FICHE DE COURS OFFICIELLE
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+                            <span>🗺️</span> DOCUMENT OFFICIEL & COURS DE GÉOGRAPHIE
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black font-heading text-slate-800 mt-2">
+                            Ration calorique par habitant et alimentation carnée
+                        </h2>
                     </div>
-                    
-                    <h2 class="text-2xl sm:text-3xl font-black font-heading text-slate-800">
-                        Leçon 1 : Mange-t-on de la même manière partout dans le monde ?
-                    </h2>
-                    
-                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
-                        Cette leçon de géographie explore les habitudes de consommation des sociétés humaines, les contrastes entre pays riches et pays en développement, et les grands défis du gaspillage alimentaire.
-                    </p>
+                    <button onclick="window.print()" class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs flex items-center gap-2">
+                        <span>🖨️</span> Imprimer la Fiche
+                    </button>
+                </div>
 
-                    <!-- Cartes synthèses -->
-                    <div class="space-y-4 pt-2">
-                        
-                        <!-- Bloc 1 : La France -->
-                        <div class="p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-200 flex flex-col sm:flex-row gap-4 items-start">
-                            <span class="text-4xl p-3 bg-white rounded-2xl shadow-sm">🥖</span>
-                            <div class="space-y-1">
-                                <h3 class="font-bold text-amber-900 text-lg font-heading">1. Ce que l'on consomme en France</h3>
-                                <p class="text-slate-700 text-sm leading-relaxed">
-                                    Les Français consomment beaucoup de <strong>produits céréaliers</strong> (pain, pâtes, farine), de <strong>produits laitiers</strong> (fromages, lait, yaourts) et de <strong>viande</strong>.
-                                </p>
-                                <div class="mt-2 text-xs font-bold text-amber-800 bg-amber-200/60 inline-block px-2.5 py-1 rounded-lg">
-                                    📈 Tendance actuelle : La consommation de <strong>sucres</strong> et de <strong>plats préparés</strong> industriels augmente.
+                <!-- CARTE VECTORIELLE DU MONDE (REPRODUCTION FIDÈLE DU DOCUMENT) -->
+                <div class="bg-gradient-to-b from-sky-50 to-blue-50/50 p-4 sm:p-6 rounded-3xl border-2 border-sky-200 shadow-inner space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-600 gap-2 font-bold">
+                        <span class="flex items-center gap-1.5 text-blue-900 font-heading text-sm">
+                            🌐 <strong>Planisphère Thématique</strong> (Échelle à l'équateur : 2 500 km)
+                        </span>
+                        <span class="bg-white/80 px-3 py-1 rounded-full border border-sky-200 text-sky-800">
+                            👆 Clique sur un continent pour inspecter ses calories !
+                        </span>
+                    </div>
+
+                    <!-- SVG DU PLANISPHÈRE AVEC MOTIFS HACHURÉS D'ALIMENTATION CARNÉE -->
+                    <div class="relative w-full overflow-hidden bg-white/70 rounded-2xl border border-sky-200 shadow-sm">
+                        <svg viewBox="0 0 950 480" class="w-full h-auto select-none" id="worldMapSvg">
+                            <defs>
+                                <!-- Motifs de hachures selon l'alimentation carnée -->
+                                <pattern id="hatch-1000" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <line x1="0" y1="0" x2="0" y2="10" stroke="#4a151b" stroke-width="3" />
+                                </pattern>
+                                <pattern id="hatch-700" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <line x1="0" y1="0" x2="0" y2="10" stroke="#7f1d1d" stroke-width="1.8" />
+                                </pattern>
+                                <pattern id="hatch-450" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <circle cx="2" cy="2" r="1.2" fill="#92400e" />
+                                    <circle cx="7" cy="7" r="1.2" fill="#92400e" />
+                                </pattern>
+                                <pattern id="hatch-200" width="10" height="10" patternUnits="userSpaceOnUse">
+                                    <!-- Très peu de hachures / presque uni -->
+                                </pattern>
+                            </defs>
+
+                            <!-- Fond Océans avec labels -->
+                            <rect width="950" height="480" fill="#f0f9ff" />
+                            
+                            <!-- Ligne de l'Équateur -->
+                            <line x1="0" y1="240" x2="950" y2="240" stroke="#94a3b8" stroke-dasharray="6,6" stroke-width="1.2" />
+                            <text x="15" y="235" font-size="10" fill="#64748b" font-weight="bold">Équateur (0°)</text>
+
+                            <!-- Labels Océans -->
+                            <text x="80" y="280" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN PACIFIQUE</text>
+                            <text x="360" y="200" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN ATLANTIQUE</text>
+                            <text x="610" y="320" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN INDIEN</text>
+                            <text x="830" y="280" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN PACIFIQUE</text>
+
+                            <!-- 1. AMÉRIQUE DU NORD (Canada, USA) : >3200 kcal (Rouge foncé) + Hachures >1000 kcal -->
+                            <g class="map-region" onclick="inspectRegion('namerica')" id="reg-namerica">
+                                <path d="M 120,50 L 260,40 L 290,90 L 250,110 L 270,160 L 210,180 L 160,190 L 120,130 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.5" />
+                                <!-- Superposition hachures 1000 kcal -->
+                                <path d="M 120,50 L 260,40 L 290,90 L 250,110 L 270,160 L 210,180 L 160,190 L 120,130 Z" fill="url(#hatch-1000)" opacity="0.55" pointer-events="none" />
+                                <text x="180" y="115" font-size="12" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">AMÉRIQUE DU NORD</text>
+                                <text x="180" y="130" font-size="10" fill="#fecaca" font-weight="bold">>3200 kcal (Carné: 1000)</text>
+                            </g>
+
+                            <!-- Groenland : absence de données -->
+                            <path d="M 290,25 L 350,20 L 330,70 L 285,60 Z" fill="#cbd5e1" stroke="#94a3b8" />
+                            <text x="295" y="48" font-size="8" fill="#475569" font-weight="bold">Groenland</text>
+
+                            <!-- 2. AMÉRIQUE DU SUD : 2500 - 2800 kcal (Orange/Rouge moyen) + ~450/700 kcal carné -->
+                            <g class="map-region" onclick="inspectRegion('samerica')" id="reg-samerica">
+                                <path d="M 220,215 L 290,215 L 320,270 L 290,370 L 250,380 L 230,290 Z" fill="#ea580c" stroke="#9a3412" stroke-width="1.5" />
+                                <path d="M 220,215 L 290,215 L 320,270 L 290,370 L 250,380 L 230,290 Z" fill="url(#hatch-700)" opacity="0.4" pointer-events="none" />
+                                <text x="240" y="290" font-size="11" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">AMÉRIQUE DU SUD</text>
+                                <text x="245" y="305" font-size="9" fill="#ffedd5" font-weight="bold">2800 kcal (Carné: 700)</text>
+                            </g>
+
+                            <!-- 3. EUROPE : >3200 kcal (Rouge foncé) + Hachures >1000 kcal -->
+                            <g class="map-region" onclick="inspectRegion('europe')" id="reg-europe">
+                                <path d="M 440,65 L 530,60 L 540,110 L 490,140 L 440,135 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.5" />
+                                <path d="M 440,65 L 530,60 L 540,110 L 490,140 L 440,135 Z" fill="url(#hatch-1000)" opacity="0.55" pointer-events="none" />
+                                <text x="460" y="95" font-size="12" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">EUROPE</text>
+                                <text x="455" y="110" font-size="9" fill="#fecaca" font-weight="bold">>3200 kcal (Carné: 1000)</text>
+                            </g>
+
+                            <!-- 4. AFRIQUE : <2200 à 2500 kcal (Jaune pâle / Orange clair) + <200 kcal carné -->
+                            <g class="map-region" onclick="inspectRegion('africa')" id="reg-africa">
+                                <!-- Afrique du Nord (2800 kcal orange clair) -->
+                                <path d="M 430,145 L 530,145 L 520,185 L 420,185 Z" fill="#f97316" stroke="#c2410c" stroke-width="1.2" />
+                                <!-- Afrique Subsaharienne (<2200 - 2500 kcal jaune très pâle, très peu carné) -->
+                                <path d="M 410,185 L 535,185 L 550,260 L 500,340 L 460,340 L 430,240 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+                                <path d="M 410,185 L 535,185 L 550,260 L 500,340 L 460,340 L 430,240 Z" fill="url(#hatch-450)" opacity="0.2" pointer-events="none" />
+                                <!-- Madagascar -->
+                                <path d="M 545,290 L 560,290 L 555,330 L 540,320 Z" fill="#fef08a" stroke="#ca8a04" />
+                                
+                                <text x="445" y="240" font-size="12" fill="#713f12" font-weight="900">AFRIQUE</text>
+                                <text x="430" y="255" font-size="9" fill="#854d0e" font-weight="bold">&lt; 2200 - 2500 kcal</text>
+                                <text x="435" y="270" font-size="8" fill="#854d0e" font-weight="bold">(Carné: &lt; 200 kcal)</text>
+                            </g>
+
+                            <!-- 5. ASIE DU NORD / RUSSIE : 2800 - 3200 kcal -->
+                            <g class="map-region" onclick="inspectRegion('russia')" id="reg-russia">
+                                <path d="M 540,55 L 820,50 L 780,120 L 550,115 Z" fill="#c2410c" stroke="#7c2d12" stroke-width="1.5" />
+                                <path d="M 540,55 L 820,50 L 780,120 L 550,115 Z" fill="url(#hatch-700)" opacity="0.45" pointer-events="none" />
+                                <text x="640" y="85" font-size="11" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">RUSSIE / ASIE DU NORD</text>
+                            </g>
+
+                            <!-- 6. ASIE DU SUD (INDE) & ASIE DE L'EST (CHINE) -->
+                            <!-- Inde : 2200 - 2500 kcal, Carné très faible <200 kcal (60 fois moins que la France) -->
+                            <g class="map-region" onclick="inspectRegion('india')" id="reg-india">
+                                <path d="M 580,165 L 650,160 L 640,240 L 610,250 L 585,210 Z" fill="#fef08a" stroke="#a16207" stroke-width="1.5" />
+                                <text x="590" y="200" font-size="11" fill="#713f12" font-weight="900">INDE</text>
+                                <text x="585" y="215" font-size="8" fill="#854d0e" font-weight="bold">Carné: &lt;200 kcal</text>
+                            </g>
+
+                            <!-- Chine / Asie de l'Est : 2800 kcal -->
+                            <g class="map-region" onclick="inspectRegion('china')" id="reg-china">
+                                <path d="M 655,130 L 770,125 L 750,210 L 660,200 Z" fill="#ea580c" stroke="#9a3412" stroke-width="1.5" />
+                                <path d="M 655,130 L 770,125 L 750,210 L 660,200 Z" fill="url(#hatch-450)" opacity="0.5" pointer-events="none" />
+                                <text x="685" y="165" font-size="11" fill="#ffffff" font-weight="900">ASIE DE L'EST</text>
+                            </g>
+
+                            <!-- 7. OCÉANIE / AUSTRALIE : >3200 kcal (Rouge foncé) + Hachures >1000 kcal carnées -->
+                            <g class="map-region" onclick="inspectRegion('oceania')" id="reg-oceania">
+                                <path d="M 720,290 L 810,285 L 820,360 L 730,365 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.5" />
+                                <path d="M 720,290 L 810,285 L 820,360 L 730,365 Z" fill="url(#hatch-1000)" opacity="0.55" pointer-events="none" />
+                                <text x="735" y="325" font-size="11" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">AUSTRALIE</text>
+                                <text x="735" y="340" font-size="9" fill="#fecaca" font-weight="bold">>3200 (Carné: 1000)</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- DOUBLE LÉGENDE FIDÈLE AU DOCUMENT SCANNÉ -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-2xl border border-slate-200">
+                        <!-- Légende 1 : Calories totales -->
+                        <div class="space-y-2">
+                            <span class="text-xs uppercase font-extrabold text-slate-700 tracking-wider flex items-center gap-1.5">
+                                🟡 <span>Consommation de calories par jour et par personne (kcal, 2004)</span>
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <div class="flex-1 text-center py-1.5 bg-[#fef08a] border border-amber-300 text-[11px] font-bold text-amber-950 rounded-l-lg">
+                                    &lt; 2 200
+                                </div>
+                                <div class="flex-1 text-center py-1.5 bg-[#fde047] border border-amber-400 text-[11px] font-bold text-amber-950">
+                                    2 500
+                                </div>
+                                <div class="flex-1 text-center py-1.5 bg-[#ea580c] border border-orange-600 text-[11px] font-bold text-white">
+                                    2 800
+                                </div>
+                                <div class="flex-1 text-center py-1.5 bg-[#991b1b] border border-red-950 text-[11px] font-bold text-white rounded-r-lg">
+                                    > 3 200
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic">Jaune pâle = sous-alimentation / Rouge foncé = surconsommation</p>
+                        </div>
+
+                        <!-- Légende 2 : Hachures / Part carnée -->
+                        <div class="space-y-2">
+                            <span class="text-xs uppercase font-extrabold text-slate-700 tracking-wider flex items-center gap-1.5">
+                                🥩 <span>... dont kilocalories d'origine animale (carnée)</span>
+                            </span>
+                            <div class="grid grid-cols-4 gap-1 text-center text-[10px] font-bold">
+                                <div class="p-1.5 border border-slate-300 rounded bg-slate-50">
+                                    <div class="h-3 border-b border-slate-200 mb-1"></div>
+                                    200 kcal
+                                </div>
+                                <div class="p-1.5 border border-slate-300 rounded bg-slate-100">
+                                    <div class="h-3 border-b-2 border-dotted border-amber-700 mb-1"></div>
+                                    450 kcal
+                                </div>
+                                <div class="p-1.5 border border-slate-300 rounded bg-slate-200">
+                                    <div class="h-3 border-b-2 border-slate-700 mb-1"></div>
+                                    700 kcal
+                                </div>
+                                <div class="p-1.5 border border-slate-400 rounded bg-rose-200 text-rose-950 font-black">
+                                    <div class="h-3 border-b-4 border-red-900 mb-1"></div>
+                                    1 000 kcal
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Bloc 2 : Inégalités -->
-                        <div class="p-5 rounded-2xl bg-blue-50/80 border-2 border-blue-200 flex flex-col sm:flex-row gap-4 items-start">
-                            <span class="text-4xl p-3 bg-white rounded-2xl shadow-sm">🌏</span>
-                            <div class="space-y-1">
-                                <h3 class="font-bold text-blue-900 text-lg font-heading">2. Les inégalités d'accès à la nourriture dans le monde</h3>
-                                <p class="text-slate-700 text-sm leading-relaxed">
-                                    Dans le monde, l'accès à la nourriture est très <strong>inégal</strong> :
-                                </p>
-                                <ul class="list-disc list-inside text-sm text-slate-700 space-y-1 ml-1">
-                                    <li>Les habitants des pays d'<strong>Afrique</strong> et d'<strong>Asie</strong> consomment <strong>moins d'aliments</strong>.</li>
-                                    <li>Les habitants des pays riches d'<strong>Europe</strong> et d'<strong>Amérique</strong> en consomment beaucoup plus.</li>
-                                    <li><em>Exemple marquant :</em> un habitant de l'<strong>Inde</strong> consomme environ <strong>60 fois moins de viande</strong> qu'un Français !</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Bloc 3 : Faim et Gaspillage -->
-                        <div class="p-5 rounded-2xl bg-rose-50/80 border-2 border-rose-200 flex flex-col sm:flex-row gap-4 items-start">
-                            <span class="text-4xl p-3 bg-white rounded-2xl shadow-sm">🗑️</span>
-                            <div class="space-y-1">
-                                <h3 class="font-bold text-rose-900 text-lg font-heading">3. Le grand paradoxe : Faim et Gaspillage</h3>
-                                <p class="text-slate-700 text-sm leading-relaxed">
-                                    Un grand nombre d'êtres humains souffre encore de la <strong>faim</strong> sur notre planète.<br>
-                                    Pourtant, près d'<strong>un cinquième (1/5)</strong> de toute la nourriture disponible sur Terre est <strong>gaspillée chaque jour</strong> !
-                                </p>
-                            </div>
-                        </div>
-
                     </div>
 
-                    <!-- Actions -->
-                    <div class="pt-4 flex flex-wrap gap-3">
-                        <button onclick="navigate('exercises')" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow transition flex items-center gap-2">
-                            <span>🚀</span> Je suis prêt, passer aux exercices !
-                        </button>
-                        <button onclick="window.print()" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-2xl transition flex items-center gap-2">
-                            <span>🖨️</span> Imprimer cette fiche
-                        </button>
+                    <!-- Fiche interactive continent cliqué -->
+                    <div id="regionDetailBox" class="p-4 rounded-2xl bg-white border-2 border-emerald-400 shadow-sm transition-all duration-300">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl" id="regionIcon">💡</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-base" id="regionTitle">Clique sur un continent de la carte ci-dessus</h4>
+                                <p class="text-xs text-slate-600" id="regionDesc">Inspecte l'Amérique du Nord, l'Afrique, l'Inde, l'Europe ou l'Australie pour comprendre la carte.</p>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
+
+                <!-- 3 BLOCS DE COURS COMPLETS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div class="p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-200 space-y-2">
+                        <span class="text-3xl">🥖</span>
+                        <h3 class="font-bold text-amber-950 font-heading text-base">1. La France</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Beaucoup de <strong>céréales</strong>, <strong>produits laitiers</strong> et <strong>viande</strong>.<br>
+                            <em>En forte hausse :</em> les sucres et les plats cuisinés industriels.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-blue-50/80 border-2 border-blue-200 space-y-2">
+                        <span class="text-3xl">⚖️</span>
+                        <h3 class="font-bold text-blue-950 font-heading text-base">2. Les Inégalités Mondiales</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            L'<strong>Afrique</strong> et l'<strong>Asie</strong> consomment beaucoup moins que l'Europe et l'Amérique.<br>
+                            Un Indien mange <strong>60 fois moins de viande</strong> qu'un Français !
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-rose-50/80 border-2 border-rose-200 space-y-2">
+                        <span class="text-3xl">🗑️</span>
+                        <h3 class="font-bold text-rose-950 font-heading text-base">3. Le Paradoxe Alimentaire</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Alors que des centaines de millions d'humains <strong>souffrent de la faim</strong>, <strong>un cinquième (1/5)</strong> de toute la nourriture est gaspillée chaque jour.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex flex-wrap gap-3">
+                    <button onclick="selectExercise(6)" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow transition flex items-center gap-2">
+                        <span>🧭</span> S'entraîner sur la Carte (Exercice 6)
+                    </button>
+                    <button onclick="navigate('exercises')" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition">
+                        Voir les 6 Exercices
+                    </button>
+                </div>
+
             </div>
 
         </section>
 
         <!-- ======================================================== -->
-        <!-- PAGE 3 : EXERCICES AVEC SÉLECTEUR RAPIDE                -->
+        <!-- PAGE 3 : LES 6 EXERCICES INTERACTIFS                    -->
         <!-- ======================================================== -->
         <section id="page-exercises" class="page-view space-y-6">
             
-            <!-- Sélecteur d'exercices pills / tabs -->
+            <!-- Barre de navigation des 6 onglets -->
             <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 overflow-x-auto">
-                <button onclick="selectExercise(1)" id="ex-tab-1" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow">
+                <button onclick="selectExercise(1)" id="ex-tab-1" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow">
                     <span>1. Vrai / Faux</span>
-                    <span id="tab-score-1" class="text-xs bg-black/20 px-1.5 py-0.5 rounded-md">0/4</span>
+                    <span id="tab-score-1" class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded-md">0/4</span>
                 </button>
-                <button onclick="selectExercise(2)" id="ex-tab-2" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                <button onclick="selectExercise(2)" id="ex-tab-2" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
                     <span>2. Texte à Trous</span>
-                    <span id="tab-score-2" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                    <span id="tab-score-2" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
                 </button>
-                <button onclick="selectExercise(3)" id="ex-tab-3" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
-                    <span>3. QCM Géographique</span>
-                    <span id="tab-score-3" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                <button onclick="selectExercise(3)" id="ex-tab-3" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>3. QCM Géo</span>
+                    <span id="tab-score-3" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
                 </button>
-                <button onclick="selectExercise(4)" id="ex-tab-4" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
-                    <span>4. Les Chiffres Chocs</span>
-                    <span id="tab-score-4" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                <button onclick="selectExercise(4)" id="ex-tab-4" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>4. Chiffres Chocs</span>
+                    <span id="tab-score-4" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
                 </button>
-                <button onclick="selectExercise(5)" id="ex-tab-5" class="ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                <button onclick="selectExercise(5)" id="ex-tab-5" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
                     <span>5. Le Grand Tri</span>
-                    <span id="tab-score-5" class="text-xs bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                    <span id="tab-score-5" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
+                </button>
+                <button onclick="selectExercise(6)" id="ex-tab-6" class="ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+                    <span>6. 🗺️ Carte du Monde</span>
+                    <span id="tab-score-6" class="text-[10px] bg-black/10 px-1.5 py-0.5 rounded-md">0/4</span>
                 </button>
             </div>
 
-            <!-- CONTENEURS D'EXERCICES -->
-            
             <!-- EXERCICE 1 : VRAI / FAUX -->
             <div id="exercise-pane-1" class="exercise-pane space-y-5">
                 <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
@@ -378,14 +524,13 @@
                             <span class="text-xs font-black uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Défi 1 • 4 Points</span>
                             <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Vrai ou Faux ?</h3>
                         </div>
-                        <p class="text-xs font-semibold text-slate-500">Lis chaque affirmation et sélectionne la bonne réponse.</p>
+                        <p class="text-xs font-semibold text-slate-500">Sélectionne VRAI ou FAUX pour chaque proposition.</p>
                     </div>
 
                     <div class="space-y-4" id="vfQuestionsList">
-                        <!-- Q1 -->
                         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-1">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <p class="font-bold text-slate-800 text-base">1. En France, la consommation de sucres et de plats préparés est en augmentation.</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">1. En France, la consommation de sucres et de plats préparés est en augmentation.</p>
                                 <div class="flex items-center gap-2">
                                     <button onclick="answerVF(1, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
                                     <button onclick="answerVF(1, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
@@ -394,10 +539,9 @@
                             <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
                         </div>
 
-                        <!-- Q2 -->
                         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-2">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <p class="font-bold text-slate-800 text-base">2. Tous les pays du monde consomment exactement la même quantité de nourriture.</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">2. Tous les habitants de la Terre ont un accès identique et égalitaire à la nourriture.</p>
                                 <div class="flex items-center gap-2">
                                     <button onclick="answerVF(2, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
                                     <button onclick="answerVF(2, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
@@ -406,10 +550,9 @@
                             <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
                         </div>
 
-                        <!-- Q3 -->
                         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-3">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <p class="font-bold text-slate-800 text-base">3. Les Français consomment beaucoup de produits céréaliers, laitiers et de viande.</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">3. Les Français consomment beaucoup de produits céréaliers, de produits laitiers et de viande.</p>
                                 <div class="flex items-center gap-2">
                                     <button onclick="answerVF(3, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
                                     <button onclick="answerVF(3, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
@@ -418,10 +561,9 @@
                             <div class="feedback-msg text-xs font-bold mt-2.5 hidden"></div>
                         </div>
 
-                        <!-- Q4 -->
                         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200" id="vf-row-4">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <p class="font-bold text-slate-800 text-base">4. La nourriture disponible est entièrement consommée, il n'y a aucun gaspillage.</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">4. La nourriture disponible est entièrement mangée : rien n'est jeté chaque jour.</p>
                                 <div class="flex items-center gap-2">
                                     <button onclick="answerVF(4, true, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-emerald-500 transition">VRAI</button>
                                     <button onclick="answerVF(4, false, this)" class="vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-rose-500 transition">FAUX</button>
@@ -433,10 +575,10 @@
 
                     <div class="pt-4 flex justify-between items-center border-t border-slate-100">
                         <button onclick="resetExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
-                            🔄 Réinitialiser l'exercice 1
+                            🔄 Recommencer Défi 1
                         </button>
                         <button onclick="selectExercise(2)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
-                            Exercice suivant ➡️
+                            Défi 2 : Texte à Trous ➡️
                         </button>
                     </div>
                 </div>
@@ -450,12 +592,11 @@
                             <span class="text-xs font-black uppercase tracking-wider text-blue-700 bg-blue-100 px-3 py-1 rounded-full">Défi 2 • 4 Points</span>
                             <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Texte à Trous</h3>
                         </div>
-                        <p class="text-xs font-semibold text-slate-500">Clique sur un mot ci-dessous, puis sur l'emplacement vide voulu !</p>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur un mot, puis sur l'encadré vide où tu veux le placer.</p>
                     </div>
 
-                    <!-- Banque de mots -->
                     <div class="p-4 bg-blue-50/60 rounded-2xl border border-blue-100 space-y-2">
-                        <span class="text-xs uppercase font-extrabold text-blue-900 tracking-wider">Mots disponibles :</span>
+                        <span class="text-xs uppercase font-extrabold text-blue-900 tracking-wider">Mots à placer :</span>
                         <div class="flex flex-wrap gap-2" id="clozeBank">
                             <button onclick="pickWord(this)" data-word="inégalités" class="cloze-chip px-4 py-2 bg-white border-2 border-blue-300 hover:border-blue-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">inégalités</button>
                             <button onclick="pickWord(this)" data-word="60" class="cloze-chip px-4 py-2 bg-white border-2 border-blue-300 hover:border-blue-600 rounded-xl font-black text-sm shadow-sm cursor-pointer transition">60</button>
@@ -464,8 +605,7 @@
                         </div>
                     </div>
 
-                    <!-- Phrase avec trous -->
-                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-base sm:text-lg leading-loose text-slate-800 font-medium space-y-3">
+                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-base leading-loose text-slate-800 font-medium space-y-3">
                         Dans le monde, il y a de profondes
                         <span onclick="dropWord(this)" data-expected="inégalités" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">
                             ... ? ...
@@ -478,7 +618,7 @@
                         <span onclick="dropWord(this)" data-expected="faim" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[110px] transition">
                             ... ? ...
                         </span>
-                        alors que près d'un cinquième de la nourriture est chaque jour
+                        alors que près d'un cinquième de la nourriture disponible est chaque jour
                         <span onclick="dropWord(this)" data-expected="gaspillée" class="cloze-slot inline-flex items-center justify-center px-4 py-1 border-2 border-dashed border-blue-400 bg-white text-blue-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">
                             ... ? ...
                         </span> !
@@ -496,10 +636,10 @@
 
                     <div class="pt-4 flex justify-between items-center border-t border-slate-100">
                         <button onclick="selectExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
-                            ⬅️ Exercice précédent
+                            ⬅️ Défi 1
                         </button>
                         <button onclick="selectExercise(3)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
-                            Exercice suivant ➡️
+                            Défi 3 : QCM Géo ➡️
                         </button>
                     </div>
                 </div>
@@ -516,14 +656,13 @@
                         <p class="text-xs font-semibold text-slate-500">2 questions à choix multiples (2 points chacune)</p>
                     </div>
 
-                    <!-- Question 3.1 -->
                     <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3" id="qcm-box-1">
                         <p class="font-extrabold text-slate-900 text-base">
                             1. Quels continents sont cités dans la leçon comme consommant globalement MOINS d'aliments ?
                         </p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             <button onclick="answerQCM(1, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
-                                A) L'Europe et l'Amérique
+                                A) L'Europe et l'Amérique du Nord
                             </button>
                             <button onclick="answerQCM(1, true, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
                                 B) L'Afrique et l'Asie
@@ -532,29 +671,28 @@
                                 C) L'Océanie et l'Antarctique
                             </button>
                             <button onclick="answerQCM(1, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
-                                D) L'Australie et le Pôle Nord
+                                D) Le Pôle Sud et le Groenland
                             </button>
                         </div>
                         <div class="qcm-feedback text-xs font-bold mt-2 hidden"></div>
                     </div>
 
-                    <!-- Question 3.2 -->
                     <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3" id="qcm-box-2">
                         <p class="font-extrabold text-slate-900 text-base">
                             2. Qu'est-ce qui caractérise l'alimentation en France selon le cours ?
                         </p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             <button onclick="answerQCM(2, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
-                                A) On ne mange presque pas de céréales ni de viande
+                                A) On ne mange presque pas de produits laitiers
                             </button>
                             <button onclick="answerQCM(2, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
-                                B) La consommation de sucre est en chute libre
+                                B) La consommation de sucre est en très forte diminution
                             </button>
                             <button onclick="answerQCM(2, true, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
                                 C) On mange beaucoup de céréales, produits laitiers et viande
                             </button>
                             <button onclick="answerQCM(2, false, this)" class="qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition">
-                                D) Tous les aliments sont issus à 100% de la cueillette sauvage
+                                D) Tous les repas sont exclusivement végétariens
                             </button>
                         </div>
                         <div class="qcm-feedback text-xs font-bold mt-2 hidden"></div>
@@ -562,16 +700,16 @@
 
                     <div class="pt-4 flex justify-between items-center border-t border-slate-100">
                         <button onclick="selectExercise(2)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
-                            ⬅️ Exercice précédent
+                            ⬅️ Défi 2
                         </button>
                         <button onclick="selectExercise(4)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
-                            Exercice suivant ➡️
+                            Défi 4 : Chiffres Chocs ➡️
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- EXERCICE 4 : RELIER LES CARTES / CHIFFRES CHOCS -->
+            <!-- EXERCICE 4 : RELIER LES CHIFFRES CHOCS -->
             <div id="exercise-pane-4" class="exercise-pane hidden space-y-5">
                 <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -579,11 +717,10 @@
                             <span class="text-xs font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-3 py-1 rounded-full">Défi 4 • 4 Points</span>
                             <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Associer les Faits & Chiffres Chocs</h3>
                         </div>
-                        <p class="text-xs font-semibold text-slate-500">Clique d'abord sur une carte de gauche, puis sur son équivalent à droite.</p>
+                        <p class="text-xs font-semibold text-slate-500">Clique d'abord sur une case à gauche, puis sur son correspondant à droite.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="matchGameGrid">
-                        <!-- Colonne Gauche -->
                         <div class="space-y-3" id="matchColLeft">
                             <button onclick="selectMatchCard(this, 'left', 'inde')" data-key="inde" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
                                 🇮🇳 Habitant de l'Inde
@@ -599,7 +736,6 @@
                             </button>
                         </div>
 
-                        <!-- Colonne Droite (ordre mélangé) -->
                         <div class="space-y-3" id="matchColRight">
                             <button onclick="selectMatchCard(this, 'right', 'gaspillage')" data-key="gaspillage" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
                                 Près d'un cinquième (1/5) est gaspillé chaque jour
@@ -608,10 +744,10 @@
                                 Consomme 60 fois moins de viande qu'un Français
                             </button>
                             <button onclick="selectMatchCard(this, 'right', 'france')" data-key="france" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
-                                Forte consommation de produits céréaliers, laitiers et viande
+                                Forte consommation de céréales, produits laitiers et viande
                             </button>
                             <button onclick="selectMatchCard(this, 'right', 'riches')" data-key="riches" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
-                                Pays riches consommant plus d'aliments que l'Afrique et l'Asie
+                                Pays riches consommant beaucoup plus d'aliments que l'Afrique et l'Asie
                             </button>
                         </div>
                     </div>
@@ -620,16 +756,16 @@
 
                     <div class="pt-4 flex justify-between items-center border-t border-slate-100">
                         <button onclick="resetExercise(4)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
-                            🔄 Recommencer l'association
+                            🔄 Recommencer Défi 4
                         </button>
                         <button onclick="selectExercise(5)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
-                            Exercice suivant ➡️
+                            Défi 5 : Le Grand Tri ➡️
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- EXERCICE 5 : TRI ALIMENTAIRE -->
+            <!-- EXERCICE 5 : LE GRAND TRI -->
             <div id="exercise-pane-5" class="exercise-pane hidden space-y-5">
                 <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -637,12 +773,11 @@
                             <span class="text-xs font-black uppercase tracking-wider text-rose-700 bg-rose-100 px-3 py-1 rounded-full">Défi 5 • 4 Points</span>
                             <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Grand Tri de l'Alimentation</h3>
                         </div>
-                        <p class="text-xs font-semibold text-slate-500">Clique sur une étiquette ci-dessous pour la sélectionner, puis clique sur la bonne colonne de destination !</p>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur une étiquette, puis dépose-la dans le bac correspondant.</p>
                     </div>
 
-                    <!-- Éléments à trier -->
                     <div class="p-4 bg-slate-100/70 rounded-2xl border border-slate-200 space-y-2">
-                        <span class="text-xs uppercase font-extrabold text-slate-600">Étiquettes à ranger :</span>
+                        <span class="text-xs uppercase font-extrabold text-slate-600">Étiquettes à classer :</span>
                         <div class="flex flex-wrap gap-2.5 min-h-[48px]" id="sortOriginPool">
                             <div onclick="selectSortTag(this)" data-category="france-base" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
                                 🥛 Produits laitiers & Fromages
@@ -654,44 +789,38 @@
                                 🌍 Habitants d'Afrique et d'Asie
                             </div>
                             <div onclick="selectSortTag(this)" data-category="france-base" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
-                                🥖 Produits céréaliers & Viande
+                                🥖 Céréales & Viandes traditionnelles
                             </div>
                             <div onclick="selectSortTag(this)" data-category="france-hausse" class="sort-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-sm cursor-pointer hover:border-rose-400 transition">
-                                🍬 Sucres et confiseries
+                                🍬 Sucres & Confiseries
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3 Bacs de destination -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        
-                        <!-- Bac 1 -->
-                        <div onclick="depositSortTag('france-base')" class="p-4 rounded-2xl bg-emerald-50/70 border-2 border-emerald-300 hover:border-emerald-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                        <div onclick="depositSortTag('france-base')" class="p-4 rounded-2xl bg-emerald-50/70 border-2 border-emerald-300 hover:border-emerald-500 cursor-pointer transition flex flex-col min-h-[160px]">
                             <div class="font-extrabold text-emerald-900 text-sm mb-2 flex items-center justify-between">
-                                <span>Traditionnellement très consommés en France</span>
-                                <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded-full">Base</span>
+                                <span>Base en France</span>
+                                <span class="text-xs bg-emerald-200 px-2 py-0.5 rounded-full">Tradition</span>
                             </div>
                             <div id="drop-target-france-base" class="space-y-2 flex-grow"></div>
                         </div>
 
-                        <!-- Bac 2 -->
-                        <div onclick="depositSortTag('france-hausse')" class="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300 hover:border-amber-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                        <div onclick="depositSortTag('france-hausse')" class="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300 hover:border-amber-500 cursor-pointer transition flex flex-col min-h-[160px]">
                             <div class="font-extrabold text-amber-900 text-sm mb-2 flex items-center justify-between">
-                                <span>Consommation qui AUGMENTE en France</span>
-                                <span class="text-xs bg-amber-200 px-2 py-0.5 rounded-full">En hausse</span>
+                                <span>En HAUSSE en France</span>
+                                <span class="text-xs bg-amber-200 px-2 py-0.5 rounded-full">Évolution</span>
                             </div>
                             <div id="drop-target-france-hausse" class="space-y-2 flex-grow"></div>
                         </div>
 
-                        <!-- Bac 3 -->
-                        <div onclick="depositSortTag('monde-moins')" class="p-4 rounded-2xl bg-purple-50/70 border-2 border-purple-300 hover:border-purple-500 cursor-pointer transition flex flex-col min-h-[170px]">
+                        <div onclick="depositSortTag('monde-moins')" class="p-4 rounded-2xl bg-purple-50/70 border-2 border-purple-300 hover:border-purple-500 cursor-pointer transition flex flex-col min-h-[160px]">
                             <div class="font-extrabold text-purple-900 text-sm mb-2 flex items-center justify-between">
-                                <span>Consomment MOINS d'aliments</span>
-                                <span class="text-xs bg-purple-200 px-2 py-0.5 rounded-full">Monde</span>
+                                <span>Consomment MOINS</span>
+                                <span class="text-xs bg-purple-200 px-2 py-0.5 rounded-full">Inégalités</span>
                             </div>
                             <div id="drop-target-monde-moins" class="space-y-2 flex-grow"></div>
                         </div>
-
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -699,20 +828,111 @@
                             Valider le tri
                         </button>
                         <button onclick="resetExercise(5)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
-                            Vider les bacs
+                            Recommencer
                         </button>
                         <div id="sortFeedback" class="text-sm font-bold ml-2"></div>
                     </div>
 
                     <div class="pt-4 flex justify-between items-center border-t border-slate-100">
                         <button onclick="selectExercise(4)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
-                            ⬅️ Exercice précédent
+                            ⬅️ Défi 4
+                        </button>
+                        <button onclick="selectExercise(6)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow flex items-center gap-2">
+                            Défi 6 : 🗺️ Carte du Monde ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 6 (NOUVEAU) : OBSERVATION DE LA CARTE MONDIALE -->
+            <div id="exercise-pane-6" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-cyan-700 bg-cyan-100 px-3 py-1 rounded-full">Défi 6 • 4 Points</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Analyse du Document & de la Carte</h3>
+                        </div>
+                        <button onclick="navigate('lesson')" class="text-xs font-bold text-cyan-700 bg-cyan-50 border border-cyan-300 px-3 py-1.5 rounded-xl hover:bg-cyan-100">
+                            🗺️ Revoir la Carte du monde
+                        </button>
+                    </div>
+
+                    <p class="text-sm text-slate-600">
+                        Réponds à ces 4 questions en t'appuyant sur la carte du document : <em>« Ration calorique par habitant et alimentation carnée »</em>.
+                    </p>
+
+                    <!-- Question 6.1 -->
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="map-q-1">
+                        <p class="font-bold text-slate-800 text-sm">
+                            1. D'après la légende de couleur (rouge foncé), quels continents consomment <strong>plus de 3 200 calories</strong> par habitant et par jour ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                            <button onclick="answerMapQ(1, true, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                A) L'Amérique du Nord, l'Europe et l'Australie
+                            </button>
+                            <button onclick="answerMapQ(1, false, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                B) L'Afrique subsaharienne et l'Inde
+                            </button>
+                        </div>
+                        <div class="map-fb text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- Question 6.2 -->
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="map-q-2">
+                        <p class="font-bold text-slate-800 text-sm">
+                            2. Comment sont représentées les <strong>kilocalories d'origine animale</strong> (viande, lait) sur cette carte ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                            <button onclick="answerMapQ(2, false, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                A) Par des cercles de différentes tailles
+                            </button>
+                            <button onclick="answerMapQ(2, true, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                B) Par des hachures et trames grises/noires plus ou moins denses
+                            </button>
+                        </div>
+                        <div class="map-fb text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- Question 6.3 -->
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="map-q-3">
+                        <p class="font-bold text-slate-800 text-sm">
+                            3. Regarde l'<strong>Inde</strong> sur la carte : quelle est sa situation par rapport à l'alimentation d'origine animale ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                            <button onclick="answerMapQ(3, true, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                A) Très faible (moins de 200 kcal carnées, sans hachures denses)
+                            </button>
+                            <button onclick="answerMapQ(3, false, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                B) La plus forte du monde (plus de 1000 kcal carnées)
+                            </button>
+                        </div>
+                        <div class="map-fb text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- Question 6.4 -->
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="map-q-4">
+                        <p class="font-bold text-slate-800 text-sm">
+                            4. Quelle couleur indique sur la carte les pays en situation de <strong>sous-alimentation</strong> (moins de 2 200 calories/jour) ?
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                            <button onclick="answerMapQ(4, true, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                A) Le jaune pâle (notamment en Afrique subsaharienne)
+                            </button>
+                            <button onclick="answerMapQ(4, false, this)" class="map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition">
+                                B) Le rouge foncé
+                            </button>
+                        </div>
+                        <div class="map-fb text-xs font-bold hidden"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="resetExercise(6)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            🔄 Recommencer Défi 6
                         </button>
                         <button onclick="navigate('trophies')" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-sm shadow flex items-center gap-2">
                             Voir mes Trophées Débloqués 🏆
                         </button>
                     </div>
-
                 </div>
             </div>
 
@@ -731,10 +951,10 @@
                             Salle d'Honneur
                         </span>
                         <h2 class="text-3xl font-black font-heading tracking-tight mt-1">
-                            🏆 Galerie des Trophées & Badges
+                            🏆 Galerie des 7 Trophées & Badges
                         </h2>
                         <p class="text-slate-300 text-sm">
-                            Accomplis les quêtes géographiques pour décrocher tous les badges et devenir un expert mondial.
+                            Accomplis les quêtes géographiques et cartographiques pour décrocher tous les badges.
                         </p>
                     </div>
 
@@ -747,12 +967,8 @@
                     </div>
                 </div>
 
-                <!-- Grille des 6 Trophées -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="trophiesListContainer">
-                    <!-- Généré dynamiquement par JS -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="trophiesListContainer"></div>
 
-                <!-- Barre d'actions & Reset -->
                 <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
                     <button onclick="navigate('exercises')" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm transition">
                         🎯 Continuer les Défis
@@ -768,50 +984,38 @@
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
         <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p>🌍 <strong>Mission Géo-Alimentation</strong> • Application pédagogique de géographie - Cycle 3 / Collège.</p>
-            <p class="text-slate-400">Respecte le programme scolaire • Conçu en HTML/JS pur sans dépendance.</p>
+            <p>🌍 <strong>Mission Géo-Alimentation</strong> • Basé sur le document cartographique <em>« Ration calorique par habitant et alimentation carnée »</em>.</p>
+            <p class="text-slate-400">Application éducative interactive 100% autonome.</p>
         </div>
     </footer>
 
     <!-- LOGIQUE JAVASCRIPT & STATE MANAGEMENT -->
     <script>
-        // --- ÉTAT GLOBAL DE L'APPLICATION ---
         const gameState = {
-            scores: {
-                ex1: 0,
-                ex2: 0,
-                ex3: 0,
-                ex4: 0,
-                ex5: 0
-            },
-            completed: {
-                ex1: false,
-                ex2: false,
-                ex3: false,
-                ex4: false,
-                ex5: false
-            },
+            scores: { ex1: 0, ex2: 0, ex3: 0, ex4: 0, ex5: 0, ex6: 0 },
+            completed: { ex1: false, ex2: false, ex3: false, ex4: false, ex5: false, ex6: false },
             trophies: {
-                first_step: false,      // "Premier Pas" (Avoir réussi son premier exercice)
-                numbers_expert: false,  // "Expert des Chiffres" (Parfait sur l'exercice 4 des chiffres 60x et 1/5)
-                explorer: false,        // "Explorateur du Monde" (Avoir réussi le QCM géographie)
-                anti_waste: false,      // "Héros Anti-Gaspillage" (Avoir réussi le texte à trous sur le gaspillage)
-                master: false,          // "Maître du Savoir" (20/20 total)
-                curious: false          // "Curieux Infatigable" (Avoir lu la fiche leçon)
+                first_step: false,
+                numbers_expert: false,
+                explorer: false,
+                anti_waste: false,
+                map_master: false,   // Nouveau trophée pour l'analyse de carte
+                master: false,       // 24/24
+                curious: false
             },
             soundEnabled: true
         };
 
         const TROPHIES_DEF = [
-            { id: 'first_step', icon: '🌱', name: 'Premier Pas', desc: 'Complète au moins un exercice avec brio.' },
+            { id: 'first_step', icon: '🌱', name: 'Premier Pas', desc: 'Complète au moins un défi avec succès.' },
             { id: 'numbers_expert', icon: '🔢', name: 'Expert des Chiffres', desc: 'Associe parfaitement le 60x moins et le 1/5ème gaspillé.' },
             { id: 'explorer', icon: '🧭', name: 'Explorateur du Monde', desc: 'Identifie les continents dans le QCM Géographique.' },
             { id: 'anti_waste', icon: '🥦', name: 'Héros Anti-Gaspillage', desc: 'Complète le texte sur la faim et le 1/5ème jeté.' },
-            { id: 'master', icon: '👑', name: 'Maître du Savoir', desc: 'Obtiens la note maximale de 20 sur 20 à tous les défis.' },
-            { id: 'curious', icon: '📜', name: 'Curieux Infatigable', desc: 'Consulte et révise la Fiche de Leçon complète.' }
+            { id: 'map_master', icon: '🗺️', name: 'Cartographe Émérite', desc: 'Obtiens 4/4 sur l\'analyse de la carte calorique mondiale.' },
+            { id: 'master', icon: '👑', name: 'Grand Maître Mondial', desc: 'Obtiens le score parfait de 24 sur 24 à tous les exercices !' },
+            { id: 'curious', icon: '📜', name: 'Curieux Infatigable', desc: 'Consulte et explore la carte et la leçon complète.' }
         ];
 
         const EXERCISES_META = [
@@ -819,19 +1023,18 @@
             { id: 2, title: 'Texte à Trous', icon: '✍️', desc: 'Remets les mots clés à leur place exacte dans le texte.', max: 4 },
             { id: 3, title: 'QCM Géographique', icon: '🌐', desc: 'Teste tes connaissances sur l\'Asie, l\'Afrique et l\'Europe.', max: 4 },
             { id: 4, title: 'Les Chiffres Chocs', icon: '🧩', desc: 'Associe 60x moins et 1/5ème aux bonnes définitions.', max: 4 },
-            { id: 5, title: 'Le Grand Tri', icon: '📦', desc: 'Classe les aliments selon les tendances de consommation.', max: 4 }
+            { id: 5, title: 'Le Grand Tri', icon: '📦', desc: 'Classe les aliments selon les tendances de consommation.', max: 4 },
+            { id: 6, title: 'Carte du Monde', icon: '🗺️', desc: 'Analyse la ration calorique et l\'alimentation carnée sur la carte.', max: 4 }
         ];
 
-        // --- AUDIO SYNTHÉTISEUR (Web Audio API) ---
+        // --- SYNTHÉTISEUR AUDIO ---
         let audioCtx = null;
         function getAudioContext() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 if (AudioContextClass) audioCtx = new AudioContextClass();
             }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             return audioCtx;
         }
 
@@ -840,13 +1043,12 @@
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
-
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-
                 const now = ctx.currentTime;
+
                 if (type === 'success') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(440, now);
@@ -864,61 +1066,55 @@
                     osc.start(now);
                     osc.stop(now + 0.2);
                 } else if (type === 'trophy') {
-                    // Petite mélodie festive
                     const notes = [523.25, 659.25, 783.99, 1046.50];
                     notes.forEach((freq, idx) => {
-                        const noteOsc = ctx.createOscillator();
-                        const noteGain = ctx.createGain();
-                        noteOsc.type = 'sine';
-                        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
-                        noteGain.gain.setValueAtTime(0.15, now + idx * 0.1);
-                        noteGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.2);
-                        noteOsc.connect(noteGain);
-                        noteGain.connect(ctx.destination);
-                        noteOsc.start(now + idx * 0.1);
-                        noteOsc.stop(now + idx * 0.1 + 0.2);
+                        const nOsc = ctx.createOscillator();
+                        const nGain = ctx.createGain();
+                        nOsc.type = 'sine';
+                        nOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        nGain.gain.setValueAtTime(0.15, now + idx * 0.1);
+                        nGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.2);
+                        nOsc.connect(nGain);
+                        nGain.connect(ctx.destination);
+                        nOsc.start(now + idx * 0.1);
+                        nOsc.stop(now + idx * 0.1 + 0.2);
                     });
                 } else if (type === 'click') {
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(600, now);
-                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.setValueAtTime(0.04, now);
                     gain.gain.linearRampToValueAtTime(0.001, now + 0.05);
                     osc.start(now);
                     osc.stop(now + 0.05);
                 }
-            } catch (e) {
-                // Silencieux si non supporté
-            }
+            } catch (e) {}
         }
 
         function toggleAudio() {
             gameState.soundEnabled = !gameState.soundEnabled;
-            const btn = document.getElementById('soundToggle');
-            btn.innerText = gameState.soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundToggle').innerText = gameState.soundEnabled ? '🔊' : '🔇';
             saveState();
         }
 
         // --- LOCAL STORAGE ---
         function loadState() {
             try {
-                const saved = localStorage.getItem('geo_food_lesson_save');
+                const saved = localStorage.getItem('geo_food_lesson_save_v2');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     Object.assign(gameState, parsed);
                 }
-            } catch (e) {
-                console.warn("Storage non accessible");
-            }
+            } catch (e) {}
             updateUI();
         }
 
         function saveState() {
             try {
-                localStorage.setItem('geo_food_lesson_save', JSON.stringify(gameState));
+                localStorage.setItem('geo_food_lesson_save_v2', JSON.stringify(gameState));
             } catch (e) {}
         }
 
-        // --- NAVIGATION SPA ---
+        // --- NAVIGATION ---
         function navigate(pageId) {
             playSound('click');
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
@@ -931,63 +1127,66 @@
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Badge curiosité si l'élève consulte la leçon
             if (pageId === 'lesson' && !gameState.trophies.curious) {
                 unlockTrophy('curious');
             }
         }
 
-        // --- SÉLECTION D'EXERCICE ---
         function selectExercise(num) {
             playSound('click');
             navigate('exercises');
 
             document.querySelectorAll('.exercise-pane').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.ex-tab-btn').forEach(btn => {
-                btn.className = "ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5";
+                btn.className = "ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5";
             });
 
             const activePane = document.getElementById(`exercise-pane-${num}`);
             const activeTab = document.getElementById(`ex-tab-${num}`);
             if (activePane) activePane.classList.remove('hidden');
             if (activeTab) {
-                activeTab.className = "ex-tab-btn px-4 py-2 rounded-xl text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow";
+                activeTab.className = "ex-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-emerald-600 text-white flex items-center gap-1.5 shadow";
             }
         }
 
-        // --- GESTION DU SCORE & TROPHÉES ---
+        // --- INSPECTION CARTE SVG ---
+        const regionData = {
+            namerica: { title: "Amérique du Nord (USA, Canada)", icon: "🍔", desc: "Ration très élevée (> 3 200 kcal/jour) et forte alimentation carnée (> 1 000 kcal d'origine animale, hachures très denses)." },
+            europe: { title: "Europe (France, Allemagne...)", icon: "🥖", desc: "Ration supérieure à 3 200 kcal/jour. Très forte part carnée et laitière (1 000 kcal d'origine animale)." },
+            africa: { title: "Afrique Subsaharienne", icon: "🌾", desc: "Ration souvent inférieure à 2 200 kcal/jour (sous-alimentation, jaune pâle). Alimentation carnée très faible (< 200 kcal)." },
+            india: { title: "Inde (Asie du Sud)", icon: "🍛", desc: "Ration entre 2 200 et 2 500 kcal/jour. Consommation carnée exceptionnellement faible (< 200 kcal, soit 60x moins qu'un Français) due aux cultures végétariennes." },
+            samerica: { title: "Amérique du Sud (Brésil, Argentine)", icon: "🥩", desc: "Ration moyenne à forte (2 800 kcal). Présence notable d'élevage avec part carnée élevée (~700 kcal)." },
+            russia: { title: "Russie & Asie du Nord", icon: "❄️", desc: "Ration de 2 800 à 3 200 kcal/jour avec part carnée modérée à élevée (700 kcal)." },
+            china: { title: "Asie de l'Est (Chine)", icon: "🍚", desc: "Ration d'environ 2 800 kcal/jour avec part carnée intermédiaire (environ 450 à 700 kcal)." },
+            oceania: { title: "Australie / Océanie", icon: "🦘", desc: "Ration très élevée (> 3 200 kcal) et alimentation carnée importante (> 1 000 kcal d'origine animale)." }
+        };
+
+        function inspectRegion(key) {
+            playSound('click');
+            const data = regionData[key];
+            if (!data) return;
+            document.getElementById('regionIcon').innerText = data.icon;
+            document.getElementById('regionTitle').innerText = data.title;
+            document.getElementById('regionDesc').innerText = data.desc;
+        }
+
+        // --- TOTAL & TROPHÉES ---
         function calculateTotalScore() {
-            return gameState.scores.ex1 + gameState.scores.ex2 + gameState.scores.ex3 + gameState.scores.ex4 + gameState.scores.ex5;
+            return gameState.scores.ex1 + gameState.scores.ex2 + gameState.scores.ex3 + gameState.scores.ex4 + gameState.scores.ex5 + gameState.scores.ex6;
         }
 
         function checkTrophiesCriteria() {
             const total = calculateTotalScore();
 
-            // Premier pas : au moins un exercice terminé avec score > 0
             if (!gameState.trophies.first_step) {
                 const anyDone = Object.values(gameState.scores).some(s => s >= 2);
                 if (anyDone) unlockTrophy('first_step');
             }
-
-            // Expert des chiffres : Exercice 4 à 4/4
-            if (!gameState.trophies.numbers_expert && gameState.scores.ex4 === 4) {
-                unlockTrophy('numbers_expert');
-            }
-
-            // Explorateur du monde : Exercice 3 à 4/4
-            if (!gameState.trophies.explorer && gameState.scores.ex3 === 4) {
-                unlockTrophy('explorer');
-            }
-
-            // Anti-gaspillage : Exercice 2 à 4/4
-            if (!gameState.trophies.anti_waste && gameState.scores.ex2 === 4) {
-                unlockTrophy('anti_waste');
-            }
-
-            // Maître du savoir : 20/20
-            if (!gameState.trophies.master && total === 20) {
-                unlockTrophy('master');
-            }
+            if (!gameState.trophies.numbers_expert && gameState.scores.ex4 === 4) unlockTrophy('numbers_expert');
+            if (!gameState.trophies.explorer && gameState.scores.ex3 === 4) unlockTrophy('explorer');
+            if (!gameState.trophies.anti_waste && gameState.scores.ex2 === 4) unlockTrophy('anti_waste');
+            if (!gameState.trophies.map_master && gameState.scores.ex6 === 4) unlockTrophy('map_master');
+            if (!gameState.trophies.master && total === 24) unlockTrophy('master');
         }
 
         function unlockTrophy(trophyId) {
@@ -998,11 +1197,8 @@
             launchConfetti();
             playSound('trophy');
 
-            // Notification visuelle
             const trophy = TROPHIES_DEF.find(t => t.id === trophyId);
-            if (trophy) {
-                showToast(`🏆 Trophée Débloqué : ${trophy.name} !`);
-            }
+            if (trophy) showToast(`🏆 Trophée Débloqué : ${trophy.name} !`);
         }
 
         function showToast(msg) {
@@ -1011,52 +1207,38 @@
             toast.innerHTML = `<span class="text-2xl">🎉</span> <span>${msg}</span>`;
             document.body.appendChild(toast);
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-            }, 50);
-
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 50);
             setTimeout(() => {
                 toast.classList.add('translate-y-10', 'opacity-0');
                 setTimeout(() => toast.remove(), 400);
             }, 3500);
         }
 
-        // --- MISE À JOUR DE L'INTERFACE GLOBALE ---
         function updateUI() {
             const total = calculateTotalScore();
+            document.getElementById('headerScore').innerText = `${total} / 24 pts`;
 
-            // Header score
-            document.getElementById('headerScore').innerText = `${total} / 20 pts`;
-
-            // Niveau du joueur
             const levelEl = document.getElementById('levelBadge');
-            if (total >= 20) levelEl.innerText = "👑 Grand Maître";
-            else if (total >= 14) levelEl.innerText = "⭐ Expert";
-            else if (total >= 8) levelEl.innerText = "🌱 Intermédiaire";
+            if (total >= 24) levelEl.innerText = "👑 Grand Maître Mondial";
+            else if (total >= 18) levelEl.innerText = "⭐ Cartographe Expert";
+            else if (total >= 10) levelEl.innerText = "🌱 Intermédiaire";
             else levelEl.innerText = "🎒 Apprenti";
 
-            // Exercices tabs scores
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const s = gameState.scores[`ex${i}`];
                 const badge = document.getElementById(`tab-score-${i}`);
                 if (badge) badge.innerText = `${s}/4`;
             }
 
-            // Compteur sur Landing
             let completedCount = 0;
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 if (gameState.completed[`ex${i}`]) completedCount++;
             }
             const completedEl = document.getElementById('completedExercisesCount');
-            if (completedEl) completedEl.innerText = `${completedCount} sur 5 terminés`;
+            if (completedEl) completedEl.innerText = `${completedCount} sur 6 terminés`;
 
-            // Rendu des cartes de la Landing
             renderLandingCards();
-
-            // Trophées counters & liste
             renderTrophiesView();
-
-            // Check auto des trophées
             checkTrophiesCriteria();
         }
 
@@ -1144,13 +1326,13 @@
         }
 
         // ==========================================
-        // DÉFI 1 : VRAI OU FAUX
+        // DÉFI 1 : VRAI / FAUX
         // ==========================================
         const vfAnswers = {
-            1: { expected: true, expl: "Vrai ! Les Français se tournent de plus en plus vers les produits sucrés et les plats industriels." },
-            2: { expected: false, expl: "Faux ! Il existe d'énormes disparités d'accès entre pays riches et pays en voie de développement." },
-            3: { expected: true, expl: "Vrai ! Ces aliments constituent les bases traditionnelles de l'alimentation française." },
-            4: { expected: false, expl: "Faux ! Près d'un cinquième (1/5) de la nourriture mondiale est malheureusement jeté chaque jour." }
+            1: { expected: true, expl: "Vrai ! Les Français consomment de plus en plus de sucres et de plats industriels." },
+            2: { expected: false, expl: "Faux ! L'accès est très inégal : Afrique/Asie consomment moins que l'Europe/Amérique." },
+            3: { expected: true, expl: "Vrai ! Ces aliments forment la base classique de l'alimentation en France." },
+            4: { expected: false, expl: "Faux ! Près d'un cinquième (1/5) de la nourriture est gaspillée chaque jour." }
         };
         const vfUserAnswers = { 1: null, 2: null, 3: null, 4: null };
 
@@ -1159,9 +1341,7 @@
             const fb = row.querySelector('.feedback-msg');
             const btns = row.querySelectorAll('.vf-btn');
 
-            btns.forEach(b => {
-                b.className = "vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-slate-500 transition";
-            });
+            btns.forEach(b => b.className = "vf-btn px-5 py-2 rounded-xl bg-white border-2 border-slate-300 font-black text-sm hover:border-slate-500 transition");
 
             const isCorrect = (choice === vfAnswers[qNum].expected);
             vfUserAnswers[qNum] = isCorrect;
@@ -1178,9 +1358,7 @@
                 fb.innerHTML = `❌ Erreur : ${vfAnswers[qNum].expl}`;
             }
 
-            // Calcul du score Ex 1
-            let score = 0;
-            let answeredCount = 0;
+            let score = 0, answeredCount = 0;
             for (let k = 1; k <= 4; k++) {
                 if (vfUserAnswers[k] !== null) answeredCount++;
                 if (vfUserAnswers[k] === true) score++;
@@ -1207,7 +1385,6 @@
         function dropWord(slot) {
             playSound('click');
             if (!selectedChip) {
-                // Vider le slot si déjà rempli
                 if (slot.dataset.currentWord) {
                     const w = slot.dataset.currentWord;
                     const c = document.querySelector(`.cloze-chip[data-word="${w}"]`);
@@ -1219,7 +1396,6 @@
                 return;
             }
 
-            // Si déjà plein, libérer l'ancien mot
             if (slot.dataset.currentWord) {
                 const prev = slot.dataset.currentWord;
                 const prevChip = document.querySelector(`.cloze-chip[data-word="${prev}"]`);
@@ -1238,8 +1414,7 @@
 
         function verifyCloze() {
             const slots = document.querySelectorAll('.cloze-slot');
-            let score = 0;
-            let full = true;
+            let score = 0, full = true;
 
             slots.forEach(slot => {
                 const word = slot.dataset.currentWord;
@@ -1261,19 +1436,18 @@
             if (score === 4) {
                 playSound('success');
                 fb.className = "text-sm font-bold ml-2 text-emerald-700";
-                fb.innerText = "🎉 Magnifique sans-faute ! Le texte est parfaitement complet.";
+                fb.innerText = "🎉 Sans-faute parfait !";
             } else {
                 playSound('error');
                 fb.className = "text-sm font-bold ml-2 text-rose-700";
-                fb.innerText = `${score}/4 corrects. Clique sur les cases rouges pour les corriger.`;
+                fb.innerText = `${score}/4 corrects. Clique sur les cases rouges pour corriger.`;
             }
-
             saveState();
             updateUI();
         }
 
         // ==========================================
-        // DÉFI 3 : QCM GÉOGRAPHIQUE
+        // DÉFI 3 : QCM GÉO
         // ==========================================
         const qcmStates = { 1: false, 2: false };
 
@@ -1282,21 +1456,19 @@
             const allBtns = container.querySelectorAll('.qcm-opt');
             const fb = container.querySelector('.qcm-feedback');
 
-            allBtns.forEach(b => {
-                b.className = "qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition";
-            });
+            allBtns.forEach(b => b.className = "qcm-opt p-3.5 bg-white border-2 border-slate-200 hover:border-purple-300 rounded-xl font-bold text-left transition");
 
             if (isCorrect) {
                 playSound('success');
                 btn.className = "qcm-opt p-3.5 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl font-bold text-left shadow-sm";
                 fb.className = "qcm-feedback text-xs font-bold mt-2 text-emerald-700 block";
-                fb.innerText = "✅ Excellente réponse !";
+                fb.innerText = "✅ Bonne réponse !";
                 qcmStates[qNum] = true;
             } else {
                 playSound('error');
                 btn.className = "qcm-opt p-3.5 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl font-bold text-left shadow-sm";
                 fb.className = "qcm-feedback text-xs font-bold mt-2 text-rose-700 block";
-                fb.innerText = "❌ Faux, relis bien le passage de la leçon correspondant.";
+                fb.innerText = "❌ Faux, relis attentivement le cours.";
                 qcmStates[qNum] = false;
             }
 
@@ -1305,13 +1477,12 @@
             if (qcmStates[2]) sc += 2;
             gameState.scores.ex3 = sc;
             gameState.completed.ex3 = true;
-
             saveState();
             updateUI();
         }
 
         // ==========================================
-        // DÉFI 4 : LES CHIFFRES CHOCS (ASSOCIER)
+        // DÉFI 4 : LES CHIFFRES CHOCS
         // ==========================================
         let matchSelectedLeft = null;
         let matchSelectedRight = null;
@@ -1337,7 +1508,6 @@
 
             if (matchSelectedLeft && matchSelectedRight) {
                 if (matchSelectedLeft.key === matchSelectedRight.key) {
-                    // Match réussi
                     playSound('success');
                     matchedPairs.add(matchSelectedLeft.key);
                     matchSelectedLeft.btn.className = "match-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
@@ -1348,9 +1518,8 @@
 
                     const fb = document.getElementById('matchFeedback');
                     fb.classList.remove('hidden');
-                    fb.innerText = `✨ Belle association ! (${matchedPairs.size}/4 validés)`;
+                    fb.innerText = `✨ Excellente association ! (${matchedPairs.size}/4 validés)`;
                 } else {
-                    // Erreur
                     playSound('error');
                     const b1 = matchSelectedLeft.btn;
                     const b2 = matchSelectedRight.btn;
@@ -1392,8 +1561,7 @@
 
         function verifySortExercise() {
             const tags = document.querySelectorAll('.sort-chip');
-            let correct = 0;
-            let totalPlaced = 0;
+            let correct = 0, totalPlaced = 0;
 
             tags.forEach(t => {
                 const current = t.dataset.currentCategory;
@@ -1409,7 +1577,6 @@
                 }
             });
 
-            // Conversion sur 4 points (5 éléments = 4 points si tout bon)
             const finalScore = Math.round((correct / 5) * 4);
             gameState.scores.ex5 = finalScore;
             if (totalPlaced === 5) gameState.completed.ex5 = true;
@@ -1418,12 +1585,55 @@
             if (correct === 5) {
                 playSound('success');
                 fb.className = "text-sm font-bold ml-2 text-emerald-700";
-                fb.innerText = "🎯 Tri parfait ! Tous les éléments sont dans leur bac approprié.";
+                fb.innerText = "🎯 Tri parfait ! Tous les éléments sont bien rangés.";
             } else {
                 playSound('error');
                 fb.className = "text-sm font-bold ml-2 text-rose-700";
                 fb.innerText = `${correct}/5 bien rangés. Corrige les étiquettes en rouge.`;
             }
+            saveState();
+            updateUI();
+        }
+
+        // ==========================================
+        // DÉFI 6 (NOUVEAU) : ANALYSE CARTE DU MONDE
+        // ==========================================
+        const mapAnswers = {
+            1: { expl: "L'Amérique du Nord, l'Europe et l'Australie apparaissent en rouge foncé (> 3200 kcal/jour)." },
+            2: { expl: "La légende montre des trames de hachures (de 200 à 1000 kcal d'origine carnée)." },
+            3: { expl: "L'Inde a une consommation animale minime (< 200 kcal), 60 fois inférieure à la France." },
+            4: { expl: "Le jaune pâle signale une sous-alimentation (< 2200 kcal), fréquente en Afrique subsaharienne." }
+        };
+        const mapUserAnswers = { 1: null, 2: null, 3: null, 4: null };
+
+        function answerMapQ(qNum, isCorrect, btn) {
+            const container = document.getElementById(`map-q-${qNum}`);
+            const allBtns = container.querySelectorAll('.map-btn');
+            const fb = container.querySelector('.map-fb');
+
+            allBtns.forEach(b => b.className = "map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition");
+
+            mapUserAnswers[qNum] = isCorrect;
+
+            if (isCorrect) {
+                playSound('success');
+                btn.className = "map-btn p-3 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold rounded-xl text-left shadow-sm";
+                fb.className = "map-fb text-xs font-bold text-emerald-700 block mt-1.5";
+                fb.innerHTML = `✅ Exact ! ${mapAnswers[qNum].expl}`;
+            } else {
+                playSound('error');
+                btn.className = "map-btn p-3 bg-rose-100 border-2 border-rose-500 text-rose-950 font-bold rounded-xl text-left shadow-sm";
+                fb.className = "map-fb text-xs font-bold text-rose-700 block mt-1.5";
+                fb.innerHTML = `❌ Erreur : ${mapAnswers[qNum].expl}`;
+            }
+
+            let sc = 0, answered = 0;
+            for (let k = 1; k <= 4; k++) {
+                if (mapUserAnswers[k] !== null) answered++;
+                if (mapUserAnswers[k] === true) sc++;
+            }
+            gameState.scores.ex6 = sc;
+            if (answered === 4) gameState.completed.ex6 = true;
 
             saveState();
             updateUI();
@@ -1475,20 +1685,31 @@
                 document.getElementById('sortFeedback').innerText = "";
                 gameState.scores.ex5 = 0;
                 gameState.completed.ex5 = false;
+            } else if (num === 6) {
+                for (let k = 1; k <= 4; k++) {
+                    mapUserAnswers[k] = null;
+                    const r = document.getElementById(`map-q-${k}`);
+                    r.querySelector('.map-fb').classList.add('hidden');
+                    r.querySelectorAll('.map-btn').forEach(b => {
+                        b.className = "map-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-cyan-500 transition";
+                    });
+                }
+                gameState.scores.ex6 = 0;
+                gameState.completed.ex6 = false;
             }
             saveState();
             updateUI();
         }
 
         function resetWholeGame() {
-            if (confirm("Souhaites-tu vraiment réinitialiser l'ensemble des scores et des trophées ?")) {
-                localStorage.removeItem('geo_food_lesson_save');
+            if (confirm("Réinitialiser l'ensemble des scores et des trophées ?")) {
+                localStorage.removeItem('geo_food_lesson_save_v2');
                 window.location.reload();
             }
         }
 
         // ==========================================
-        // ANIMATION CONFETTIS CANVAS
+        // CONFETTIS ANIMATION
         // ==========================================
         function launchConfetti() {
             const canvas = document.getElementById('confettiCanvas');
@@ -1532,16 +1753,12 @@
                 });
 
                 frames++;
-                if (frames < 100) {
-                    requestAnimationFrame(render);
-                } else {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
+                if (frames < 100) requestAnimationFrame(render);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
             render();
         }
 
-        // --- INITIALISATION AU CHARGEMENT ---
         window.addEventListener('DOMContentLoaded', () => {
             loadState();
         });

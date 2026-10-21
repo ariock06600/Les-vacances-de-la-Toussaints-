@@ -1,0 +1,8 @@
+{
+  "name": "Les vacances de la Toussaint - Espace Révisions CM1",
+  "description": "Cahier de vacances et espace interactif de révisions de CM1 pour la Toussaint : français, autodictée, conjugaison, géographie et mathématiques avec badges et récompenses.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -243,127 +243,230 @@
         <!-- ======================================================== -->
         <section id="page-lesson" class="page-view space-y-6">
             
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-8">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
                 
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                     <div>
                         <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
-                            <span>📖</span> COURS & CARTE OFFICIELS
+                            <span>🗺️</span> DOCUMENT OFFICIEL & COURS DE GÉOGRAPHIE
                         </div>
                         <h2 class="text-2xl sm:text-3xl font-black font-heading text-slate-800 mt-2">
-                            Se nourrir : Leçon 1
+                            Ration calorique par habitant et alimentation carnée
                         </h2>
                     </div>
-                    <button onclick="window.print()" class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs flex items-center gap-2 transition">
+                    <button onclick="window.print()" class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs flex items-center gap-2">
                         <span>🖨️</span> Imprimer la Fiche
                     </button>
                 </div>
 
-                <!-- 1. TEXTE INTÉGRAL DE LA LEÇON PLACÉ BIEN AU-DESSUS DE LA CARTE -->
-                <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-amber-50/60 p-6 sm:p-8 rounded-3xl border-2 border-emerald-200 shadow-sm space-y-6">
-                    <div class="border-b border-emerald-200/80 pb-4">
-                        <span class="text-xs uppercase font-black tracking-widest text-emerald-700">Leçon 1</span>
-                        <h3 class="text-2xl sm:text-3xl font-extrabold font-heading text-emerald-950 mt-1">
-                            Mange-t-on de la même manière partout dans le monde ?
-                        </h3>
+                <!-- CARTE VECTORIELLE DU MONDE (REPRODUCTION FIDÈLE DU DOCUMENT) -->
+                <div class="bg-gradient-to-b from-sky-50 to-blue-50/50 p-4 sm:p-6 rounded-3xl border-2 border-sky-200 shadow-inner space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-600 gap-2 font-bold">
+                        <span class="flex items-center gap-1.5 text-blue-900 font-heading text-sm">
+                            🌐 <strong>Planisphère Thématique</strong> (Échelle à l'équateur : 2 500 km)
+                        </span>
+                        <span class="bg-white/80 px-3 py-1 rounded-full border border-sky-200 text-sky-800">
+                            👆 Clique sur un continent pour inspecter ses calories !
+                        </span>
                     </div>
 
-                    <!-- Paragraphe textuel officiel -->
-                    <div class="prose max-w-none text-slate-800 space-y-4 text-base sm:text-lg leading-relaxed font-medium">
-                        <p class="p-4 bg-white/80 rounded-2xl border border-emerald-200 shadow-xs">
-                            🥖 <strong>Les Français</strong> consomment beaucoup de <strong>produits céréaliers</strong>, de <strong>produits laitiers</strong> et de <strong>viande</strong>. La consommation de <strong>sucres</strong> et de <strong>plats préparés</strong> augmente.
-                        </p>
+                    <!-- SVG DU PLANISPHÈRE AVEC MOTIFS HACHURÉS D'ALIMENTATION CARNÉE -->
+                    <div class="relative w-full overflow-hidden bg-white/70 rounded-2xl border border-sky-200 shadow-sm">
+                        <svg viewBox="0 0 950 480" class="w-full h-auto select-none" id="worldMapSvg">
+                            <defs>
+                                <!-- Motifs de hachures selon l'alimentation carnée -->
+                                <pattern id="hatch-1000" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <line x1="0" y1="0" x2="0" y2="10" stroke="#4a151b" stroke-width="3" />
+                                </pattern>
+                                <pattern id="hatch-700" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <line x1="0" y1="0" x2="0" y2="10" stroke="#7f1d1d" stroke-width="1.8" />
+                                </pattern>
+                                <pattern id="hatch-450" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <circle cx="2" cy="2" r="1.2" fill="#92400e" />
+                                    <circle cx="7" cy="7" r="1.2" fill="#92400e" />
+                                </pattern>
+                                <pattern id="hatch-200" width="10" height="10" patternUnits="userSpaceOnUse">
+                                    <!-- Très peu de hachures / presque uni -->
+                                </pattern>
+                            </defs>
 
-                        <p class="p-4 bg-white/80 rounded-2xl border border-emerald-200 shadow-xs">
-                            🌍 <strong>Dans le monde</strong>, il y a de grandes <strong>inégalités d'accès à la nourriture</strong>. Les habitants des pays d'<strong>Afrique</strong> et d'<strong>Asie</strong> consomment moins d'aliments que les habitants des pays riches en <strong>Europe</strong> et <strong>Amérique</strong> (un habitant de l'Inde consomme <strong>60 fois moins de viande</strong> qu'un Français).
-                        </p>
+                            <!-- Fond Océans avec labels -->
+                            <rect width="950" height="480" fill="#f0f9ff" />
+                            
+                            <!-- Ligne de l'Équateur -->
+                            <line x1="0" y1="240" x2="950" y2="240" stroke="#94a3b8" stroke-dasharray="6,6" stroke-width="1.2" />
+                            <text x="15" y="235" font-size="10" fill="#64748b" font-weight="bold">Équateur (0°)</text>
 
-                        <p class="p-4 bg-white/80 rounded-2xl border border-emerald-200 shadow-xs">
-                            ⚠️ <strong>Un grand nombre de personnes souffre de la faim</strong> dans le monde, pourtant près d'<strong>un cinquième (1/5)</strong> de la nourriture disponible est <strong>gaspillée chaque jour</strong>.
-                        </p>
+                            <!-- Labels Océans -->
+                            <text x="80" y="280" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN PACIFIQUE</text>
+                            <text x="360" y="200" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN ATLANTIQUE</text>
+                            <text x="610" y="320" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN INDIEN</text>
+                            <text x="830" y="280" font-size="12" fill="#0284c7" font-weight="800" letter-spacing="3" opacity="0.6">OCÉAN PACIFIQUE</text>
+
+                            <!-- 1. AMÉRIQUE DU NORD (Canada, USA) : >3200 kcal (Rouge foncé) + Hachures >1000 kcal -->
+                            <g class="map-region" onclick="inspectRegion('namerica')" id="reg-namerica">
+                                <path d="M 120,50 L 260,40 L 290,90 L 250,110 L 270,160 L 210,180 L 160,190 L 120,130 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.5" />
+                                <!-- Superposition hachures 1000 kcal -->
+                                <path d="M 120,50 L 260,40 L 290,90 L 250,110 L 270,160 L 210,180 L 160,190 L 120,130 Z" fill="url(#hatch-1000)" opacity="0.55" pointer-events="none" />
+                                <text x="180" y="115" font-size="12" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">AMÉRIQUE DU NORD</text>
+                                <text x="180" y="130" font-size="10" fill="#fecaca" font-weight="bold">>3200 kcal (Carné: 1000)</text>
+                            </g>
+
+                            <!-- Groenland : absence de données -->
+                            <path d="M 290,25 L 350,20 L 330,70 L 285,60 Z" fill="#cbd5e1" stroke="#94a3b8" />
+                            <text x="295" y="48" font-size="8" fill="#475569" font-weight="bold">Groenland</text>
+
+                            <!-- 2. AMÉRIQUE DU SUD : 2500 - 2800 kcal (Orange/Rouge moyen) + ~450/700 kcal carné -->
+                            <g class="map-region" onclick="inspectRegion('samerica')" id="reg-samerica">
+                                <path d="M 220,215 L 290,215 L 320,270 L 290,370 L 250,380 L 230,290 Z" fill="#ea580c" stroke="#9a3412" stroke-width="1.5" />
+                                <path d="M 220,215 L 290,215 L 320,270 L 290,370 L 250,380 L 230,290 Z" fill="url(#hatch-700)" opacity="0.4" pointer-events="none" />
+                                <text x="240" y="290" font-size="11" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">AMÉRIQUE DU SUD</text>
+                                <text x="245" y="305" font-size="9" fill="#ffedd5" font-weight="bold">2800 kcal (Carné: 700)</text>
+                            </g>
+
+                            <!-- 3. EUROPE : >3200 kcal (Rouge foncé) + Hachures >1000 kcal -->
+                            <g class="map-region" onclick="inspectRegion('europe')" id="reg-europe">
+                                <path d="M 440,65 L 530,60 L 540,110 L 490,140 L 440,135 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.5" />
+                                <path d="M 440,65 L 530,60 L 540,110 L 490,140 L 440,135 Z" fill="url(#hatch-1000)" opacity="0.55" pointer-events="none" />
+                                <text x="460" y="95" font-size="12" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">EUROPE</text>
+                                <text x="455" y="110" font-size="9" fill="#fecaca" font-weight="bold">>3200 kcal (Carné: 1000)</text>
+                            </g>
+
+                            <!-- 4. AFRIQUE : <2200 à 2500 kcal (Jaune pâle / Orange clair) + <200 kcal carné -->
+                            <g class="map-region" onclick="inspectRegion('africa')" id="reg-africa">
+                                <!-- Afrique du Nord (2800 kcal orange clair) -->
+                                <path d="M 430,145 L 530,145 L 520,185 L 420,185 Z" fill="#f97316" stroke="#c2410c" stroke-width="1.2" />
+                                <!-- Afrique Subsaharienne (<2200 - 2500 kcal jaune très pâle, très peu carné) -->
+                                <path d="M 410,185 L 535,185 L 550,260 L 500,340 L 460,340 L 430,240 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+                                <path d="M 410,185 L 535,185 L 550,260 L 500,340 L 460,340 L 430,240 Z" fill="url(#hatch-450)" opacity="0.2" pointer-events="none" />
+                                <!-- Madagascar -->
+                                <path d="M 545,290 L 560,290 L 555,330 L 540,320 Z" fill="#fef08a" stroke="#ca8a04" />
+                                
+                                <text x="445" y="240" font-size="12" fill="#713f12" font-weight="900">AFRIQUE</text>
+                                <text x="430" y="255" font-size="9" fill="#854d0e" font-weight="bold">&lt; 2200 - 2500 kcal</text>
+                                <text x="435" y="270" font-size="8" fill="#854d0e" font-weight="bold">(Carné: &lt; 200 kcal)</text>
+                            </g>
+
+                            <!-- 5. ASIE DU NORD / RUSSIE : 2800 - 3200 kcal -->
+                            <g class="map-region" onclick="inspectRegion('russia')" id="reg-russia">
+                                <path d="M 540,55 L 820,50 L 780,120 L 550,115 Z" fill="#c2410c" stroke="#7c2d12" stroke-width="1.5" />
+                                <path d="M 540,55 L 820,50 L 780,120 L 550,115 Z" fill="url(#hatch-700)" opacity="0.45" pointer-events="none" />
+                                <text x="640" y="85" font-size="11" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">RUSSIE / ASIE DU NORD</text>
+                            </g>
+
+                            <!-- 6. ASIE DU SUD (INDE) & ASIE DE L'EST (CHINE) -->
+                            <!-- Inde : 2200 - 2500 kcal, Carné très faible <200 kcal (60 fois moins que la France) -->
+                            <g class="map-region" onclick="inspectRegion('india')" id="reg-india">
+                                <path d="M 580,165 L 650,160 L 640,240 L 610,250 L 585,210 Z" fill="#fef08a" stroke="#a16207" stroke-width="1.5" />
+                                <text x="590" y="200" font-size="11" fill="#713f12" font-weight="900">INDE</text>
+                                <text x="585" y="215" font-size="8" fill="#854d0e" font-weight="bold">Carné: &lt;200 kcal</text>
+                            </g>
+
+                            <!-- Chine / Asie de l'Est : 2800 kcal -->
+                            <g class="map-region" onclick="inspectRegion('china')" id="reg-china">
+                                <path d="M 655,130 L 770,125 L 750,210 L 660,200 Z" fill="#ea580c" stroke="#9a3412" stroke-width="1.5" />
+                                <path d="M 655,130 L 770,125 L 750,210 L 660,200 Z" fill="url(#hatch-450)" opacity="0.5" pointer-events="none" />
+                                <text x="685" y="165" font-size="11" fill="#ffffff" font-weight="900">ASIE DE L'EST</text>
+                            </g>
+
+                            <!-- 7. OCÉANIE / AUSTRALIE : >3200 kcal (Rouge foncé) + Hachures >1000 kcal carnées -->
+                            <g class="map-region" onclick="inspectRegion('oceania')" id="reg-oceania">
+                                <path d="M 720,290 L 810,285 L 820,360 L 730,365 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.5" />
+                                <path d="M 720,290 L 810,285 L 820,360 L 730,365 Z" fill="url(#hatch-1000)" opacity="0.55" pointer-events="none" />
+                                <text x="735" y="325" font-size="11" fill="#ffffff" font-weight="900" filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.8))">AUSTRALIE</text>
+                                <text x="735" y="340" font-size="9" fill="#fecaca" font-weight="bold">>3200 (Carné: 1000)</text>
+                            </g>
+                        </svg>
                     </div>
 
-                    <!-- Mini-cartes de synthèse visuelle -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-                        <div class="bg-white/90 p-3.5 rounded-xl border border-emerald-300 text-xs text-slate-700">
-                            <span class="font-bold text-emerald-800 block mb-0.5">🇫🇷 Habitudes en France</span>
-                            Céréales, laitage, viande + hausse des sucres et plats cuisinés.
+                    <!-- DOUBLE LÉGENDE FIDÈLE AU DOCUMENT SCANNÉ -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-2xl border border-slate-200">
+                        <!-- Légende 1 : Calories totales -->
+                        <div class="space-y-2">
+                            <span class="text-xs uppercase font-extrabold text-slate-700 tracking-wider flex items-center gap-1.5">
+                                🟡 <span>Consommation de calories par jour et par personne (kcal, 2004)</span>
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <div class="flex-1 text-center py-1.5 bg-[#fef08a] border border-amber-300 text-[11px] font-bold text-amber-950 rounded-l-lg">
+                                    &lt; 2 200
+                                </div>
+                                <div class="flex-1 text-center py-1.5 bg-[#fde047] border border-amber-400 text-[11px] font-bold text-amber-950">
+                                    2 500
+                                </div>
+                                <div class="flex-1 text-center py-1.5 bg-[#ea580c] border border-orange-600 text-[11px] font-bold text-white">
+                                    2 800
+                                </div>
+                                <div class="flex-1 text-center py-1.5 bg-[#991b1b] border border-red-950 text-[11px] font-bold text-white rounded-r-lg">
+                                    > 3 200
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic">Jaune pâle = sous-alimentation / Rouge foncé = surconsommation</p>
                         </div>
-                        <div class="bg-white/90 p-3.5 rounded-xl border border-emerald-300 text-xs text-slate-700">
-                            <span class="font-bold text-emerald-800 block mb-0.5">⚖️ Inégalités Mondiales</span>
-                            Afrique & Asie consomment moins. Inde = 60× moins de viande qu'en France.
+
+                        <!-- Légende 2 : Hachures / Part carnée -->
+                        <div class="space-y-2">
+                            <span class="text-xs uppercase font-extrabold text-slate-700 tracking-wider flex items-center gap-1.5">
+                                🥩 <span>... dont kilocalories d'origine animale (carnée)</span>
+                            </span>
+                            <div class="grid grid-cols-4 gap-1 text-center text-[10px] font-bold">
+                                <div class="p-1.5 border border-slate-300 rounded bg-slate-50">
+                                    <div class="h-3 border-b border-slate-200 mb-1"></div>
+                                    200 kcal
+                                </div>
+                                <div class="p-1.5 border border-slate-300 rounded bg-slate-100">
+                                    <div class="h-3 border-b-2 border-dotted border-amber-700 mb-1"></div>
+                                    450 kcal
+                                </div>
+                                <div class="p-1.5 border border-slate-300 rounded bg-slate-200">
+                                    <div class="h-3 border-b-2 border-slate-700 mb-1"></div>
+                                    700 kcal
+                                </div>
+                                <div class="p-1.5 border border-slate-400 rounded bg-rose-200 text-rose-950 font-black">
+                                    <div class="h-3 border-b-4 border-red-900 mb-1"></div>
+                                    1 000 kcal
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-white/90 p-3.5 rounded-xl border border-emerald-300 text-xs text-slate-700">
-                            <span class="font-bold text-emerald-800 block mb-0.5">🗑️ Paradoxe & Gaspillage</span>
-                            Faim persistante malgré 1/5ème de la nourriture disponible jetée chaque jour.
+                    </div>
+
+                    <!-- Fiche interactive continent cliqué -->
+                    <div id="regionDetailBox" class="p-4 rounded-2xl bg-white border-2 border-emerald-400 shadow-sm transition-all duration-300">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl" id="regionIcon">💡</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-base" id="regionTitle">Clique sur un continent de la carte ci-dessus</h4>
+                                <p class="text-xs text-slate-600" id="regionDesc">Inspecte l'Amérique du Nord, l'Afrique, l'Inde, l'Europe ou l'Australie pour comprendre la carte.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. CARTE DU DOCUMENT DE COURS VIA GOOGLE PHOTOS -->
-                <div class="bg-slate-50 p-5 sm:p-7 rounded-3xl border-2 border-slate-200 shadow-inner space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                            <span class="text-xs uppercase font-extrabold text-cyan-800 bg-cyan-100 px-3 py-1 rounded-full">Document Cartographique</span>
-                            <h4 class="text-xl font-bold font-heading text-slate-800 mt-1">
-                                Ration calorique par habitant et alimentation carnée
-                            </h4>
-                            <p class="text-xs text-slate-500">Planisphère montrant la consommation de calories (2004) et la part animale en hachures.</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleMapModal(true)" class="px-3.5 py-2 bg-white border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-100 transition shadow-xs flex items-center gap-1.5">
-                                🔍 Agrandir / Zoom
-                            </button>
-                            <a href="https://photos.app.goo.gl/2GWszbyFkRTQC6B89" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
-                                <span>🔗</span> Ouvrir sur Google Photos
-                            </a>
-                        </div>
+                <!-- 3 BLOCS DE COURS COMPLETS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div class="p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-200 space-y-2">
+                        <span class="text-3xl">🥖</span>
+                        <h3 class="font-bold text-amber-950 font-heading text-base">1. La France</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Beaucoup de <strong>céréales</strong>, <strong>produits laitiers</strong> et <strong>viande</strong>.<br>
+                            <em>En forte hausse :</em> les sucres et les plats cuisinés industriels.
+                        </p>
                     </div>
 
-                    <!-- Conteneur de l'image -->
-                    <div class="relative w-full rounded-2xl overflow-hidden bg-white border-2 border-slate-300 shadow-sm flex flex-col items-center justify-center p-2 min-h-[380px]">
-                        <img 
-                            id="mapImage"
-                            src="https://photos.app.goo.gl/2GWszbyFkRTQC6B89" 
-                            alt="Carte de la ration calorique par habitant et alimentation carnée" 
-                            class="max-h-[620px] w-auto max-w-full rounded-xl object-contain shadow-sm hover:scale-[1.01] transition-transform cursor-pointer"
-                            onclick="toggleMapModal(true)"
-                            onerror="handleMapImageError(this)"
-                        />
-                        <div id="imageFallbackMessage" class="hidden text-center p-6 space-y-3">
-                            <div class="text-4xl">🗺️</div>
-                            <h5 class="font-bold text-slate-800">Visualisation de la Carte du Document</h5>
-                            <p class="text-xs text-slate-600 max-w-md mx-auto">
-                                Google Photos restreint parfois l'affichage direct intégré (hotlink). Clique sur le bouton ci-dessous pour ouvrir l'image originale dans un onglet dédié ou consulte les repères de cours :
-                            </p>
-                            <a href="https://photos.app.goo.gl/2GWszbyFkRTQC6B89" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 text-white font-bold text-xs rounded-xl shadow hover:bg-cyan-700 transition">
-                                <span>🌐</span> Ouvrir la carte dans Google Photos
-                            </a>
-                        </div>
+                    <div class="p-5 rounded-2xl bg-blue-50/80 border-2 border-blue-200 space-y-2">
+                        <span class="text-3xl">⚖️</span>
+                        <h3 class="font-bold text-blue-950 font-heading text-base">2. Les Inégalités Mondiales</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            L'<strong>Afrique</strong> et l'<strong>Asie</strong> consomment beaucoup moins que l'Europe et l'Amérique.<br>
+                            Un Indien mange <strong>60 fois moins de viande</strong> qu'un Français !
+                        </p>
                     </div>
 
-                    <!-- Légende récapitulative pour accompagner l'image -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-2xl border border-slate-200 text-xs">
-                        <div>
-                            <span class="font-extrabold text-slate-800 block mb-1.5">🟡 Couleurs : Consommation de calories / jour / habitant</span>
-                            <div class="flex items-center gap-1 text-[11px] font-bold text-center">
-                                <div class="flex-1 py-1.5 bg-[#fef08a] border border-amber-300 text-amber-950 rounded-l">&lt; 2 200 kcal</div>
-                                <div class="flex-1 py-1.5 bg-[#fde047] border border-amber-400 text-amber-950">2 500</div>
-                                <div class="flex-1 py-1.5 bg-[#ea580c] border border-orange-600 text-white">2 800</div>
-                                <div class="flex-1 py-1.5 bg-[#991b1b] border border-red-950 text-white rounded-r">> 3 200</div>
-                            </div>
-                            <span class="text-[10px] text-slate-500 mt-1 block">Jaune = sous-nutrition (Afrique...) • Rouge foncé = surabondance (Amérique du Nord, Europe...).</span>
-                        </div>
-                        <div>
-                            <span class="font-extrabold text-slate-800 block mb-1.5">🥩 Hachures : Part des calories d'origine animale</span>
-                            <div class="grid grid-cols-4 gap-1 text-[10px] text-center font-bold">
-                                <div class="p-1 border border-slate-200 rounded bg-slate-50">&lt; 200 kcal (Inde)</div>
-                                <div class="p-1 border border-slate-200 rounded bg-slate-100">450 kcal</div>
-                                <div class="p-1 border border-slate-300 rounded bg-slate-200">700 kcal</div>
-                                <div class="p-1 border border-rose-300 rounded bg-rose-100 text-rose-950">1 000 kcal (Occident)</div>
-                            </div>
-                            <span class="text-[10px] text-slate-500 mt-1 block">Plus les hachures sont denses, plus la consommation de viande et produits laitiers est forte.</span>
-                        </div>
+                    <div class="p-5 rounded-2xl bg-rose-50/80 border-2 border-rose-200 space-y-2">
+                        <span class="text-3xl">🗑️</span>
+                        <h3 class="font-bold text-rose-950 font-heading text-base">3. Le Paradoxe Alimentaire</h3>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Alors que des centaines de millions d'humains <strong>souffrent de la faim</strong>, <strong>un cinquième (1/5)</strong> de toute la nourriture est gaspillée chaque jour.
+                        </p>
                     </div>
                 </div>
 
@@ -372,40 +475,13 @@
                         <span>🧭</span> S'entraîner sur la Carte (Exercice 6)
                     </button>
                     <button onclick="navigate('exercises')" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition">
-                        Faire les 6 Exercices
+                        Voir les 6 Exercices
                     </button>
                 </div>
 
             </div>
 
         </section>
-
-        <!-- MODAL DE ZOOM PLEIN ÉCRAN POUR L'IMAGE DE LA CARTE -->
-        <div id="mapModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
-            <div class="relative max-w-5xl w-full bg-white rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[92vh]">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-                    <h4 class="font-bold font-heading text-slate-800 text-base sm:text-lg">
-                        🔎 Zoom sur la Carte : Ration calorique et alimentation carnée
-                    </h4>
-                    <div class="flex items-center gap-2">
-                        <a href="https://photos.app.goo.gl/2GWszbyFkRTQC6B89" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-cyan-700 underline px-2 py-1">
-                            Lien externe Google Photos
-                        </a>
-                        <button onclick="toggleMapModal(false)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black flex items-center justify-center transition">
-                            ✕
-                        </button>
-                    </div>
-                </div>
-                <div class="overflow-auto flex-grow flex items-center justify-center bg-slate-100 rounded-2xl p-2">
-                    <img 
-                        src="https://photos.app.goo.gl/2GWszbyFkRTQC6B89" 
-                        alt="Zoom Carte" 
-                        class="max-w-full h-auto object-contain rounded-lg"
-                        onerror="this.src='https://placehold.co/900x500/f8fafc/0284c7?text=Carte+Ration+Calorique+(Voir+sur+Google+Photos)';"
-                    />
-                </div>
-            </div>
-        </div>
 
         <!-- ======================================================== -->
         <!-- PAGE 3 : LES 6 EXERCICES INTERACTIFS                    -->
@@ -774,25 +850,15 @@
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
                             <span class="text-xs font-black uppercase tracking-wider text-cyan-700 bg-cyan-100 px-3 py-1 rounded-full">Défi 6 • 4 Points</span>
-                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Analyse de la Carte & du Cours</h3>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Analyse du Document & de la Carte</h3>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleMapModal(true)" class="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-xl hover:bg-slate-200">
-                                🔍 Zoom Carte
-                            </button>
-                            <button onclick="navigate('lesson')" class="text-xs font-bold text-cyan-700 bg-cyan-50 border border-cyan-300 px-3 py-1.5 rounded-xl hover:bg-cyan-100">
-                                📖 Revoir le Cours
-                            </button>
-                        </div>
+                        <button onclick="navigate('lesson')" class="text-xs font-bold text-cyan-700 bg-cyan-50 border border-cyan-300 px-3 py-1.5 rounded-xl hover:bg-cyan-100">
+                            🗺️ Revoir la Carte du monde
+                        </button>
                     </div>
 
-                    <!-- Rappel de cours condensé sous forme de bandeau -->
-                    <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-slate-700 leading-relaxed font-medium">
-                        💡 <strong>Rappel du cours :</strong> La France consomme beaucoup de céréales, laitages et viandes (hausse des sucres et plats préparés). L'Afrique et l'Asie ont un accès plus restreint (un Indien consomme 60 fois moins de viande qu'un Français), et 1/5ème de la nourriture disponible est gaspillée chaque jour.
-                    </div>
-
-                    <p class="text-sm text-slate-600 font-semibold">
-                        Réponds à ces 4 questions en observant attentivement la carte : <em>« Ration calorique par habitant et alimentation carnée »</em>.
+                    <p class="text-sm text-slate-600">
+                        Réponds à ces 4 questions en t'appuyant sur la carte du document : <em>« Ration calorique par habitant et alimentation carnée »</em>.
                     </p>
 
                     <!-- Question 6.1 -->
@@ -1696,26 +1762,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadState();
         });
-
-        // Gestion de la modale de zoom et du chargement d'image
-        function toggleMapModal(show) {
-            const modal = document.getElementById('mapModal');
-            if (!modal) return;
-            if (show) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            } else {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        function handleMapImageError(imgEl) {
-            // Si l'affichage direct est bloqué par les règles Google Photos, afficher le fallback convivial
-            const fallback = document.getElementById('imageFallbackMessage');
-            if (fallback) fallback.classList.remove('hidden');
-            imgEl.classList.add('hidden');
-        }
     </script>
 </body>
 </html>

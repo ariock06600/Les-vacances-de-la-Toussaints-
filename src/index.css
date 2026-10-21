@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Quicksand', 'Nunito', sans-serif;
+    background-color: #FFF9F2;
+    background-image: radial-gradient(#FDEED9 1.5px, transparent 1.5px), radial-gradient(#FDEED9 1.5px, #FFF9F2 1.5px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    overflow-x: hidden;
+  }
+}
+
+.font-fredoka {
+  font-family: 'Fredoka', cursive, sans-serif;
+}
+
+.font-quicksand {
+  font-family: 'Quicksand', sans-serif;
+}
+
+.font-school {
+  font-family: 'Patrick Hand', cursive, sans-serif;
+}
+
+.font-nunito {
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Texture Réglure de Cahier d'écolier (Seyes) */
+.seyes-paper {
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(to right, transparent 58px, rgba(239, 68, 68, 0.4) 58px, rgba(239, 68, 68, 0.4) 60px, transparent 60px),
+    repeating-linear-gradient(to bottom, rgba(94, 153, 196, 0.7) 0px, rgba(94, 153, 196, 0.7) 2px, transparent 2px, transparent 32px),
+    repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, rgba(186, 215, 233, 0.45) 7px, rgba(186, 215, 233, 0.45) 8px, transparent 8px, transparent 15px, rgba(186, 215, 233, 0.45) 15px, rgba(186, 215, 233, 0.45) 16px, transparent 16px, transparent 23px, rgba(186, 215, 233, 0.45) 23px, rgba(186, 215, 233, 0.45) 24px, transparent 24px, transparent 32px);
+  background-size: 100% 100%, 100% 32px, 100% 32px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+/* Feuilles d'automne qui tombent */
+.leaf {
+  position: fixed;
+  pointer-events: none;
+  z-index: 5;
+  top: -50px;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-50px) rotate(0deg) translateX(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(50vh) rotate(180deg) translateX(50px);
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg) translateX(-20px);
+    opacity: 0.1;
+  }
+}
+
+/* Effets dynamiques */
+.card-zoom {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card-zoom:hover {
+  transform: translateY(-6px);
+}
+
+/* Barre de progression rayée bonbon */
+.progress-bar-striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.25) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.25) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1.5rem 1.5rem;
+  animation: progress-move 2s linear infinite;
+}
+
+@keyframes progress-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 1.5rem 0; }
+}
+
+/* Animation attachement des zéros */
+@keyframes attachZeros {
+  0% { transform: scale(0.2) translateX(-25px); opacity: 0; }
+  60% { transform: scale(1.25) translateX(3px); opacity: 1; }
+  100% { transform: scale(1) translateX(0); opacity: 1; }
+}
+.animate-attach-zeros {
+  animation: attachZeros 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Carte SVG Interactive */
+.map-region {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.map-region:hover {
+  filter: brightness(1.15) drop-shadow(0 0 6px rgba(0,0,0,0.3));
+}

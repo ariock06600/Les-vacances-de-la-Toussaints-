@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ La Conquête de la Gaule - Entraînement d'Histoire</title>
+    <!-- Tailwind CSS pour une mise en page fluide et soignée -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rome: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#ef4444',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                        gaulois: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            700: '#15803d',
+                            800: '#166534',
+                        },
+                        parchment: '#fefae0',
+                        bronze: '#b45309'
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Polices adaptées et faciles à lire -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+        .screen-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+        }
+        .screen-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* Surlignages façon cahier d'écolier */
+        .hl-yellow {
+            background-color: #fef08a;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+        .hl-grey {
+            background-color: #e2e8f0;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+        /* Texture parchemin romain */
+        .parchment-card {
+            background-color: #fdfbf7;
+            background-image: radial-gradient(#f7efe1 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        @keyframes pulse-trophy {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+        }
+        .trophy-glow {
+            animation: pulse-trophy 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-amber-50/40 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-amber-200">
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-gradient-to-r from-red-800 via-rose-900 to-amber-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-3.5 flex flex-wrap items-center justify-between gap-3">
+            
+            <button onclick="navigate('home')" class="flex items-center gap-3 text-left group">
+                <span class="text-3xl p-2 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">🏛️</span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs uppercase font-extrabold tracking-wider bg-black/25 text-amber-200 px-2.5 py-0.5 rounded-full">Histoire Cycle 3 • Antiquité</span>
+                        <span id="rankBadge" class="text-xs font-bold text-amber-300">Apprenti Légionnaire</span>
+                    </div>
+                    <h1 class="text-lg sm:text-xl font-black font-heading tracking-tight leading-tight mt-0.5">
+                        21. La Conquête de la Gaule
+                    </h1>
+                </div>
+            </button>
+
+            <!-- Navigation Links -->
+            <nav class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold bg-black/20 p-1.5 rounded-2xl">
+                <button onclick="navigate('home')" id="nav-home" class="px-3 py-1.5 rounded-xl bg-white/20 text-white shadow-xs transition flex items-center gap-1.5">
+                    <span>🏠</span> <span class="hidden sm:inline">Accueil</span>
+                </button>
+                <button onclick="navigate('lesson')" id="nav-lesson" class="px-3 py-1.5 rounded-xl hover:bg-white/10 text-white transition flex items-center gap-1.5">
+                    <span>📜</span> <span>Fiche Leçon</span>
+                </button>
+                <button onclick="navigate('trophies')" id="nav-trophies" class="px-3 py-1.5 rounded-xl hover:bg-white/10 text-white transition flex items-center gap-1.5 relative">
+                    <span>🏆</span> <span>Trophées</span>
+                    <span id="navTrophyCountBadge" class="bg-amber-400 text-amber-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">0/8</span>
+                </button>
+                <button id="soundToggle" onclick="toggleAudio()" title="Activer / Couper le son" class="p-1.5 rounded-xl hover:bg-white/10 text-white transition">
+                    🔊
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENEUR DES PAGES PRINCIPALES -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 1 : LANDING PAGE / MENU GÉNÉRAL                   -->
+        <!-- ======================================================== -->
+        <section id="screen-home" class="screen-view active space-y-6">
+            
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-800 via-rose-900 to-amber-950 text-white p-6 sm:p-9 shadow-xl border border-amber-500/20">
+                <div class="absolute -right-8 -top-8 w-60 h-60 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 rounded-full text-xs font-black tracking-wide text-amber-200 border border-white/10">
+                        <span>⚔️</span> ROME CONTRE LES GAULOIS • 52 AVANT J.-C.
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold font-heading leading-tight">
+                        Deviens incollable sur Jules César & Vercingétorix !
+                    </h2>
+                    <p class="text-amber-100 text-sm sm:text-base font-medium">
+                        Révise ta leçon officielle, maîtrise les mots importants (conquérir, indépendance, impôt) et relève les 4 défis d'histoire.
+                    </p>
+
+                    <div class="pt-2 flex flex-wrap items-center gap-3">
+                        <button onclick="navigate('lesson')" class="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black font-heading rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <span>📜</span> Relire la Fiche Complète
+                        </button>
+                        <button onclick="selectExercise(1)" class="px-5 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-2xl transition flex items-center gap-2">
+                            <span>🎮</span> Commencer les Exercices
+                        </button>
+                        <button onclick="navigate('trophies')" class="px-5 py-3 bg-black/25 hover:bg-black/40 text-amber-200 border border-amber-400/30 font-bold rounded-2xl transition flex items-center gap-2">
+                            <span>🏆</span> Mes Trophées
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repères chronologiques fondamentaux -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center">
+                    <div class="text-[11px] text-slate-500 font-bold uppercase">L'Époque</div>
+                    <div class="text-lg sm:text-xl font-black font-heading text-red-800 mt-1">Antiquité</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Ier siècle av. J.-C.</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center">
+                    <div class="text-[11px] text-slate-500 font-bold uppercase">Le Chef Romain</div>
+                    <div class="text-lg sm:text-xl font-black font-heading text-rose-700 mt-1">Jules César</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Armée très organisée</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center">
+                    <div class="text-[11px] text-slate-500 font-bold uppercase">Le Chef Gaulois</div>
+                    <div class="text-lg sm:text-xl font-black font-heading text-emerald-700 mt-1">Vercingétorix</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Union des tribus</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-center">
+                    <div class="text-[11px] text-slate-500 font-bold uppercase">Bataille Décisive</div>
+                    <div class="text-lg sm:text-xl font-black font-heading text-amber-600 mt-1">52 av. J.-C.</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Siège d'Alésia</p>
+                </div>
+            </div>
+
+            <!-- Menu des 4 Exercices -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-black font-heading text-slate-800 flex items-center gap-2">
+                        <span>🎮</span> Les 4 Exercices pour apprendre toute la leçon :
+                    </h3>
+                    <span id="completedExercisesCount" class="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1 rounded-full">
+                        0 / 4 terminés
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Exercice 1 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">🏛️</span>
+                                <span id="badge-ex-1" class="text-xs bg-slate-100 text-slate-600 font-extrabold px-2.5 py-0.5 rounded-full">Non commencé</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 1 : Le Grand Quiz de Rome et de la Gaule</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                5 questions sur l'armée romaine, le pourtour méditerranéen, Jules César et la défaite d'Alésia en 52 av. J.-C.
+                            </p>
+                        </div>
+                        <button onclick="selectExercise(1)" class="w-full py-2.5 bg-red-800 hover:bg-red-900 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Lancer le Quiz</span> <span>➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Exercice 2 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">🧩</span>
+                                <span id="badge-ex-2" class="text-xs bg-slate-100 text-slate-600 font-extrabold px-2.5 py-0.5 rounded-full">Non commencé</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 2 : Les Définitions & Mots-clés</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Associe chaque mot clé (<em>Conquérir, Indépendance, Impôt, Alésia, Vercingétorix</em>) à sa signification exacte.
+                            </p>
+                        </div>
+                        <button onclick="selectExercise(2)" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Associer les définitions</span> <span>➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Exercice 3 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">✍️</span>
+                                <span id="badge-ex-3" class="text-xs bg-slate-100 text-slate-600 font-extrabold px-2.5 py-0.5 rounded-full">Non commencé</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 3 : Le Texte à Trous de la Leçon</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Retrouve les mots clés masqués pour mémoriser par cœur le cours complet (a et b).
+                            </p>
+                        </div>
+                        <button onclick="selectExercise(3)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Remplir les trous</span> <span>➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Exercice 4 -->
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-3xl">🛡️</span>
+                                <span id="badge-ex-4" class="text-xs bg-slate-100 text-slate-600 font-extrabold px-2.5 py-0.5 rounded-full">Non commencé</span>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 text-base font-heading mb-1">Exercice 4 : Camp Romain vs Camp Gaulois</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Trie et classe chaque affirmation ou rôle : est-ce le côté Romain (César) ou le côté Gaulois (Vercingétorix) ?
+                            </p>
+                        </div>
+                        <button onclick="selectExercise(4)" class="w-full py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-2xl transition flex items-center justify-center gap-1.5 shadow-xs">
+                            <span>Trier les camps</span> <span>➔</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 2 : FICHE LEÇON COMPLETE (REPRODUCTION DU CAHIER) -->
+        <!-- ======================================================== -->
+        <section id="screen-lesson" class="screen-view space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="text-xs font-black uppercase tracking-wider text-rose-800 bg-rose-100 px-3 py-1 rounded-full">Fiche d'Histoire Officielle</span>
+                        <h2 class="text-2xl sm:text-3xl font-black font-heading text-slate-800 mt-1">21. La Conquête de la Gaule</h2>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="readAloudLesson()" id="btnReadLesson" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition">
+                            <span>🔊</span> Écouter la leçon
+                        </button>
+                        <button onclick="window.print()" class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs flex items-center gap-1.5 transition">
+                            <span>🖨️</span> Imprimer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reproduction du texte manuscrit du cahier avec surlignages conformes -->
+                <div class="parchment-card p-6 sm:p-9 rounded-3xl border-2 border-amber-200 shadow-inner space-y-6 text-slate-800 leading-relaxed text-base sm:text-lg">
+                    
+                    <!-- Section a -->
+                    <div class="space-y-2">
+                        <h3 class="font-black text-red-900 text-lg sm:text-xl font-heading flex items-center gap-2">
+                            <span>🏛️</span> a) La puissance de Rome
+                        </h3>
+                        <p class="p-3 bg-white/70 rounded-2xl border border-amber-200/60 shadow-2xs">
+                            Durant <span class="hl-yellow">l'antiquité</span>, <span class="hl-yellow">Rome est devenue la ville la plus puissante d'Europe</span>. Les Romains avaient une armée <span class="hl-yellow">bien équipée, organisée et efficace</span>, ce qui lui a permis de <span class="hl-grey">conquérir*</span> <span class="hl-yellow">des régions de plus en plus éloignées</span>. Au <span class="hl-yellow">Ier siècle avant J.-C.</span>, les Romains dominaient le pourtour de <span class="hl-yellow">la mer Méditerranée</span>.
+                        </p>
+                    </div>
+
+                    <!-- Section b -->
+                    <div class="space-y-2">
+                        <h3 class="font-black text-red-900 text-lg sm:text-xl font-heading flex items-center gap-2">
+                            <span>⚔️</span> b) La conquête de la Gaule
+                        </h3>
+                        <p class="p-3 bg-white/70 rounded-2xl border border-amber-200/60 shadow-2xs">
+                            Les Romains voulaient <span class="hl-yellow">prendre le contrôle de la Gaule et de ses richesses</span>. Sous le contrôle de <span class="hl-yellow">Jules César</span>, ils se lancent à l'assaut. Pour se défendre, les Gaulois s'unissent alors autour d'un <span class="hl-yellow">chef unique</span> : <span class="hl-yellow">Vercingétorix</span>. Cependant, ils sont vaincus <span class="hl-yellow">en 52 avant J.-C. à Alésia</span>, et la Gaule perd son <span class="hl-grey">indépendance*</span>. Les Romains établissent alors la paix entre les tribus gauloises et les <span class="hl-yellow">obligent à leur payer un impôt*</span>.
+                        </p>
+                    </div>
+
+                    <!-- Mots importants -->
+                    <div class="space-y-2 pt-2 border-t border-amber-300/60">
+                        <h3 class="font-black text-amber-950 text-base sm:text-lg font-heading flex items-center gap-2">
+                            <span>📖</span> Mots importants :
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs sm:text-sm">
+                            <div class="p-3 bg-white/90 rounded-2xl border border-amber-300">
+                                <span class="hl-grey font-black text-slate-900">Conquérir*</span> :
+                                <span class="hl-yellow block mt-1">S'emparer d'une région par la guerre.</span>
+                            </div>
+                            <div class="p-3 bg-white/90 rounded-2xl border border-amber-300">
+                                <span class="hl-grey font-black text-slate-900">L'indépendance*</span> :
+                                <span class="hl-yellow block mt-1">La liberté, le fait de n'être soumis à aucune autorité.</span>
+                            </div>
+                            <div class="p-3 bg-white/90 rounded-2xl border border-amber-300">
+                                <span class="hl-grey font-black text-slate-900">Un impôt*</span> :
+                                <span class="hl-yellow block mt-1">Argent que l'on verse à son pays ou sa région pour les dépenses communes.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <button onclick="navigate('home')" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+                        ← Retour à l'accueil
+                    </button>
+                    <button onclick="selectExercise(1)" class="px-6 py-3 bg-red-800 hover:bg-red-900 text-white font-bold rounded-2xl text-xs sm:text-sm shadow transition flex items-center gap-2">
+                        <span>🎯</span> S'entraîner avec les 4 exercices
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 3 : LES 4 EXERCICES INTERACTIFS                    -->
+        <!-- ======================================================== -->
+        <section id="screen-exercises" class="screen-view space-y-6">
+            
+            <!-- Barre de navigation des 4 onglets d'exercices -->
+            <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 overflow-x-auto">
+                <button onclick="selectExercise(1)" id="ex-tab-1" class="ex-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-red-800 text-white shadow">
+                    <span>1. Le Grand Quiz</span>
+                </button>
+                <button onclick="selectExercise(2)" id="ex-tab-2" class="ex-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    <span>2. Mots-clés & Définitions</span>
+                </button>
+                <button onclick="selectExercise(3)" id="ex-tab-3" class="ex-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    <span>3. Texte à trous</span>
+                </button>
+                <button onclick="selectExercise(4)" id="ex-tab-4" class="ex-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    <span>4. Romains vs Gaulois</span>
+                </button>
+            </div>
+
+            <!-- EXERCICE 1 : LE GRAND QUIZ (QCM / VRAI-FAUX) -->
+            <div id="exercise-pane-1" class="exercise-pane space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-rose-800 bg-rose-100 px-3 py-1 rounded-full">Exercice 1 sur 4</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Grand Quiz de la Conquête</h3>
+                        </div>
+                        <span class="text-xs text-slate-500 font-bold">5 questions essentielles</span>
+                    </div>
+
+                    <div class="space-y-4" id="quizQuestionsList">
+                        <!-- Q1 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="q-box-1">
+                            <p class="font-bold text-slate-800 text-sm sm:text-base">1. Durant l'Antiquité, quelle ville est devenue la plus puissante d'Europe grâce à son armée bien équipée et organisée ?</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                                <button onclick="answerQuizQ(1, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">A) Lutèce (Paris)</button>
+                                <button onclick="answerQuizQ(1, true, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">B) Rome</button>
+                                <button onclick="answerQuizQ(1, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">C) Alésia</button>
+                                <button onclick="answerQuizQ(1, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">D) Athènes</button>
+                            </div>
+                            <div class="quiz-fb text-xs font-bold hidden"></div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="q-box-2">
+                            <p class="font-bold text-slate-800 text-sm sm:text-base">2. Au Ier siècle avant J.-C., quelle zone les Romains dominaient-ils entièrement ?</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                                <button onclick="answerQuizQ(2, true, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">A) Le pourtour de la mer Méditerranée</button>
+                                <button onclick="answerQuizQ(2, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">B) L'Océan Pacifique</button>
+                                <button onclick="answerQuizQ(2, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">C) Le pôle Nord</button>
+                                <button onclick="answerQuizQ(2, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">D) L'Amérique du Sud</button>
+                            </div>
+                            <div class="quiz-fb text-xs font-bold hidden"></div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="q-box-3">
+                            <p class="font-bold text-slate-800 text-sm sm:text-base">3. Pourquoi les Romains voulaient-ils faire la conquête de la Gaule ?</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                                <button onclick="answerQuizQ(3, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">A) Pour y passer leurs vacances d'été</button>
+                                <button onclick="answerQuizQ(3, true, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">B) Pour prendre le contrôle de la Gaule et de ses richesses</button>
+                            </div>
+                            <div class="quiz-fb text-xs font-bold hidden"></div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="q-box-4">
+                            <p class="font-bold text-slate-800 text-sm sm:text-base">4. En quelle année et dans quelle ville les Gaulois de Vercingétorix sont-ils vaincus par Jules César ?</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                                <button onclick="answerQuizQ(4, true, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">A) En 52 avant J.-C. à Alésia</button>
+                                <button onclick="answerQuizQ(4, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">B) En 1515 à Marignan</button>
+                                <button onclick="answerQuizQ(4, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">C) En l'an 800 à Rome</button>
+                                <button onclick="answerQuizQ(4, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">D) En 1789 à Paris</button>
+                            </div>
+                            <div class="quiz-fb text-xs font-bold hidden"></div>
+                        </div>
+
+                        <!-- Q5 -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5" id="q-box-5">
+                            <p class="font-bold text-slate-800 text-sm sm:text-base">5. Après leur victoire, que font les Romains avec les tribus gauloises ?</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
+                                <button onclick="answerQuizQ(5, false, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">A) Ils chassent tous les Gaulois en Angleterre</button>
+                                <button onclick="answerQuizQ(5, true, this)" class="quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition">B) Ils établissent la paix et les obligent à leur payer un impôt</button>
+                            </div>
+                            <div class="quiz-fb text-xs font-bold hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="resetExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            🔄 Recommencer le Quiz
+                        </button>
+                        <button onclick="selectExercise(2)" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow flex items-center gap-1.5">
+                            Exercice 2 : Définitions ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 2 : DÉFINITIONS & MOTS-CLÉS -->
+            <div id="exercise-pane-2" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full">Exercice 2 sur 4</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Mots-clés & Définitions de la Leçon</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur un mot à gauche, puis sur sa définition à droite.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="matchGameGrid">
+                        <div class="space-y-3" id="matchColLeft">
+                            <button onclick="selectMatchCard(this, 'left', 'conquerir')" data-key="conquerir" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                ⚔️ Conquérir
+                            </button>
+                            <button onclick="selectMatchCard(this, 'left', 'independance')" data-key="independance" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                🕊️ L'indépendance
+                            </button>
+                            <button onclick="selectMatchCard(this, 'left', 'impot')" data-key="impot" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                💰 Un impôt
+                            </button>
+                            <button onclick="selectMatchCard(this, 'left', 'alesia')" data-key="alesia" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition">
+                                🏰 Alésia (52 av. J.-C.)
+                            </button>
+                        </div>
+
+                        <div class="space-y-3" id="matchColRight">
+                            <button onclick="selectMatchCard(this, 'right', 'impot')" data-key="impot" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                Argent que l'on verse à son pays ou sa région pour les dépenses communes.
+                            </button>
+                            <button onclick="selectMatchCard(this, 'right', 'conquerir')" data-key="conquerir" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                S'emparer d'une région par la guerre.
+                            </button>
+                            <button onclick="selectMatchCard(this, 'right', 'alesia')" data-key="alesia" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                Lieu de la bataille où les Gaulois sont vaincus et perdent leur liberté.
+                            </button>
+                            <button onclick="selectMatchCard(this, 'right', 'independance')" data-key="independance" class="match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition">
+                                La liberté, le fait de n'être soumis à aucune autorité.
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="matchFeedback" class="text-sm font-bold text-emerald-700 hidden"></div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(1)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Exercice 1
+                        </button>
+                        <button onclick="selectExercise(3)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow flex items-center gap-1.5">
+                            Exercice 3 : Texte à trous ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 3 : TEXTE À TROUS DE LA LEÇON -->
+            <div id="exercise-pane-3" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">Exercice 3 sur 4</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Le Texte à Trous de la Leçon</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur un mot ci-dessous puis clique sur la case vide correspondante.</p>
+                    </div>
+
+                    <!-- Banque de mots -->
+                    <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-emerald-900 tracking-wider">Mots à placer :</span>
+                        <div class="flex flex-wrap gap-2" id="clozeBank">
+                            <!-- Généré et mélangé aléatoirement par JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Texte avec les trous -->
+                    <div class="p-6 parchment-card border border-amber-200 rounded-2xl text-base leading-loose text-slate-800 font-medium space-y-4">
+                        <p>
+                            Au Ier siècle avant J.-C., les Romains dominaient le pourtour de la mer 
+                            <span onclick="dropClozeWord(this)" data-expected="Méditerranée" class="cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">... ? ...</span>.
+                        </p>
+                        <p>
+                            Les Romains voulaient prendre le contrôle de la Gaule et de ses richesses sous la conduite de 
+                            <span onclick="dropClozeWord(this)" data-expected="Jules César" class="cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[120px] transition">... ? ...</span>.
+                            Pour se défendre, les tribus gauloises s'unissent autour d'un chef unique nommé 
+                            <span onclick="dropClozeWord(this)" data-expected="Vercingétorix" class="cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">... ? ...</span>.
+                        </p>
+                        <p>
+                            Cependant, les Gaulois sont vaincus en 
+                            <span onclick="dropClozeWord(this)" data-expected="52 avant J.-C." class="cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[130px] transition">... ? ...</span>
+                            à 
+                            <span onclick="dropClozeWord(this)" data-expected="Alésia" class="cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[100px] transition">... ? ...</span>.
+                            La Gaule perd son indépendance et les Romains obligent les tribus à leur verser un 
+                            <span onclick="dropClozeWord(this)" data-expected="impôt" class="cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[90px] transition">... ? ...</span>.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifyClozeExercise()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition">
+                            Vérifier mes réponses
+                        </button>
+                        <button onclick="resetExercise(3)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Recommencer
+                        </button>
+                        <div id="clozeFeedback" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(2)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Exercice 2
+                        </button>
+                        <button onclick="selectExercise(4)" class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-xs sm:text-sm shadow flex items-center gap-1.5">
+                            Exercice 4 : Romains vs Gaulois ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCICE 4 : TRI ROMAINS VS GAULOIS -->
+            <div id="exercise-pane-4" class="exercise-pane hidden space-y-5">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-wider text-purple-800 bg-purple-100 px-3 py-1 rounded-full">Exercice 4 sur 4</span>
+                            <h3 class="text-2xl font-bold font-heading text-slate-800 mt-1">Camp Romain ou Camp Gaulois ?</h3>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-500">Clique sur une étiquette, puis dépose-la dans le bon camp.</p>
+                    </div>
+
+                    <!-- Étiquettes à trier -->
+                    <div class="p-4 bg-slate-100/80 rounded-2xl border border-slate-200 space-y-2">
+                        <span class="text-xs uppercase font-extrabold text-slate-600">Étiquettes à classer :</span>
+                        <div class="flex flex-wrap gap-2.5 min-h-[48px]" id="campOriginPool">
+                            <div onclick="selectCampChip(this)" data-camp="romains" class="camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition">
+                                🏛️ Dirigés par Jules César
+                            </div>
+                            <div onclick="selectCampChip(this)" data-camp="gaulois" class="camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition">
+                                ⚔️ Unis autour de Vercingétorix
+                            </div>
+                            <div onclick="selectCampChip(this)" data-camp="romains" class="camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition">
+                                🛡️ Armée bien équipée, organisée et efficace
+                            </div>
+                            <div onclick="selectCampChip(this)" data-camp="gaulois" class="camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition">
+                                🏰 Vaincus en 52 avant J.-C. à Alésia
+                            </div>
+                            <div onclick="selectCampChip(this)" data-camp="romains" class="camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition">
+                                💰 Reçoivent un impôt après leur victoire
+                            </div>
+                            <div onclick="selectCampChip(this)" data-camp="gaulois" class="camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition">
+                                🕊️ Perdent leur indépendance
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Les 2 Bacs de Tri -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div onclick="depositCampChip('romains')" class="p-5 rounded-2xl bg-red-50 border-2 border-red-300 hover:border-red-500 cursor-pointer transition flex flex-col min-h-[190px]">
+                            <div class="font-extrabold text-red-950 text-base mb-2 flex items-center justify-between">
+                                <span>🏛️ Camp Romain</span>
+                                <span class="text-xs bg-red-200 text-red-900 px-2 py-0.5 rounded-full font-bold">Rome / César</span>
+                            </div>
+                            <div id="drop-target-romains" class="space-y-2 flex-grow"></div>
+                        </div>
+
+                        <div onclick="depositCampChip('gaulois')" class="p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 hover:border-emerald-500 cursor-pointer transition flex flex-col min-h-[190px]">
+                            <div class="font-extrabold text-emerald-950 text-base mb-2 flex items-center justify-between">
+                                <span>🌲 Camp Gaulois</span>
+                                <span class="text-xs bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">Gaule / Vercingétorix</span>
+                            </div>
+                            <div id="drop-target-gaulois" class="space-y-2 flex-grow"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="verifyCampExercise()" class="px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl shadow transition">
+                            Valider le tri
+                        </button>
+                        <button onclick="resetExercise(4)" class="px-4 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-sm transition">
+                            Recommencer
+                        </button>
+                        <div id="campFeedback" class="text-sm font-bold ml-2"></div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-100">
+                        <button onclick="selectExercise(3)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                            ⬅️ Exercice 3
+                        </button>
+                        <button onclick="navigate('trophies')" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-xs sm:text-sm shadow flex items-center gap-1.5">
+                            Voir mes Trophées 🏆
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- ÉCRAN 4 : SALLE DES TROPHÉES                             -->
+        <!-- ======================================================== -->
+        <section id="screen-trophies" class="screen-view space-y-6">
+            
+            <div class="bg-gradient-to-br from-red-950 via-slate-900 to-amber-950 text-white rounded-3xl p-6 sm:p-9 shadow-xl border border-white/10 space-y-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider font-extrabold text-amber-300 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30">
+                            Palmarès Historique
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black font-heading mt-2">
+                            🏆 La Galerie des 8 Trophées
+                        </h2>
+                        <p class="text-slate-300 text-xs sm:text-sm mt-1">
+                            Valide les 4 exercices pour débloquer l'ensemble des couronnes et boucliers !
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 p-3.5 rounded-2xl border border-white/15 text-center min-w-[180px]">
+                        <div class="text-[11px] uppercase text-slate-300 font-bold">Progression Globale</div>
+                        <div id="trophyPercentLabel" class="text-3xl font-black font-heading text-amber-300">0%</div>
+                        <div class="w-full bg-black/40 h-2 rounded-full overflow-hidden mt-1.5">
+                            <div id="trophyGlobalBar" class="bg-amber-400 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grille des 8 trophées -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5" id="trophiesListGrid">
+                    <!-- Rempli en JS -->
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs">
+                    <button onclick="navigate('home')" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-amber-950 font-black rounded-xl transition">
+                        ← Retour à l'accueil
+                    </button>
+                    <button onclick="resetWholeHistoryApp()" class="text-rose-300 hover:text-rose-100 underline transition">
+                        Réinitialiser tous mes trophées
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-amber-200 bg-white py-4 text-center text-xs text-slate-500">
+        <p>🏛️ <strong>21. La Conquête de la Gaule</strong> • Application pédagogique autonome d'histoire Cycle 3.</p>
+    </footer>
+
+    <!-- LOGIQUE JAVASCRIPT & AUDIO -->
+    <script>
+        const TROPHIES_CONFIG = [
+            { id: "t_first", icon: "🌱", title: "Premier Pas d'Historien", desc: "Compléter un premier exercice avec succès.", check: (s) => s.completedEx.length >= 1 },
+            { id: "t_quiz", icon: "🏛️", title: "Sénateur de Rome", desc: "Obtenir 5/5 au Grand Quiz d'histoire (Ex 1).", check: (s) => s.ex1Score === 5 },
+            { id: "t_words", icon: "📖", title: "Maître du Vocabulaire", desc: "Associer sans faute les 4 définitions clés (Ex 2).", check: (s) => s.ex2Score === 4 },
+            { id: "t_cloze", icon: "✍️", title: "Scribe de la République", desc: "Compléter parfaitement le texte à trous (Ex 3).", check: (s) => s.ex3Score === 6 },
+            { id: "t_camps", icon: "🛡️", title: "Stratège des Deux Camps", desc: "Classer sans aucune erreur Romains et Gaulois (Ex 4).", check: (s) => s.ex4Score === 6 },
+            { id: "t_reader", icon: "📜", title: "Mémoire d'Alésia", desc: "Avoir lu et écouté la fiche de leçon complète.", check: (s) => s.lessonRead === true },
+            { id: "t_perfect", icon: "👑", title: "Triomphe Impérial", desc: "Avoir validé les 4 exercices de la leçon à 100%.", check: (s) => s.ex1Score === 5 && s.ex2Score === 4 && s.ex3Score === 6 && s.ex4Score === 6 },
+            { id: "t_legend", icon: "🌟", title: "Grand Sage de la Gaule", desc: "Débloquer les 7 autres trophées de l'application.", check: (s, count) => count >= 7 }
+        ];
+
+        const gameState = {
+            ex1Score: 0,
+            ex2Score: 0,
+            ex3Score: 0,
+            ex4Score: 0,
+            completedEx: [],
+            lessonRead: false,
+            unlockedTrophies: [],
+            soundEnabled: true
+        };
+
+        // --- AUDIO WEB AUDIO API ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.14);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.linearRampToValueAtTime(150, now + 0.22);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.24);
+                    osc.start(now);
+                    osc.stop(now + 0.24);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'trophy') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'sine';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        g.gain.setValueAtTime(0.12, now + idx * 0.08);
+                        g.gain.linearRampToValueAtTime(0.001, now + idx * 0.08 + 0.32);
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.start(now + idx * 0.08);
+                        o.stop(now + idx * 0.08 + 0.32);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudio() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            document.getElementById('soundToggle').innerText = gameState.soundEnabled ? '🔊' : '🔇';
+            saveData();
+        }
+
+        // --- LOCAL STORAGE ---
+        function loadData() {
+            try {
+                const raw = localStorage.getItem('histoire_conquete_gaule_save');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    Object.assign(gameState, parsed);
+                }
+            } catch (e) {}
+            updateUI();
+            checkTrophies(false);
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('histoire_conquete_gaule_save', JSON.stringify(gameState));
+            } catch (e) {}
+            updateUI();
+        }
+
+        // --- NAVIGATION ENTRE PAGES ---
+        function navigate(pageId) {
+            playSound('click');
+            document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(`screen-${pageId}`);
+            if (target) target.classList.add('active');
+
+            if (pageId === 'trophies') {
+                renderTrophiesGallery();
+            } else if (pageId === 'lesson') {
+                gameState.lessonRead = true;
+                saveData();
+                checkTrophies(true);
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectExercise(num) {
+            playSound('click');
+            navigate('exercises');
+
+            document.querySelectorAll('.exercise-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.ex-tab').forEach(tab => {
+                tab.className = "ex-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-slate-100 text-slate-700 hover:bg-slate-200";
+            });
+
+            const activePane = document.getElementById(`exercise-pane-${num}`);
+            const activeTab = document.getElementById(`ex-tab-${num}`);
+
+            if (activePane) activePane.classList.remove('hidden');
+            if (activeTab) {
+                activeTab.className = "ex-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition bg-red-800 text-white shadow";
+            }
+        }
+
+        function updateUI() {
+            const count = gameState.unlockedTrophies.length;
+            document.getElementById('navTrophyCountBadge').innerText = `${count}/8`;
+
+            const rankEl = document.getElementById('rankBadge');
+            if (count === 8) rankEl.innerText = "👑 Grand Sage";
+            else if (count >= 5) rankEl.innerText = "⭐ Centurion";
+            else if (count >= 2) rankEl.innerText = "🛡️ Guerrier Gaulois";
+            else rankEl.innerText = "Apprenti Légionnaire";
+
+            // Badges d'état des 4 exercices
+            const exMeta = [
+                { id: 1, max: 5 },
+                { id: 2, max: 4 },
+                { id: 3, max: 6 },
+                { id: 4, max: 6 }
+            ];
+
+            let doneCount = 0;
+            exMeta.forEach(ex => {
+                const badge = document.getElementById(`badge-ex-${ex.id}`);
+                const isDone = gameState.completedEx.includes(ex.id);
+                const score = gameState[`ex${ex.id}Score`];
+                if (isDone && score === ex.max) {
+                    doneCount++;
+                    badge.className = "text-xs bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-0.5 rounded-full";
+                    badge.innerText = `Validé (${score}/${ex.max})`;
+                } else if (isDone || score > 0) {
+                    badge.className = "text-xs bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full";
+                    badge.innerText = `En cours (${score}/${ex.max})`;
+                } else {
+                    badge.className = "text-xs bg-slate-100 text-slate-600 font-extrabold px-2.5 py-0.5 rounded-full";
+                    badge.innerText = "Non commencé";
+                }
+            });
+
+            document.getElementById('completedExercisesCount').innerText = `${doneCount} / 4 terminés`;
+        }
+
+        // --- SYNTHÈSE VOCALE POUR LA LEÇON ---
+        function readAloudLesson() {
+            if (!('speechSynthesis' in window)) {
+                alert("La synthèse vocale n'est pas disponible sur ce navigateur.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const textToRead = "21. La conquête de la Gaule. a) La puissance de Rome. Durant l'antiquité, Rome est devenue la ville la plus puissante d'Europe. Les Romains avaient une armée bien équipée, organisée et efficace, ce qui lui a permis de conquérir des régions de plus en plus éloignées. Au premier siècle avant Jésus-Christ, les Romains dominaient le pourtour de la mer Méditerranée. b) La conquête de la Gaule. Les Romains voulaient prendre le contrôle de la Gaule et de ses richesses. Sous le contrôle de Jules César, ils se lancent à l'assaut. Pour se défendre, les Gaulois s'unissent alors autour d'un chef unique, Vercingétorix. Cependant, ils sont vaincus en 52 avant Jésus-Christ à Alésia, et la Gaule perd son indépendance. Les Romains établissent alors la paix entre les tribus gauloises et les obligent à leur payer un impôt.";
+            
+            const utter = new SpeechSynthesisUtterance(textToRead);
+            utter.lang = 'fr-FR';
+            utter.rate = 0.95;
+            window.speechSynthesis.speak(utter);
+            gameState.lessonRead = true;
+            saveData();
+            checkTrophies(true);
+        }
+
+        // ==========================================
+        // EXERCICE 1 : LE GRAND QUIZ (5 QUESTIONS)
+        // ==========================================
+        const quizAnswers = { 1: false, 2: false, 3: false, 4: false, 5: false };
+
+        function answerQuizQ(qNum, isCorrect, btn) {
+            const container = document.getElementById(`q-box-${qNum}`);
+            const allBtns = container.querySelectorAll('.quiz-btn');
+            const fb = container.querySelector('.quiz-fb');
+
+            allBtns.forEach(b => b.className = "quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition");
+
+            quizAnswers[qNum] = isCorrect;
+
+            if (isCorrect) {
+                playSound('correct');
+                btn.className = "quiz-btn p-3 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold rounded-xl text-left shadow-xs";
+                fb.className = "quiz-fb text-xs font-bold text-emerald-700 block mt-1.5";
+                fb.innerHTML = "✅ Bonne réponse !";
+            } else {
+                playSound('wrong');
+                btn.className = "quiz-btn p-3 bg-rose-100 border-2 border-rose-500 text-rose-950 font-bold rounded-xl text-left shadow-xs";
+                fb.className = "quiz-fb text-xs font-bold text-rose-700 block mt-1.5";
+                fb.innerHTML = "❌ Erreur, relis bien le cours.";
+            }
+
+            let sc = 0;
+            for (let k = 1; k <= 5; k++) {
+                if (quizAnswers[k] === true) sc++;
+            }
+            gameState.ex1Score = sc;
+            if (!gameState.completedEx.includes(1)) gameState.completedEx.push(1);
+
+            saveData();
+            checkTrophies(true);
+        }
+
+        // ==========================================
+        // EXERCICE 2 : DÉFINITIONS & MOTS-CLÉS
+        // ==========================================
+        let matchLeft = null;
+        let matchRight = null;
+        const matchedKeys = new Set();
+
+        function selectMatchCard(btn, side, key) {
+            if (matchedKeys.has(key)) return;
+            playSound('click');
+
+            if (side === 'left') {
+                document.querySelectorAll('#matchColLeft .match-card').forEach(b => {
+                    if (!matchedKeys.has(b.dataset.key)) b.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition";
+                });
+                matchLeft = { btn, key };
+                btn.className = "match-card w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-500 font-bold text-left text-sm transition";
+            } else {
+                document.querySelectorAll('#matchColRight .match-card').forEach(b => {
+                    if (!matchedKeys.has(b.dataset.key)) b.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-semibold text-left text-sm transition";
+                });
+                matchRight = { btn, key };
+                btn.className = "match-card w-full p-4 rounded-2xl bg-amber-100 border-2 border-amber-500 font-semibold text-left text-sm transition";
+            }
+
+            if (matchLeft && matchRight) {
+                if (matchLeft.key === matchRight.key) {
+                    playSound('correct');
+                    matchedKeys.add(matchLeft.key);
+                    matchLeft.btn.className = "match-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
+                    matchRight.btn.className = "match-card w-full p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-950 font-bold text-left text-sm pointer-events-none";
+
+                    gameState.ex2Score = matchedKeys.size;
+                    if (matchedKeys.size === 4 && !gameState.completedEx.includes(2)) {
+                        gameState.completedEx.push(2);
+                    }
+
+                    const fb = document.getElementById('matchFeedback');
+                    fb.classList.remove('hidden');
+                    fb.innerText = `✨ Définition validée ! (${matchedKeys.size}/4)`;
+                } else {
+                    playSound('wrong');
+                    const b1 = matchLeft.btn;
+                    const b2 = matchRight.btn;
+                    b1.className = "match-card w-full p-4 rounded-2xl bg-rose-100 border-2 border-rose-400 text-rose-950 font-bold text-left text-sm";
+                    b2.className = "match-card w-full p-4 rounded-2xl bg-rose-100 border-2 border-rose-400 text-rose-950 font-semibold text-left text-sm";
+                    setTimeout(() => {
+                        b1.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-bold text-left text-sm";
+                        b2.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-semibold text-left text-sm";
+                    }, 500);
+                }
+                matchLeft = null;
+                matchRight = null;
+                saveData();
+                checkTrophies(true);
+            }
+        }
+
+        // ==========================================
+        // EXERCICE 3 : TEXTE À TROUS
+        // ==========================================
+        const CLOZE_WORDS = [
+            "Méditerranée",
+            "Jules César",
+            "Vercingétorix",
+            "52 avant J.-C.",
+            "Alésia",
+            "impôt"
+        ];
+        let selectedClozeWordChip = null;
+
+        // Mélange aléatoire (Fisher-Yates) pour que les jetons ne soient jamais dans l'ordre du texte
+        function shuffleArray(arr) {
+            const shuffled = [...arr];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function renderClozeBank() {
+            const bank = document.getElementById('clozeBank');
+            if (!bank) return;
+            bank.innerHTML = '';
+            selectedClozeWordChip = null;
+
+            const shuffledWords = shuffleArray(CLOZE_WORDS);
+            shuffledWords.forEach(word => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "cloze-chip px-3.5 py-1.5 bg-white border-2 border-emerald-300 hover:border-emerald-600 rounded-xl font-black text-xs sm:text-sm shadow-xs transition";
+                btn.dataset.word = word;
+                btn.innerText = word;
+                btn.onclick = () => pickClozeWord(btn);
+                bank.appendChild(btn);
+            });
+        }
+
+        function pickClozeWord(chip) {
+            if (chip.classList.contains('opacity-30')) return;
+            playSound('click');
+            document.querySelectorAll('.cloze-chip').forEach(c => c.classList.remove('border-emerald-700', 'bg-emerald-100'));
+            selectedClozeWordChip = chip;
+            chip.classList.add('border-emerald-700', 'bg-emerald-100');
+        }
+
+        function dropClozeWord(slot) {
+            playSound('click');
+            if (!selectedClozeWordChip) {
+                if (slot.dataset.currentWord) {
+                    const w = slot.dataset.currentWord;
+                    const c = document.querySelector(`.cloze-chip[data-word="${w}"]`);
+                    if (c) c.classList.remove('opacity-30', 'pointer-events-none');
+                    delete slot.dataset.currentWord;
+                    slot.innerText = "... ? ...";
+                    slot.className = "cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[100px] transition";
+                }
+                return;
+            }
+
+            if (slot.dataset.currentWord) {
+                const prev = slot.dataset.currentWord;
+                const prevChip = document.querySelector(`.cloze-chip[data-word="${prev}"]`);
+                if (prevChip) prevChip.classList.remove('opacity-30', 'pointer-events-none');
+            }
+
+            const word = selectedClozeWordChip.dataset.word;
+            slot.dataset.currentWord = word;
+            slot.innerText = word;
+            slot.className = "cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-emerald-600 bg-emerald-600 text-white font-bold rounded-xl cursor-pointer min-w-[100px] shadow-xs";
+
+            selectedClozeWordChip.classList.add('opacity-30', 'pointer-events-none');
+            selectedClozeWordChip.classList.remove('border-emerald-700', 'bg-emerald-100');
+            selectedClozeWordChip = null;
+        }
+
+        function verifyClozeExercise() {
+            const slots = document.querySelectorAll('.cloze-slot');
+            let score = 0, allFilled = true;
+
+            slots.forEach(slot => {
+                const word = slot.dataset.currentWord;
+                const expected = slot.dataset.expected;
+                if (!word) allFilled = false;
+
+                if (word === expected) {
+                    score++;
+                    slot.className = "cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-emerald-500 bg-emerald-100 text-emerald-950 font-bold rounded-xl";
+                } else {
+                    slot.className = "cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-rose-500 bg-rose-100 text-rose-950 font-bold rounded-xl";
+                }
+            });
+
+            gameState.ex3Score = score;
+            if (allFilled && !gameState.completedEx.includes(3)) gameState.completedEx.push(3);
+
+            const fb = document.getElementById('clozeFeedback');
+            if (score === 6) {
+                playSound('correct');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🎉 Sans-faute parfait sur le texte !";
+            } else {
+                playSound('wrong');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${score}/6 corrects. Clique sur les cases rouges pour modifier.`;
+            }
+
+            saveData();
+            checkTrophies(true);
+        }
+
+        // ==========================================
+        // EXERCICE 4 : TRI ROMAINS VS GAULOIS
+        // ==========================================
+        let selectedCampChipEl = null;
+
+        function selectCampChip(chip) {
+            playSound('click');
+            document.querySelectorAll('.camp-chip').forEach(t => t.classList.remove('border-purple-600', 'bg-purple-50'));
+            selectedCampChipEl = chip;
+            chip.classList.add('border-purple-600', 'bg-purple-50');
+        }
+
+        function depositCampChip(targetCamp) {
+            if (!selectedCampChipEl) return;
+            playSound('click');
+            const targetContainer = document.getElementById(`drop-target-${targetCamp}`);
+            targetContainer.appendChild(selectedCampChipEl);
+            selectedCampChipEl.dataset.currentCamp = targetCamp;
+            selectedCampChipEl.classList.remove('border-purple-600', 'bg-purple-50');
+            selectedCampChipEl = null;
+        }
+
+        function verifyCampExercise() {
+            const chips = document.querySelectorAll('.camp-chip');
+            let correct = 0, placedCount = 0;
+
+            chips.forEach(t => {
+                const current = t.dataset.currentCamp;
+                const expected = t.dataset.camp;
+                if (current) {
+                    placedCount++;
+                    if (current === expected) {
+                        correct++;
+                        t.className = "camp-chip px-3.5 py-2 bg-emerald-100 border-2 border-emerald-500 text-emerald-950 rounded-xl text-xs sm:text-sm font-bold shadow-xs";
+                    } else {
+                        t.className = "camp-chip px-3.5 py-2 bg-rose-100 border-2 border-rose-500 text-rose-950 rounded-xl text-xs sm:text-sm font-bold shadow-xs";
+                    }
+                }
+            });
+
+            gameState.ex4Score = correct;
+            if (placedCount === 6 && !gameState.completedEx.includes(4)) gameState.completedEx.push(4);
+
+            const fb = document.getElementById('campFeedback');
+            if (correct === 6) {
+                playSound('correct');
+                fb.className = "text-sm font-bold ml-2 text-emerald-700";
+                fb.innerText = "🛡️ Bravo ! Romains et Gaulois sont parfaitement identifiés.";
+            } else {
+                playSound('wrong');
+                fb.className = "text-sm font-bold ml-2 text-rose-700";
+                fb.innerText = `${correct}/6 bien classés. Réajuste les étiquettes en rouge.`;
+            }
+
+            saveData();
+            checkTrophies(true);
+        }
+
+        // ==========================================
+        // RÉINITIALISATIONS DES EXERCICES
+        // ==========================================
+        function resetExercise(num) {
+            playSound('click');
+            if (num === 1) {
+                for (let k = 1; k <= 5; k++) {
+                    quizAnswers[k] = false;
+                    const r = document.getElementById(`q-box-${k}`);
+                    r.querySelector('.quiz-fb').classList.add('hidden');
+                    r.querySelectorAll('.quiz-btn').forEach(b => {
+                        b.className = "quiz-btn p-3 bg-white border border-slate-200 rounded-xl text-left hover:border-red-400 transition";
+                    });
+                }
+                gameState.ex1Score = 0;
+            } else if (num === 2) {
+                matchedKeys.clear();
+                document.querySelectorAll('#matchGameGrid .match-card').forEach(b => {
+                    b.className = "match-card w-full p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 font-bold text-left text-sm transition";
+                });
+                document.getElementById('matchFeedback').classList.add('hidden');
+                gameState.ex2Score = 0;
+            } else if (num === 3) {
+                document.querySelectorAll('.cloze-slot').forEach(s => {
+                    delete s.dataset.currentWord;
+                    s.innerText = "... ? ...";
+                    s.className = "cloze-slot inline-flex items-center justify-center px-3 py-1 border-2 border-dashed border-emerald-400 bg-white text-emerald-900 font-bold rounded-xl cursor-pointer min-w-[100px] transition";
+                });
+                renderClozeBank();
+                document.getElementById('clozeFeedback').innerText = "";
+                gameState.ex3Score = 0;
+            } else if (num === 4) {
+                const origin = document.getElementById('campOriginPool');
+                document.querySelectorAll('.camp-chip').forEach(t => {
+                    delete t.dataset.currentCamp;
+                    t.className = "camp-chip px-3.5 py-2 bg-white border-2 border-slate-300 rounded-xl text-xs sm:text-sm font-bold shadow-xs cursor-pointer hover:border-purple-400 transition";
+                    origin.appendChild(t);
+                });
+                document.getElementById('campFeedback').innerText = "";
+                gameState.ex4Score = 0;
+            }
+            saveData();
+        }
+
+        // ==========================================
+        // SYSTÈME DE TROPHÉES
+        // ==========================================
+        function checkTrophies(notify = true) {
+            let newly = false;
+            const currentUnlocked = gameState.unlockedTrophies.length;
+
+            TROPHIES_CONFIG.forEach(t => {
+                if (!gameState.unlockedTrophies.includes(t.id)) {
+                    if (t.check(gameState, currentUnlocked)) {
+                        gameState.unlockedTrophies.push(t.id);
+                        newly = true;
+                        if (notify) {
+                            showTrophyToast(t);
+                            playSound('trophy');
+                            launchConfetti();
+                        }
+                    }
+                }
+            });
+
+            if (newly) saveData();
+        }
+
+        function showTrophyToast(t) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-amber-400 text-amber-950 px-5 py-3.5 rounded-2xl shadow-2xl font-bold flex items-center gap-3 border-2 border-white transform translate-y-12 opacity-0 transition-all duration-300";
+            toast.innerHTML = `<span class="text-3xl">${t.icon}</span> <div><div class="text-[10px] uppercase font-black tracking-wider text-amber-900">Trophée Débloqué !</div><div class="font-heading text-base font-black">${t.title}</div></div>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-12', 'opacity-0'), 60);
+            setTimeout(() => {
+                toast.classList.add('translate-y-12', 'opacity-0');
+                setTimeout(() => toast.remove(), 400);
+            }, 3800);
+        }
+
+        function renderTrophiesGallery() {
+            const container = document.getElementById('trophiesListGrid');
+            container.innerHTML = '';
+
+            const unlocked = gameState.unlockedTrophies.length;
+            const percent = Math.round((unlocked / TROPHIES_CONFIG.length) * 100);
+
+            document.getElementById('trophyPercentLabel').innerText = `${percent}%`;
+            document.getElementById('trophyGlobalBar').style.width = `${percent}%`;
+
+            TROPHIES_CONFIG.forEach(t => {
+                const isUnlocked = gameState.unlockedTrophies.includes(t.id);
+                const card = document.createElement('div');
+
+                if (isUnlocked) {
+                    card.className = "p-4 rounded-2xl bg-white/10 border-2 border-amber-400/80 shadow-md flex items-center gap-3.5 relative overflow-hidden group trophy-glow";
+                    card.innerHTML = `
+                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-black shrink-0 shadow">
+                            ${t.icon}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-amber-300 text-sm sm:text-base font-heading">${t.title}</h4>
+                                <span class="text-[9px] bg-emerald-500/30 text-emerald-300 font-black px-1.5 py-0.2 rounded-full border border-emerald-400/30">OBTENU</span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${t.desc}</p>
+                        </div>
+                    `;
+                } else {
+                    card.className = "p-4 rounded-2xl bg-black/30 border border-white/5 opacity-55 flex items-center gap-3.5";
+                    card.innerHTML = `
+                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white/5 text-slate-400 flex items-center justify-center text-2xl font-bold shrink-0">
+                            🔒
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-300 text-sm sm:text-base font-heading">${t.title}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">${t.desc}</p>
+                        </div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function resetWholeHistoryApp() {
+            if (confirm("Réinitialiser l'ensemble de tes scores et trophées sur la Gaule ?")) {
+                localStorage.removeItem('histoire_conquete_gaule_save');
+                location.reload();
+            }
+        }
+
+        // --- CONFETTIS CANVAS ---
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#f59e0b', '#ef4444', '#10b981', '#8b5cf6', '#3b82f6'];
+
+            for (let i = 0; i < 85; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 8 + 4,
+                    h: Math.random() * 6 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 15,
+                    vy: (Math.random() - 0.7) * 15,
+                    gravity: 0.28,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 8
+                });
+            }
+
+            let frames = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.rot += p.rotSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+
+                frames++;
+                if (frames < 85) requestAnimationFrame(animate);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            animate();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderClozeBank();
+            loadData();
+        });
+    </script>
+</body>
+</html>

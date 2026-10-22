@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geom 2 : Les angles - Exercices</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --error: #dc2626;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 16px 10px 50px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+      background: var(--card);
+      padding: 18px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border-top: 5px solid var(--primary);
+    }
+
+    .badge-code {
+      display: inline-block;
+      background: #dbeafe;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      justify-content: space-between;
+      align-items: stretch;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1 1 0;
+      min-width: 0;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      padding: 8px 6px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+
+    .section-content {
+      display: none;
+    }
+
+    .section-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .lesson-rule {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 12px;
+    }
+
+    .types-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .type-card {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .type-card svg {
+      width: 100%;
+      max-width: 140px;
+      height: 90px;
+      margin-bottom: 8px;
+    }
+
+    .type-card h3 {
+      font-size: 1rem;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .type-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 10px;
+    }
+
+    .ex-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .ex-score {
+      font-size: 0.88rem;
+      font-weight: bold;
+      background: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .question-block {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .question-block p.q-text {
+      text-align: left;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .question-block svg {
+      width: 140px;
+      height: 90px;
+      margin: 8px auto;
+      display: block;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-opt {
+      flex: 1;
+      min-width: 100px;
+      padding: 9px 10px;
+      border: 2px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .btn-opt:hover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .btn-opt.selected {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .feedback {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      text-align: left;
+    }
+
+    .feedback.visible {
+      display: block;
+    }
+
+    .feedback.ok { color: var(--success); }
+    .feedback.err { color: var(--error); }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .trophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .trophy-card {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .trophy-card.unlocked {
+      border-color: #f59e0b;
+      background: #fffdf5;
+    }
+
+    .trophy-icon {
+      font-size: 2rem;
+      filter: grayscale(1);
+      opacity: 0.4;
+      margin-bottom: 6px;
+    }
+
+    .trophy-card.unlocked .trophy-icon {
+      filter: none;
+      opacity: 1;
+    }
+
+    .trophy-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .trophy-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 680px) {
+      .nav-tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+      }
+      .tab-btn {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge-code">FICHE GEOM 2</div>
+    <h1>Leçon : Les angles</h1>
+    <p style="color: var(--text-muted);">Mémorise et teste tes connaissances sur les angles avec 4 exercices interactifs</p>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="openTab('lecon', this)">📖 La Leçon</button>
+    <button class="tab-btn" onclick="openTab('ex1', this)">⚡ 1. Vrai / Faux</button>
+    <button class="tab-btn" onclick="openTab('ex2', this)">📐 2. Reconnaître</button>
+    <button class="tab-btn" onclick="openTab('ex3', this)">✏️ 3. Notation</button>
+    <button class="tab-btn" onclick="openTab('ex4', this)">🔍 4. Définitions</button>
+    <button class="tab-btn" onclick="openTab('trophees', this)">🏆 Trophées</button>
+  </div>
+
+  <!-- ONGLET LEÇON -->
+  <section id="lecon" class="section-content active">
+    <div class="card">
+      <h2 style="font-size: 1.25rem; margin-bottom: 12px;">Rappel du cours</h2>
+      <div class="lesson-rule">
+        <strong>Définition :</strong> Un <strong>angle</strong> est l'espace qui se trouve entre deux droites qui se coupent.
+      </div>
+      <div class="lesson-rule">
+        <strong>Composition :</strong> Un angle a un <strong>sommet</strong> (noté A) et <strong>deux côtés</strong>. Sa grandeur dépend de l'écartement des côtés.
+      </div>
+      <div class="lesson-rule">
+        <strong>Notation :</strong> On le note avec un chapeau : <strong>Â</strong> ou <strong>MÂN</strong> (avec toujours le sommet au milieu et un point sur chaque côté).
+      </div>
+
+      <h3 style="margin-top: 18px; font-size: 1.05rem;">Les 3 sortes d'angles :</h3>
+      <div class="types-grid">
+        <div class="type-card">
+          <svg viewBox="0 0 100 80">
+            <line x1="20" y1="70" x2="90" y2="70" stroke="#0f172a" stroke-width="3" />
+            <line x1="20" y1="70" x2="20" y2="10" stroke="#0f172a" stroke-width="3" />
+            <rect x="20" y="55" width="15" height="15" fill="none" stroke="#2563eb" stroke-width="2" />
+          </svg>
+          <h3>Angle droit</h3>
+          <p>Les côtés sont <strong>perpendiculaires</strong> (forme le coin de l'équerre).</p>
+        </div>
+
+        <div class="type-card">
+          <svg viewBox="0 0 100 80">
+            <line x1="20" y1="70" x2="90" y2="70" stroke="#0f172a" stroke-width="3" />
+            <line x1="20" y1="70" x2="65" y2="15" stroke="#0f172a" stroke-width="3" />
+            <path d="M 40 70 A 20 20 0 0 0 34 53" fill="none" stroke="#16a34a" stroke-width="2" />
+          </svg>
+          <h3>Angle aigu</h3>
+          <p>L'angle est <strong>plus petit</strong> qu'un angle droit.</p>
+        </div>
+
+        <div class="type-card">
+          <svg viewBox="0 0 100 80">
+            <line x1="50" y1="70" x2="95" y2="70" stroke="#0f172a" stroke-width="3" />
+            <line x1="50" y1="70" x2="10" y2="20" stroke="#0f172a" stroke-width="3" />
+            <path d="M 70 70 A 20 20 0 0 0 35 52" fill="none" stroke="#dc2626" stroke-width="2" />
+          </svg>
+          <h3>Angle obtus</h3>
+          <p>L'angle est <strong>plus grand</strong> qu'un angle droit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 1 : VRAI / FAUX -->
+  <section id="ex1" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 1 : Vrai ou Faux</span>
+        <span class="ex-score" id="score-ex1">Score : 0 / 4</span>
+      </div>
+
+      <div class="question-block" id="blk-vf-1">
+        <p class="q-text">1. Un angle est l'espace qui se trouve entre deux droites parallèles.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(1, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(1, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-1"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-2">
+        <p class="q-text">2. Les côtés d'un angle droit sont perpendiculaires.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(2, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(2, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-2"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-3">
+        <p class="q-text">3. Un angle obtus est plus petit qu'un angle droit.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(3, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(3, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-3"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-4">
+        <p class="q-text">4. La grandeur d'un angle dépend de l'écartement de ses côtés.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(4, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(4, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-4"></div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx1()">Valider mes réponses (Exercice 1)</button>
+      <div class="feedback" id="fb-ex1-global" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 2 : RECONNAÎTRE L'ANGLE -->
+  <section id="ex2" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 2 : Reconnaître le type d'angle</span>
+        <span class="ex-score" id="score-ex2">Score : 0 / 4</span>
+      </div>
+
+      <div class="question-block" id="blk-rec-1">
+        <p class="q-text">Figure 1 : Quel est ce type d'angle ?</p>
+        <svg viewBox="0 0 100 80">
+          <line x1="20" y1="70" x2="85" y2="70" stroke="#0f172a" stroke-width="3" />
+          <line x1="20" y1="70" x2="70" y2="20" stroke="#0f172a" stroke-width="3" />
+        </svg>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectRec(1, 'aigu', this)">Angle aigu</button>
+          <button class="btn-opt" onclick="selectRec(1, 'droit', this)">Angle droit</button>
+          <button class="btn-opt" onclick="selectRec(1, 'obtus', this)">Angle obtus</button>
+        </div>
+        <div class="feedback" id="fb-rec-1"></div>
+      </div>
+
+      <div class="question-block" id="blk-rec-2">
+        <p class="q-text">Figure 2 : Quel est ce type d'angle ?</p>
+        <svg viewBox="0 0 100 80">
+          <line x1="50" y1="70" x2="90" y2="70" stroke="#0f172a" stroke-width="3" />
+          <line x1="50" y1="70" x2="15" y2="20" stroke="#0f172a" stroke-width="3" />
+        </svg>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectRec(2, 'aigu', this)">Angle aigu</button>
+          <button class="btn-opt" onclick="selectRec(2, 'droit', this)">Angle droit</button>
+          <button class="btn-opt" onclick="selectRec(2, 'obtus', this)">Angle obtus</button>
+        </div>
+        <div class="feedback" id="fb-rec-2"></div>
+      </div>
+
+      <div class="question-block" id="blk-rec-3">
+        <p class="q-text">Figure 3 : Quel est ce type d'angle ?</p>
+        <svg viewBox="0 0 100 80">
+          <line x1="20" y1="70" x2="85" y2="70" stroke="#0f172a" stroke-width="3" />
+          <line x1="20" y1="70" x2="20" y2="15" stroke="#0f172a" stroke-width="3" />
+          <rect x="20" y="55" width="15" height="15" fill="none" stroke="#2563eb" stroke-width="2" />
+        </svg>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectRec(3, 'aigu', this)">Angle aigu</button>
+          <button class="btn-opt" onclick="selectRec(3, 'droit', this)">Angle droit</button>
+          <button class="btn-opt" onclick="selectRec(3, 'obtus', this)">Angle obtus</button>
+        </div>
+        <div class="feedback" id="fb-rec-3"></div>
+      </div>
+
+      <div class="question-block" id="blk-rec-4">
+        <p class="q-text">Figure 4 : Quel est ce type d'angle ?</p>
+        <svg viewBox="0 0 100 80">
+          <line x1="30" y1="65" x2="90" y2="65" stroke="#0f172a" stroke-width="3" />
+          <line x1="30" y1="65" x2="70" y2="35" stroke="#0f172a" stroke-width="3" />
+        </svg>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectRec(4, 'aigu', this)">Angle aigu</button>
+          <button class="btn-opt" onclick="selectRec(4, 'droit', this)">Angle droit</button>
+          <button class="btn-opt" onclick="selectRec(4, 'obtus', this)">Angle obtus</button>
+        </div>
+        <div class="feedback" id="fb-rec-4"></div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx2()">Valider mes réponses (Exercice 2)</button>
+      <div class="feedback" id="fb-ex2-global" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 3 : NOTATION D'UN ANGLE -->
+  <section id="ex3" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 3 : La notation d'un angle</span>
+        <span class="ex-score" id="score-ex3">Score : 0 / 4</span>
+      </div>
+
+      <div class="question-block" id="blk-not-1">
+        <p class="q-text">1. Où doit toujours se situer le sommet dans la notation d'un angle à 3 lettres ?</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectNot(1, 'debut', this)">Au début</button>
+          <button class="btn-opt" onclick="selectNot(1, 'milieu', this)">Au milieu</button>
+          <button class="btn-opt" onclick="selectNot(1, 'fin', this)">À la fin</button>
+        </div>
+        <div class="feedback" id="fb-not-1"></div>
+      </div>
+
+      <div class="question-block" id="blk-not-2">
+        <p class="q-text">2. Si un angle a pour sommet le point A, comment peut-on l'écrire avec une seule lettre ?</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectNot(2, 'A', this)">A</button>
+          <button class="btn-opt" onclick="selectNot(2, 'A_chap', this)">Â</button>
+          <button class="btn-opt" onclick="selectNot(2, 'A_barre', this)">Ā</button>
+        </div>
+        <div class="feedback" id="fb-not-2"></div>
+      </div>
+
+      <div class="question-block" id="blk-not-3">
+        <p class="q-text">3. L'angle a pour sommet A et ses côtés passent par M et N. Quelle écriture est correcte ?</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectNot(3, 'AMN', this)">ÂMN</button>
+          <button class="btn-opt" onclick="selectNot(3, 'MAN', this)">MÂN</button>
+          <button class="btn-opt" onclick="selectNot(3, 'MNA', this)">MNÂ</button>
+        </div>
+        <div class="feedback" id="fb-not-3"></div>
+      </div>
+
+      <div class="question-block" id="blk-not-4">
+        <p class="q-text">4. Quelle autre écriture désigne exactement le même angle que MÂN ?</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectNot(4, 'NAM', this)">NÂM</button>
+          <button class="btn-opt" onclick="selectNot(4, 'ANM', this)">AN̂M</button>
+          <button class="btn-opt" onclick="selectNot(4, 'NMA', this)">NM̂A</button>
+        </div>
+        <div class="feedback" id="fb-not-4"></div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx3()">Valider mes réponses (Exercice 3)</button>
+      <div class="feedback" id="fb-ex3-global" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 4 : DÉFINITIONS ET PROPRIÉTÉS -->
+  <section id="ex4" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 4 : Définitions et propriétés</span>
+        <span class="ex-score" id="score-ex4">Score : 0 / 4</span>
+      </div>
+
+      <div class="question-block" id="blk-def-1">
+        <p class="q-text">1. De quoi dépend la grandeur d'un angle ?</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectDef(1, 'longueur', this)">De la longueur des côtés</button>
+          <button class="btn-opt" onclick="selectDef(1, 'ecart', this)">De l'écartement des côtés</button>
+        </div>
+        <div class="feedback" id="fb-def-1"></div>
+      </div>
+
+      <div class="question-block" id="blk-def-2">
+        <p class="q-text">2. Un angle est formé de :</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectDef(2, '1s_2c', this)">Un sommet et deux côtés</button>
+          <button class="btn-opt" onclick="selectDef(2, '2s_1c', this)">Deux sommets et un côté</button>
+        </div>
+        <div class="feedback" id="fb-def-2"></div>
+      </div>
+
+      <div class="question-block" id="blk-def-3">
+        <p class="q-text">3. Comment qualifie-t-on les côtés d'un angle droit ?</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectDef(3, 'para', this)">Parallèles</button>
+          <button class="btn-opt" onclick="selectDef(3, 'perp', this)">Perpendiculaires</button>
+        </div>
+        <div class="feedback" id="fb-def-3"></div>
+      </div>
+
+      <div class="question-block" id="blk-def-4">
+        <p class="q-text">4. Si un angle est plus grand qu'un angle droit, c'est un angle :</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectDef(4, 'aigu', this)">Aigu</button>
+          <button class="btn-opt" onclick="selectDef(4, 'obtus', this)">Obtus</button>
+        </div>
+        <div class="feedback" id="fb-def-4"></div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx4()">Valider mes réponses (Exercice 4)</button>
+      <div class="feedback" id="fb-ex4-global" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- ONGLET TROPHÉES -->
+  <section id="trophees" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">🏆 Salle des Trophées</span>
+        <span class="ex-score" id="total-score-badge">Total : 0 / 16</span>
+      </div>
+
+      <div class="trophy-grid">
+        <div class="trophy-card" id="tr-1">
+          <div class="trophy-icon">⚡</div>
+          <div class="trophy-title">Vrai ou Faux Réussi</div>
+          <div class="trophy-desc">Au moins 3/4 à l'exercice 1.</div>
+        </div>
+        <div class="trophy-card" id="tr-2">
+          <div class="trophy-icon">📐</div>
+          <div class="trophy-title">Œil du Géomètre</div>
+          <div class="trophy-desc">Sans-faute (4/4) sur la reconnaissance.</div>
+        </div>
+        <div class="trophy-card" id="tr-3">
+          <div class="trophy-icon">✏️</div>
+          <div class="trophy-title">As de la Notation</div>
+          <div class="trophy-desc">Sans-faute (4/4) à l'exercice 3.</div>
+        </div>
+        <div class="trophy-card" id="tr-4">
+          <div class="trophy-icon">🔍</div>
+          <div class="trophy-title">Expert des Angles</div>
+          <div class="trophy-desc">Sans-faute (4/4) sur les définitions.</div>
+        </div>
+        <div class="trophy-card" id="tr-5">
+          <div class="trophy-icon">👑</div>
+          <div class="trophy-title">Grand Maître Géomètre</div>
+          <div class="trophy-desc">Note parfaite de 16 / 16 !</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const scores = { ex1: 0, ex2: 0, ex3: 0, ex4: 0 };
+  const userVF = {};
+  const userRec = {};
+  const userNot = {};
+  const userDef = {};
+
+  function openTab(tabId, el) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+  }
+
+  // Exercice 1
+  const vfAnswers = { 1: false, 2: true, 3: false, 4: true };
+
+  function selectVF(qId, val, btn) {
+    userVF[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx1() {
+    let pts = 0;
+    for (let i = 1; i <= 4; i++) {
+      const fb = document.getElementById('fb-vf-' + i);
+      fb.className = 'feedback visible';
+
+      if (userVF[i] === undefined) {
+        fb.textContent = 'Tu n\'as pas encore répondu à cette question.';
+        fb.className = 'feedback visible err';
+      } else {
+        if (userVF[i] === vfAnswers[i]) {
+          fb.textContent = 'Correct !';
+          fb.className = 'feedback visible ok';
+          pts++;
+        } else {
+          fb.textContent = 'Faux, relis bien la leçon.';
+          fb.className = 'feedback visible err';
+        }
+      }
+    }
+
+    scores.ex1 = pts;
+    document.getElementById('score-ex1').textContent = `Score : ${pts} / 4`;
+    const globalFb = document.getElementById('fb-ex1-global');
+    globalFb.className = 'feedback visible ' + (pts === 4 ? 'ok' : 'err');
+    globalFb.textContent = pts === 4 ? 'Bravo ! 4/4 au Vrai ou Faux.' : `Score : ${pts}/4. Corrige tes erreurs !`;
+    updateTotal();
+  }
+
+  // Exercice 2
+  const recAnswers = { 1: 'aigu', 2: 'obtus', 3: 'droit', 4: 'aigu' };
+
+  function selectRec(qId, val, btn) {
+    userRec[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx2() {
+    let pts = 0;
+    for (let i = 1; i <= 4; i++) {
+      const fb = document.getElementById('fb-rec-' + i);
+      fb.className = 'feedback visible';
+
+      if (userRec[i] === undefined) {
+        fb.textContent = 'Tu n\'as pas sélectionné de réponse.';
+        fb.className = 'feedback visible err';
+      } else {
+        if (userRec[i] === recAnswers[i]) {
+          fb.textContent = 'Correct !';
+          fb.className = 'feedback visible ok';
+          pts++;
+        } else {
+          fb.textContent = 'Incorrect, observe bien l\'ouverture par rapport à l\'angle droit.';
+          fb.className = 'feedback visible err';
+        }
+      }
+    }
+
+    scores.ex2 = pts;
+    document.getElementById('score-ex2').textContent = `Score : ${pts} / 4`;
+    const globalFb = document.getElementById('fb-ex2-global');
+    globalFb.className = 'feedback visible ' + (pts === 4 ? 'ok' : 'err');
+    globalFb.textContent = pts === 4 ? 'Parfait ! 4/4 sur la reconnaissance.' : `Score : ${pts}/4. Regarde bien les angles.`;
+    updateTotal();
+  }
+
+  // Exercice 3
+  const notAnswers = { 1: 'milieu', 2: 'A_chap', 3: 'MAN', 4: 'NAM' };
+
+  function selectNot(qId, val, btn) {
+    userNot[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx3() {
+    let pts = 0;
+    for (let i = 1; i <= 4; i++) {
+      const fb = document.getElementById('fb-not-' + i);
+      fb.className = 'feedback visible';
+
+      if (userNot[i] === undefined) {
+        fb.textContent = 'Tu n\'as pas sélectionné de réponse.';
+        fb.className = 'feedback visible err';
+      } else {
+        if (userNot[i] === notAnswers[i]) {
+          fb.textContent = 'Correct !';
+          fb.className = 'feedback visible ok';
+          pts++;
+        } else {
+          fb.textContent = 'Faux. Le sommet doit être au milieu avec le chapeau au-dessus.';
+          fb.className = 'feedback visible err';
+        }
+      }
+    }
+
+    scores.ex3 = pts;
+    document.getElementById('score-ex3').textContent = `Score : ${pts} / 4`;
+    const globalFb = document.getElementById('fb-ex3-global');
+    globalFb.className = 'feedback visible ' + (pts === 4 ? 'ok' : 'err');
+    globalFb.textContent = pts === 4 ? 'Bravo ! 4/4 sur la notation.' : `Score : ${pts}/4. Attention à la place du sommet.`;
+    updateTotal();
+  }
+
+  // Exercice 4
+  const defAnswers = { 1: 'ecart', 2: '1s_2c', 3: 'perp', 4: 'obtus' };
+
+  function selectDef(qId, val, btn) {
+    userDef[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx4() {
+    let pts = 0;
+    for (let i = 1; i <= 4; i++) {
+      const fb = document.getElementById('fb-def-' + i);
+      fb.className = 'feedback visible';
+
+      if (userDef[i] === undefined) {
+        fb.textContent = 'Tu n\'as pas sélectionné de réponse.';
+        fb.className = 'feedback visible err';
+      } else {
+        if (userDef[i] === defAnswers[i]) {
+          fb.textContent = 'Correct !';
+          fb.className = 'feedback visible ok';
+          pts++;
+        } else {
+          fb.textContent = 'Faux, relis bien le mémo de cours.';
+          fb.className = 'feedback visible err';
+        }
+      }
+    }
+
+    scores.ex4 = pts;
+    document.getElementById('score-ex4').textContent = `Score : ${pts} / 4`;
+    const globalFb = document.getElementById('fb-ex4-global');
+    globalFb.className = 'feedback visible ' + (pts === 4 ? 'ok' : 'err');
+    globalFb.textContent = pts === 4 ? 'Superbe ! 4/4 sans faute sur les définitions.' : `Score : ${pts}/4. Relis les définitions.`;
+    updateTotal();
+  }
+
+  function updateTotal() {
+    const total = scores.ex1 + scores.ex2 + scores.ex3 + scores.ex4;
+    document.getElementById('total-score-badge').textContent = `Total : ${total} / 16`;
+
+    if (scores.ex1 >= 3) document.getElementById('tr-1').classList.add('unlocked');
+    else document.getElementById('tr-1').classList.remove('unlocked');
+
+    if (scores.ex2 === 4) document.getElementById('tr-2').classList.add('unlocked');
+    else document.getElementById('tr-2').classList.remove('unlocked');
+
+    if (scores.ex3 === 4) document.getElementById('tr-3').classList.add('unlocked');
+    else document.getElementById('tr-3').classList.remove('unlocked');
+
+    if (scores.ex4 === 4) document.getElementById('tr-4').classList.add('unlocked');
+    else document.getElementById('tr-4').classList.remove('unlocked');
+
+    if (total === 16) document.getElementById('tr-5').classList.add('unlocked');
+    else document.getElementById('tr-5').classList.remove('unlocked');
+  }
+</script>
+
+</body>
+</html>

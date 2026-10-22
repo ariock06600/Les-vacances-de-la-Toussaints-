@@ -5,22 +5,26 @@ const STORAGE_KEY = 'toussaint_cm1_progress';
 export type MissionId =
   | 'autodictee1'
   | 'conjugaison'
+  | 'dictionnaire'
   | 'histoire1'
   | 'histoire2'
   | 'geo1'
   | 'geo2'
   | 'tables'
-  | 'multiplier';
+  | 'multiplier'
+  | 'angles';
 
 export const ALL_MISSIONS: MissionId[] = [
   'autodictee1',
   'conjugaison',
+  'dictionnaire',
   'histoire1',
   'histoire2',
   'geo1',
   'geo2',
   'tables',
   'multiplier',
+  'angles',
 ];
 
 export function getMissionsProgress(): Record<string, boolean> {

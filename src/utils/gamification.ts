@@ -48,8 +48,8 @@ export const TROPHIES_CATALOG: Omit<Trophy, 'unlocked' | 'unlockedAt'>[] = [
     category: 'Général',
     tier: 'legendaire',
     icon: '👑',
-    description: 'Incroyable ! Tu as terminé toutes les 8 grandes missions de révision.',
-    hint: 'Valide les 8 missions du programme de la Toussaint.',
+    description: 'Incroyable ! Tu as terminé toutes les 10 grandes missions de révision.',
+    hint: 'Valide les 10 missions du programme de la Toussaint.',
     points: 300,
   },
   {
@@ -80,6 +80,16 @@ export const TROPHIES_CATALOG: Omit<Trophy, 'unlocked' | 'unlockedAt'>[] = [
     icon: '⚡',
     description: 'Score parfait au grand quiz de conjugaison des 11 verbes CM1 !',
     hint: 'Réussis le quiz ou le marathon de conjugaison.',
+    points: 150,
+  },
+  {
+    id: 'as_dictionnaire',
+    title: 'As du Dictionnaire',
+    category: 'Français',
+    tier: 'or',
+    icon: '📖',
+    description: 'Tu maîtrises l’ordre alphabétique, les mots-repères et les 11 abréviations !',
+    hint: 'Réussis les exercices sur la leçon du dictionnaire.',
     points: 150,
   },
   {
@@ -153,6 +163,16 @@ export const TROPHIES_CATALOG: Omit<Trophy, 'unlocked' | 'unlockedAt'>[] = [
     points: 150,
   },
   {
+    id: 'maitre_angles',
+    title: 'Maître des Angles & de l’Équerre',
+    category: 'Maths',
+    tier: 'or',
+    icon: '📐',
+    description: 'Tu sais reconnaître au premier coup d’œil les angles droits, aigus et obtus !',
+    hint: 'Termine les 4 exercices de géométrie sur les angles.',
+    points: 150,
+  },
+  {
     id: 'serie_feu',
     title: 'Flamme de l’Assiduité',
     category: 'Général',
@@ -187,7 +207,7 @@ export const LEVELS: LevelInfo[] = [
   { level: 2, title: 'Hérisson Malin', mascot: '🦔', minXP: 150, maxXP: 350 },
   { level: 3, title: 'Renard Astucieux', mascot: '🦊', minXP: 350, maxXP: 700 },
   { level: 4, title: 'Hibou Sage', mascot: '🦉', minXP: 700, maxXP: 1200 },
-  { level: 5, title: 'Cerf Majestueux', mascot: '🦌', minXP: 1200, maxXP: 2200 },
+  { level: 5, title: 'Cerf Majestueux', mascot: '🦌', minXP: 1200, maxXP: 2500 },
 ];
 
 export function getPlayerXP(): number {
@@ -290,7 +310,6 @@ export function addXP(amount: number, reason: string): { newXP: number; leveledU
     playSound('success');
   }
 
-  // Notify listeners
   xpListeners.forEach((l) => l({ amount, reason, totalXP: newXP, leveledUp, newLevel: leveledUp ? newLevel : undefined }));
 
   return { newXP, leveledUp, newLevel: leveledUp ? newLevel : undefined };
@@ -299,7 +318,7 @@ export function addXP(amount: number, reason: string): { newXP: number; leveledU
 export function unlockTrophy(trophyId: string): boolean {
   const unlockedMap = getUnlockedTrophies();
   if (unlockedMap[trophyId]) {
-    return false; // Already unlocked
+    return false;
   }
 
   const trophyMeta = TROPHIES_CATALOG.find((t) => t.id === trophyId);

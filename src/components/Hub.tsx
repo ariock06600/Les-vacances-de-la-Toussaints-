@@ -34,12 +34,14 @@ export const Hub: React.FC<HubProps> = ({
   const missionOrder: { id: MissionId; label: string; icon: string }[] = [
     { id: 'autodictee1', label: 'Autodictée n°1', icon: '✍️' },
     { id: 'conjugaison', label: 'Conjugaison au Présent', icon: '⚡' },
+    { id: 'dictionnaire', label: 'Le Dictionnaire', icon: '📖' },
     { id: 'histoire1', label: 'Les Populations de la Gaule', icon: '🏺' },
     { id: 'histoire2', label: 'La Conquête de la Gaule', icon: '⚔️' },
     { id: 'geo1', label: 'Se nourrir dans le monde', icon: '🌍' },
     { id: 'geo2', label: 'D’où viennent nos aliments ?', icon: '🍎' },
     { id: 'tables', label: 'Les Tables de Multiplication', icon: '🧠' },
     { id: 'multiplier', label: 'Multiplier par 10, 100, 1000', icon: '🪄' },
+    { id: 'angles', label: 'Les Angles', icon: '📐' },
   ];
 
   const nextMission = missionOrder.find((m) => !progress[m.id]) || missionOrder[0];
@@ -381,16 +383,16 @@ export const Hub: React.FC<HubProps> = ({
                 Français & Mots doux
               </h2>
               <p className="text-xs sm:text-sm text-amber-700 font-medium">
-                Orthographe, conjugaison au présent et texte de Claude Ponti
+                Orthographe, conjugaison au présent, dictionnaire et texte de Claude Ponti
               </p>
             </div>
           </div>
           <span className="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1 rounded-full border border-amber-300">
-            2 Missions
+            3 Missions
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Autodictée 1 */}
           <article
             onClick={() => onOpenModule('autodictee1')}
@@ -427,13 +429,10 @@ export const Hub: React.FC<HubProps> = ({
 
               <div className="mt-4 flex flex-wrap gap-1.5">
                 <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
-                  🎧 Lecture audio
+                  🎧 Audio
                 </span>
                 <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
-                  🔍 Mots difficiles
-                </span>
-                <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
-                  ✍️ Mode dictée
+                  🔍 Loupe
                 </span>
                 <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
                   +150 XP
@@ -480,7 +479,7 @@ export const Hub: React.FC<HubProps> = ({
                 Conjugaison au Présent
               </h3>
               <p className="text-sm text-stone-600 mt-2 font-medium leading-relaxed">
-                Les 11 verbes indispensables du CM1 (aimer, finir, aller, faire, dire, venir, pouvoir, voir, vouloir, prendre, être/avoir) avec fiches mémo et grand quiz marathon.
+                Les 11 verbes indispensables du CM1 (aimer, finir, aller, faire, dire, venir, pouvoir, voir...) avec fiches mémo et grand quiz marathon.
               </p>
 
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -488,10 +487,7 @@ export const Hub: React.FC<HubProps> = ({
                   📋 11 Verbes
                 </span>
                 <span className="text-[11px] bg-orange-50 text-orange-800 px-2.5 py-0.5 rounded-lg font-bold">
-                  🎯 Entraînement
-                </span>
-                <span className="text-[11px] bg-orange-50 text-orange-800 px-2.5 py-0.5 rounded-lg font-bold">
-                  🏆 Quiz Marathon
+                  🏆 Marathon
                 </span>
                 <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
                   +150 XP
@@ -504,6 +500,61 @@ export const Hub: React.FC<HubProps> = ({
                 Conjuguer maintenant <ArrowRight className="w-3.5 h-3.5" />
               </span>
               <span className="text-stone-400">8 min</span>
+            </div>
+          </article>
+
+          {/* Le Dictionnaire (NOUVEAU) */}
+          <article
+            onClick={() => onOpenModule('dictionnaire')}
+            className="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg border-2 border-sky-100 hover:border-sky-300 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden active:scale-[0.99]"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-bl-full -z-0" />
+            <div className="relative z-10">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <span className="text-4xl bg-sky-100/70 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                  📖
+                </span>
+                <button
+                  onClick={(e) => handleToggle('dictionnaire', e)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 border-2 cursor-pointer ${
+                    progress['dictionnaire']
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-2xs'
+                      : 'border-dashed border-stone-300 text-stone-500 bg-stone-50 hover:border-sky-400'
+                  }`}
+                >
+                  <span>{progress['dictionnaire'] ? '✅' : '⚪'}</span>
+                  <span>{progress['dictionnaire'] ? 'Terminé !' : 'À faire'}</span>
+                </button>
+              </div>
+
+              <div className="text-[11px] font-extrabold uppercase text-sky-800 tracking-wider mb-1">
+                Fiche V1 • Vocabulaire
+              </div>
+              <h3 className="font-fredoka text-xl font-bold text-stone-900 group-hover:text-sky-800 transition">
+                Le Dictionnaire
+              </h3>
+              <p className="text-sm text-stone-600 mt-2 font-medium leading-relaxed">
+                Ordre alphabétique, mots-repères (premier et dernier mot), tableau des 11 abréviations et décryptage complet d'un article de dictionnaire.
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="text-[11px] bg-sky-50 text-sky-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  🔤 11 Abréviations
+                </span>
+                <span className="text-[11px] bg-sky-50 text-sky-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  📑 Mots-repères
+                </span>
+                <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  +150 XP
+                </span>
+              </div>
+            </div>
+
+            <div className="relative z-10 mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-bold text-sky-700">
+              <span className="flex items-center gap-1">
+                Consulter le dico <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+              <span className="text-stone-400">7 min</span>
             </div>
           </article>
         </div>
@@ -646,29 +697,29 @@ export const Hub: React.FC<HubProps> = ({
       </section>
 
       {/* ======================================================== */}
-      {/* SECTION 4 : MATHÉMATIQUES & CALCUL                       */}
+      {/* SECTION 4 : MATHÉMATIQUES & GÉOMÉTRIE                    */}
       {/* ======================================================== */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b-2 border-indigo-200 pb-2">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-xs text-2xl">
-              🧮
+              📐
             </div>
             <div>
               <h2 className="font-fredoka text-2xl sm:text-3xl font-bold text-indigo-950">
-                Mathématiques & Calcul
+                Mathématiques & Géométrie
               </h2>
               <p className="text-xs sm:text-sm text-indigo-800 font-medium">
-                Maîtrise des tables de multiplication et la magie des zéros
+                Tables de calcul, magie des zéros et géométrie des angles CM1
               </p>
             </div>
           </div>
           <span className="text-xs font-bold bg-indigo-100 text-indigo-900 px-3 py-1 rounded-full border border-indigo-300">
-            2 Missions
+            3 Missions
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Tables de multiplication */}
           <article
             onClick={() => onOpenModule('tables')}
@@ -782,6 +833,64 @@ export const Hub: React.FC<HubProps> = ({
                 Devenir le Maître des Zéros <ArrowRight className="w-3.5 h-3.5" />
               </span>
               <span className="text-stone-400">7 min</span>
+            </div>
+          </article>
+
+          {/* Fiche Geom 2 : Les angles */}
+          <article
+            onClick={() => onOpenModule('angles')}
+            className="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg border-2 border-cyan-100 hover:border-cyan-300 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden active:scale-[0.99]"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-50 rounded-bl-full -z-0" />
+            <div className="relative z-10">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <span className="text-4xl bg-cyan-100/70 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                  📐
+                </span>
+                <button
+                  onClick={(e) => handleToggle('angles', e)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 border-2 cursor-pointer ${
+                    progress['angles']
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-2xs'
+                      : 'border-dashed border-stone-300 text-stone-500 bg-stone-50 hover:border-cyan-400'
+                  }`}
+                >
+                  <span>{progress['angles'] ? '✅' : '⚪'}</span>
+                  <span>{progress['angles'] ? 'Terminé !' : 'À faire'}</span>
+                </button>
+              </div>
+
+              <div className="text-[11px] font-extrabold uppercase text-cyan-800 tracking-wider mb-1">
+                Fiche Geom 2 • Géométrie
+              </div>
+              <h3 className="font-fredoka text-xl font-bold text-stone-900 group-hover:text-cyan-800 transition">
+                Les Angles : Aigu, Droit, Obtus
+              </h3>
+              <p className="text-sm text-stone-600 mt-2 font-medium leading-relaxed">
+                Reconnais les 4 types d'angles (aigu, droit, obtus, plat), maîtrise la notation avec chapeau (Â, MÂN) et utilise l'équerre virtuelle.
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="text-[11px] bg-cyan-50 text-cyan-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  📐 Équerre
+                </span>
+                <span className="text-[11px] bg-cyan-50 text-cyan-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  🎯 4 Types d'angles
+                </span>
+                <span className="text-[11px] bg-cyan-50 text-cyan-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  ✍️ Notation Â
+                </span>
+                <span className="text-[11px] bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-lg font-bold">
+                  +150 XP
+                </span>
+              </div>
+            </div>
+
+            <div className="relative z-10 mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-bold text-cyan-700">
+              <span className="flex items-center gap-1">
+                Maîtriser les angles <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+              <span className="text-stone-400">8 min</span>
             </div>
           </article>
         </div>

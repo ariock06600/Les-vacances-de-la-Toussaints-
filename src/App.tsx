@@ -9,6 +9,8 @@ import { GeoLecon1Module } from './components/modules/GeoLecon1Module';
 import { GeoLecon2Module } from './components/modules/GeoLecon2Module';
 import { TablesMultiplicationModule } from './components/modules/TablesMultiplicationModule';
 import { Multiplier101001000Module } from './components/modules/Multiplier101001000Module';
+import { DictionnaireModule } from './components/modules/DictionnaireModule';
+import { AnglesModule } from './components/modules/AnglesModule';
 import { TrophyRoomModal } from './components/TrophyRoomModal';
 import { SaveSystemModal } from './components/SaveSystemModal';
 import { XPToast } from './components/XPToast';
@@ -41,12 +43,14 @@ export function App() {
         'hub',
         'autodictee1',
         'conjugaison',
+        'dictionnaire',
         'histoire1',
         'histoire2',
         'geo1',
         'geo2',
         'tables',
         'multiplier',
+        'angles',
       ];
       if (validViews.includes(hash)) {
         setCurrentView(hash);
@@ -152,6 +156,13 @@ export function App() {
           />
         )}
 
+        {currentView === 'dictionnaire' && (
+          <DictionnaireModule
+            onHome={() => navigateTo('hub')}
+            onComplete={() => handleModuleComplete('dictionnaire')}
+          />
+        )}
+
         {currentView === 'histoire1' && (
           <HistoirePopulationsGauleModule
             onHome={() => navigateTo('hub')}
@@ -191,6 +202,13 @@ export function App() {
           <Multiplier101001000Module
             onHome={() => navigateTo('hub')}
             onComplete={() => handleModuleComplete('multiplier')}
+          />
+        )}
+
+        {currentView === 'angles' && (
+          <AnglesModule
+            onHome={() => navigateTo('hub')}
+            onComplete={() => handleModuleComplete('angles')}
           />
         )}
       </div>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V1 : Le Dictionnaire - Exercices</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --success: #16a34a;
+      --error: #dc2626;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 16px 10px 50px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+      background: var(--card);
+      padding: 18px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border-top: 5px solid var(--primary);
+    }
+
+    .badge-code {
+      display: inline-block;
+      background: #e0f2fe;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      justify-content: space-between;
+      align-items: stretch;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1 1 0;
+      min-width: 0;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      padding: 8px 6px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+
+    .section-content {
+      display: none;
+    }
+
+    .section-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .lesson-rule {
+      background: #f0fdf4;
+      border-left: 4px solid var(--success);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 12px;
+    }
+
+    .lesson-article {
+      background: #fffbeb;
+      border: 2px dashed #f59e0b;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+
+    .dict-entry {
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .dict-word {
+      font-weight: bold;
+      color: #b45309;
+      font-size: 1.25rem;
+    }
+
+    .tag-annot {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 6px;
+      margin: 0 3px;
+    }
+
+    .tag-nature { background: #dbeafe; color: #1e40af; }
+    .tag-def { background: #dcfce7; color: #166534; }
+    .tag-ex { background: #fef3c7; color: #92400e; font-style: italic; }
+    .tag-syn { background: #f3e8ff; color: #6b21a8; }
+
+    .abbrev-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .abbrev-item {
+      display: flex;
+      justify-content: space-between;
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .abbrev-item strong {
+      color: var(--primary);
+    }
+
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 10px;
+    }
+
+    .ex-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .ex-score {
+      font-size: 0.88rem;
+      font-weight: bold;
+      background: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .question-block {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-opt {
+      flex: 1;
+      min-width: 110px;
+      padding: 9px 10px;
+      border: 2px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .btn-opt:hover {
+      border-color: var(--primary);
+      background: #f0f9ff;
+    }
+
+    .btn-opt.selected {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .feedback {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .feedback.visible {
+      display: block;
+    }
+
+    .feedback.ok { color: var(--success); }
+    .feedback.err { color: var(--error); }
+
+    .match-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
+
+    .match-row td {
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .match-row td:first-child {
+      border-left: 1px solid var(--border);
+      border-radius: 8px 0 0 8px;
+      font-weight: bold;
+      color: var(--primary);
+      width: 32%;
+    }
+
+    .match-row td:last-child {
+      border-right: 1px solid var(--border);
+      border-radius: 0 8px 8px 0;
+    }
+
+    select.match-select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .page-repere {
+      display: flex;
+      justify-content: space-between;
+      background: #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: bold;
+      color: #334155;
+      margin-bottom: 14px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .trophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .trophy-card {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .trophy-card.unlocked {
+      border-color: #f59e0b;
+      background: #fffdf5;
+    }
+
+    .trophy-icon {
+      font-size: 2rem;
+      filter: grayscale(1);
+      opacity: 0.4;
+      margin-bottom: 6px;
+    }
+
+    .trophy-card.unlocked .trophy-icon {
+      filter: none;
+      opacity: 1;
+    }
+
+    .trophy-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .trophy-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 680px) {
+      .nav-tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+      }
+      .tab-btn {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge-code">FICHE V1</div>
+    <h1>Le dictionnaire</h1>
+    <p style="color: var(--text-muted);">Mémorise et entraîne-toi avec les 4 exercices interactifs</p>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="openTab('lecon', this)">📖 La Leçon</button>
+    <button class="tab-btn" onclick="openTab('ex1', this)">⚡ 1. Vrai / Faux</button>
+    <button class="tab-btn" onclick="openTab('ex2', this)">🔤 2. Abréviations</button>
+    <button class="tab-btn" onclick="openTab('ex3', this)">📑 3. Mots-repères</button>
+    <button class="tab-btn" onclick="openTab('ex4', this)">🔍 4. L'Article</button>
+    <button class="tab-btn" onclick="openTab('trophees', this)">🏆 Trophées</button>
+  </div>
+
+  <!-- ONGLET LEÇON -->
+  <section id="lecon" class="section-content active">
+    <div class="card">
+      <h2 style="font-size: 1.25rem; margin-bottom: 12px;">Rappel du cours</h2>
+      <div class="lesson-rule">
+        <strong>1. Rangement :</strong> Dans un dictionnaire, les mots sont rangés dans <strong>l'ordre alphabétique</strong>. On regarde la 1ère lettre, puis la 2e, la 3e...
+      </div>
+      <div class="lesson-rule">
+        <strong>2. Mots-repères :</strong> En haut des pages, ils indiquent le <strong>1er mot</strong> et le <strong>dernier mot</strong> de la double page.
+      </div>
+      <div class="lesson-rule">
+        <strong>3. Utilité :</strong> Vérifier l'orthographe, la nature, le genre et les différents sens d'un mot.
+      </div>
+
+      <div class="lesson-article">
+        <div class="dict-entry">
+          <span class="dict-word">nomade</span>
+          <span class="tag-annot tag-nature">adj. et n.</span>
+          <span class="tag-annot tag-def">Qui n'a pas d'habitation fixe.</span>
+          <span class="tag-annot tag-ex">Les premiers peuples préhistoriques étaient nomades.</span>
+          <span class="tag-annot tag-syn">|| contr. sédentaire ||</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 16px; font-size: 1.05rem;">Toutes les abréviations de la fiche :</h3>
+      <div class="abbrev-grid">
+        <div class="abbrev-item"><span><strong>n.</strong></span> <span>Nom</span></div>
+        <div class="abbrev-item"><span><strong>m. ou masc.</strong></span> <span>Masculin</span></div>
+        <div class="abbrev-item"><span><strong>v.</strong></span> <span>Verbe</span></div>
+        <div class="abbrev-item"><span><strong>f. ou fém.</strong></span> <span>Féminin</span></div>
+        <div class="abbrev-item"><span><strong>adj.</strong></span> <span>Adjectif</span></div>
+        <div class="abbrev-item"><span><strong>pl.</strong></span> <span>Pluriel</span></div>
+        <div class="abbrev-item"><span><strong>adv.</strong></span> <span>Adverbe</span></div>
+        <div class="abbrev-item"><span><strong>sing.</strong></span> <span>Singulier</span></div>
+        <div class="abbrev-item"><span><strong>inv.</strong></span> <span>Invariable</span></div>
+        <div class="abbrev-item"><span><strong>syn.</strong></span> <span>Synonyme</span></div>
+        <div class="abbrev-item"><span><strong>contr.</strong></span> <span>Contraire</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 1 : VRAI / FAUX AVEC BOUTON DE VALIDATION -->
+  <section id="ex1" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 1 : Vrai ou Faux</span>
+        <span class="ex-score" id="score-ex1">Score : 0 / 5</span>
+      </div>
+
+      <div class="question-block" id="blk-vf-1">
+        <p><strong>1.</strong> Dans un dictionnaire, les mots sont rangés dans l'ordre alphabétique.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(1, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(1, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-1"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-2">
+        <p><strong>2.</strong> On ne regarde que la 1ère lettre du mot pour le trouver.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(2, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(2, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-2"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-3">
+        <p><strong>3.</strong> Les mots-repères indiquent le premier et le dernier mot de la double page.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(3, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(3, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-3"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-4">
+        <p><strong>4.</strong> L'exemple dans un article est souvent écrit en italique.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(4, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(4, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-4"></div>
+      </div>
+
+      <div class="question-block" id="blk-vf-5">
+        <p><strong>5.</strong> Les numéros devant une définition indiquent les différents sens du mot.</p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="selectVF(5, true, this)">Vrai</button>
+          <button class="btn-opt" onclick="selectVF(5, false, this)">Faux</button>
+        </div>
+        <div class="feedback" id="fb-vf-5"></div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx1()">Valider mes réponses (Exercice 1)</button>
+      <div class="feedback" id="fb-ex1-global" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 2 : TOUT LE TABLEAU DE LA FICHE -->
+  <section id="ex2" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 2 : Décoder le tableau complet des abréviations</span>
+        <span class="ex-score" id="score-ex2">Score : 0 / 11</span>
+      </div>
+      <p style="margin-bottom: 12px; color: var(--text-muted);">Associe chaque abréviation de la fiche à sa signification exacte :</p>
+
+      <table class="match-table">
+        <tr class="match-row">
+          <td>n.</td>
+          <td>
+            <select class="match-select" id="abr-n">
+              <option value="">-- Choisis --</option>
+              <option value="Nom">Nom</option>
+              <option value="Verbe">Verbe</option>
+              <option value="Adjectif">Adjectif</option>
+              <option value="Invariable">Invariable</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>m. ou masc.</td>
+          <td>
+            <select class="match-select" id="abr-m">
+              <option value="">-- Choisis --</option>
+              <option value="Féminin">Féminin</option>
+              <option value="Masculin">Masculin</option>
+              <option value="Pluriel">Pluriel</option>
+              <option value="Nom">Nom</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>v.</td>
+          <td>
+            <select class="match-select" id="abr-v">
+              <option value="">-- Choisis --</option>
+              <option value="Nom">Nom</option>
+              <option value="Verbe">Verbe</option>
+              <option value="Adverbe">Adverbe</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>f. ou fém.</td>
+          <td>
+            <select class="match-select" id="abr-f">
+              <option value="">-- Choisis --</option>
+              <option value="Féminin">Féminin</option>
+              <option value="Masculin">Masculin</option>
+              <option value="Singulier">Singulier</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>adj.</td>
+          <td>
+            <select class="match-select" id="abr-adj">
+              <option value="">-- Choisis --</option>
+              <option value="Adverbe">Adverbe</option>
+              <option value="Adjectif">Adjectif</option>
+              <option value="Invariable">Invariable</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>pl.</td>
+          <td>
+            <select class="match-select" id="abr-pl">
+              <option value="">-- Choisis --</option>
+              <option value="Singulier">Singulier</option>
+              <option value="Pluriel">Pluriel</option>
+              <option value="Contraire">Contraire</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>adv.</td>
+          <td>
+            <select class="match-select" id="abr-adv">
+              <option value="">-- Choisis --</option>
+              <option value="Adverbe">Adverbe</option>
+              <option value="Adjectif">Adjectif</option>
+              <option value="Verbe">Verbe</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>sing.</td>
+          <td>
+            <select class="match-select" id="abr-sing">
+              <option value="">-- Choisis --</option>
+              <option value="Singulier">Singulier</option>
+              <option value="Pluriel">Pluriel</option>
+              <option value="Synonyme">Synonyme</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>inv.</td>
+          <td>
+            <select class="match-select" id="abr-inv">
+              <option value="">-- Choisis --</option>
+              <option value="Invariable">Invariable</option>
+              <option value="Indéfini">Indéfini</option>
+              <option value="Indicatif">Indicatif</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>syn.</td>
+          <td>
+            <select class="match-select" id="abr-syn">
+              <option value="">-- Choisis --</option>
+              <option value="Synonyme">Synonyme</option>
+              <option value="Contraire">Contraire</option>
+              <option value="Singulier">Singulier</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="match-row">
+          <td>contr.</td>
+          <td>
+            <select class="match-select" id="abr-contr">
+              <option value="">-- Choisis --</option>
+              <option value="Contraire">Contraire</option>
+              <option value="Synonyme">Synonyme</option>
+              <option value="Invariable">Invariable</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+
+      <button class="btn-submit" onclick="checkEx2()">Vérifier les 11 abréviations</button>
+      <div class="feedback" id="fb-ex2" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 3 : MOTS-REPÈRES -->
+  <section id="ex3" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 3 : Mots-repères</span>
+        <span class="ex-score" id="score-ex3">Score : 0 / 4</span>
+      </div>
+      <div class="page-repere">
+        <span>📖 Début : <strong>CARTABLE</strong></span>
+        <span>Fin : <strong>CHÂTEAU</strong> 📖</span>
+      </div>
+
+      <div class="question-block" id="blk-rep-1">
+        <p><strong>1. Cascade</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setRepere(1, 'avant', this)">Avant</button>
+          <button class="btn-opt" onclick="setRepere(1, 'page', this)">Sur la page</button>
+          <button class="btn-opt" onclick="setRepere(1, 'apres', this)">Après</button>
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-rep-2">
+        <p><strong>2. Cahier</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setRepere(2, 'avant', this)">Avant</button>
+          <button class="btn-opt" onclick="setRepere(2, 'page', this)">Sur la page</button>
+          <button class="btn-opt" onclick="setRepere(2, 'apres', this)">Après</button>
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-rep-3">
+        <p><strong>3. Chien</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setRepere(3, 'avant', this)">Avant</button>
+          <button class="btn-opt" onclick="setRepere(3, 'page', this)">Sur la page</button>
+          <button class="btn-opt" onclick="setRepere(3, 'apres', this)">Après</button>
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-rep-4">
+        <p><strong>4. Cavalier</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setRepere(4, 'avant', this)">Avant</button>
+          <button class="btn-opt" onclick="setRepere(4, 'page', this)">Sur la page</button>
+          <button class="btn-opt" onclick="setRepere(4, 'apres', this)">Après</button>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx3()">Vérifier mes choix</button>
+      <div class="feedback" id="fb-ex3" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- EXERCICE 4 : L'ARTICLE -->
+  <section id="ex4" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">Exercice 4 : Analyser un article</span>
+        <span class="ex-score" id="score-ex4">Score : 0 / 4</span>
+      </div>
+
+      <div class="lesson-article">
+        <div class="dict-entry">
+          <span class="dict-word">bâtir</span> <em>v.</em> Construire un édifice, une maison. <em>Les maçons bâtissent un mur.</em> || syn. <em>édifier</em> ; contr. <em>détruire</em>.
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-art-1">
+        <p><strong>1. Quelle est la nature de ce mot ?</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setArt(1, 'n', this)">Nom</button>
+          <button class="btn-opt" onclick="setArt(1, 'v', this)">Verbe</button>
+          <button class="btn-opt" onclick="setArt(1, 'adj', this)">Adjectif</button>
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-art-2">
+        <p><strong>2. Quelle est la définition ?</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setArt(2, 'def', this)">Construire un édifice, une maison.</button>
+          <button class="btn-opt" onclick="setArt(2, 'ex', this)">Les maçons bâtissent un mur.</button>
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-art-3">
+        <p><strong>3. Quel est son contraire (`contr.`) ?</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setArt(3, 'detruire', this)">détruire</button>
+          <button class="btn-opt" onclick="setArt(3, 'edifier', this)">édifier</button>
+        </div>
+      </div>
+
+      <div class="question-block" id="blk-art-4">
+        <p><strong>4. Quel est son synonyme (`syn.`) ?</strong></p>
+        <div class="btn-group">
+          <button class="btn-opt" onclick="setArt(4, 'edifier', this)">édifier</button>
+          <button class="btn-opt" onclick="setArt(4, 'detruire', this)">détruire</button>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="checkEx4()">Valider l'exercice 4</button>
+      <div class="feedback" id="fb-ex4" style="margin-top: 14px;"></div>
+    </div>
+  </section>
+
+  <!-- ONGLET TROPHÉES -->
+  <section id="trophees" class="section-content">
+    <div class="card">
+      <div class="ex-header">
+        <span class="ex-title">🏆 Salle des Trophées</span>
+        <span class="ex-score" id="total-score-badge">Total : 0 / 24</span>
+      </div>
+
+      <div class="trophy-grid">
+        <div class="trophy-card" id="tr-1">
+          <div class="trophy-icon">📖</div>
+          <div class="trophy-title">Vrai ou Faux Réussi</div>
+          <div class="trophy-desc">Au moins 4/5 à l'exercice 1.</div>
+        </div>
+        <div class="trophy-card" id="tr-2">
+          <div class="trophy-icon">🔤</div>
+          <div class="trophy-title">As des Abréviations</div>
+          <div class="trophy-desc">Sans-faute (11/11) au tableau.</div>
+        </div>
+        <div class="trophy-card" id="tr-3">
+          <div class="trophy-icon">🧭</div>
+          <div class="trophy-title">Sens du Repérage</div>
+          <div class="trophy-desc">4/4 sur les mots-repères.</div>
+        </div>
+        <div class="trophy-card" id="tr-4">
+          <div class="trophy-icon">🔍</div>
+          <div class="trophy-title">Expert de l'Article</div>
+          <div class="trophy-desc">Sans-faute (4/4) à l'exercice 4.</div>
+        </div>
+        <div class="trophy-card" id="tr-5">
+          <div class="trophy-icon">👑</div>
+          <div class="trophy-title">Grand Lexicographe</div>
+          <div class="trophy-desc">Note parfaite de 24 / 24 !</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const scores = { ex1: 0, ex2: 0, ex3: 0, ex4: 0 };
+  const userVF = {};
+  const userRepere = {};
+  const userArt = {};
+
+  function openTab(tabId, el) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+  }
+
+  // Exercice 1 : Sélection puis validation par bouton
+  const vfAnswers = { 1: true, 2: false, 3: true, 4: true, 5: true };
+
+  function selectVF(qId, val, btn) {
+    userVF[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx1() {
+    let pts = 0;
+    for (let i = 1; i <= 5; i++) {
+      const fb = document.getElementById('fb-vf-' + i);
+      fb.className = 'feedback visible';
+
+      if (userVF[i] === undefined) {
+        fb.textContent = 'Tu n\'as pas encore répondu à cette question.';
+        fb.className = 'feedback visible err';
+      } else {
+        if (userVF[i] === vfAnswers[i]) {
+          fb.textContent = 'Correct !';
+          fb.className = 'feedback visible ok';
+          pts++;
+        } else {
+          fb.textContent = 'Faux, relis bien la règle du cours.';
+          fb.className = 'feedback visible err';
+        }
+      }
+    }
+
+    scores.ex1 = pts;
+    document.getElementById('score-ex1').textContent = `Score : ${pts} / 5`;
+    const globalFb = document.getElementById('fb-ex1-global');
+    globalFb.className = 'feedback visible ' + (pts === 5 ? 'ok' : 'err');
+    globalFb.textContent = pts === 5 ? 'Bravo ! 5/5 au Vrai ou Faux.' : `Score : ${pts}/5. Corrige tes erreurs !`;
+
+    updateTotal();
+  }
+
+  // Exercice 2 : 11 abréviations complètes
+  function checkEx2() {
+    const answers = {
+      'abr-n': 'Nom',
+      'abr-m': 'Masculin',
+      'abr-v': 'Verbe',
+      'abr-f': 'Féminin',
+      'abr-adj': 'Adjectif',
+      'abr-pl': 'Pluriel',
+      'abr-adv': 'Adverbe',
+      'abr-sing': 'Singulier',
+      'abr-inv': 'Invariable',
+      'abr-syn': 'Synonyme',
+      'abr-contr': 'Contraire'
+    };
+
+    let pts = 0;
+    for (const [id, val] of Object.entries(answers)) {
+      const el = document.getElementById(id);
+      if (el.value === val) {
+        el.style.borderColor = 'var(--success)';
+        el.style.backgroundColor = '#f0fdf4';
+        pts++;
+      } else {
+        el.style.borderColor = 'var(--error)';
+        el.style.backgroundColor = '#fef2f2';
+      }
+    }
+
+    scores.ex2 = pts;
+    document.getElementById('score-ex2').textContent = `Score : ${pts} / 11`;
+    const fb = document.getElementById('fb-ex2');
+    fb.className = 'feedback visible ' + (pts === 11 ? 'ok' : 'err');
+    fb.textContent = pts === 11 ? 'Parfait ! 11/11, tu connais toutes les abréviations.' : `${pts}/11. Vérifie les cases sur fond rouge.`;
+
+    updateTotal();
+  }
+
+  // Exercice 3 : Mots-repères
+  function setRepere(qId, val, btn) {
+    userRepere[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx3() {
+    const correct = { 1: 'page', 2: 'avant', 3: 'apres', 4: 'page' };
+    let pts = 0;
+    for (const [q, val] of Object.entries(correct)) {
+      if (userRepere[q] === val) pts++;
+    }
+
+    scores.ex3 = pts;
+    document.getElementById('score-ex3').textContent = `Score : ${pts} / 4`;
+    const fb = document.getElementById('fb-ex3');
+    fb.className = 'feedback visible ' + (pts === 4 ? 'ok' : 'err');
+    fb.textContent = pts === 4 ? 'Super ! 4/4 sur les mots-repères.' : `${pts}/4. Attention aux premières lettres.`;
+
+    updateTotal();
+  }
+
+  // Exercice 4 : Analyse de l'article
+  function setArt(qId, val, btn) {
+    userArt[qId] = val;
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function checkEx4() {
+    const correct = { 1: 'v', 2: 'def', 3: 'detruire', 4: 'edifier' };
+    let pts = 0;
+    for (const [q, val] of Object.entries(correct)) {
+      if (userArt[q] === val) pts++;
+    }
+
+    scores.ex4 = pts;
+    document.getElementById('score-ex4').textContent = `Score : ${pts} / 4`;
+    const fb = document.getElementById('fb-ex4');
+    fb.className = 'feedback visible ' + (pts === 4 ? 'ok' : 'err');
+    fb.textContent = pts === 4 ? 'Excellent, 4/4 sans faute sur l\'article !' : `${pts}/4. Vérifie bien les abréviations et l'italique.`;
+
+    updateTotal();
+  }
+
+  // Mise à jour globale et trophées
+  function updateTotal() {
+    const total = scores.ex1 + scores.ex2 + scores.ex3 + scores.ex4;
+    document.getElementById('total-score-badge').textContent = `Total : ${total} / 24`;
+
+    if (scores.ex1 >= 4) document.getElementById('tr-1').classList.add('unlocked');
+    else document.getElementById('tr-1').classList.remove('unlocked');
+
+    if (scores.ex2 === 11) document.getElementById('tr-2').classList.add('unlocked');
+    else document.getElementById('tr-2').classList.remove('unlocked');
+
+    if (scores.ex3 === 4) document.getElementById('tr-3').classList.add('unlocked');
+    else document.getElementById('tr-3').classList.remove('unlocked');
+
+    if (scores.ex4 === 4) document.getElementById('tr-4').classList.add('unlocked');
+    else document.getElementById('tr-4').classList.remove('unlocked');
+
+    if (total === 24) document.getElementById('tr-5').classList.add('unlocked');
+    else document.getElementById('tr-5').classList.remove('unlocked');
+  }
+</script>
+
+</body>
+</html>
